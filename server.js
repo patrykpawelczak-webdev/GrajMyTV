@@ -43,7 +43,7 @@ app.get('/', (req, res) => {
 
 // ===== MONTOWANIE GIER =====
 // Rodziniada
-const rodziniadaRouter = require('./games/rodziniada/router');
+const rodziniadaRouter = require('./gry/rodziniada/router');
 app.use('/rodziniada', rodziniadaRouter);
 
 // Przyszłe gry (placeholder)
@@ -53,7 +53,7 @@ app.get('/gra4', (req, res) => res.redirect('/?soon=gra4'));
 
 // ===== SOCKET.IO NAMESPACES =====
 const rodziniadaIO = io.of('/rodziniada');
-const rodziniadaSocket = require('./games/rodziniada/socket');
+const rodziniadaSocket = require('./gry/rodziniada/socket');
 rodziniadaSocket(rodziniadaIO, logInfo, logSuccess, logWarn, logError, c);
 
 // ===== IP =====
