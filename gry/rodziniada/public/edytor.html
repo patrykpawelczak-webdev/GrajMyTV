@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodziniada – Edytor pytań</title>
+    <link rel="stylesheet" href="/css/edytor.css">
+    <link rel="icon" href="/ikona.png" type="image/png">
+</head>
+<body>
+
+    <!-- EKRAN PIN -->
+    <div class="pin-screen" id="pinScreen">
+        <div class="pin-box">
+            <div class="pin-logo">RODZINIADA</div>
+            <div class="pin-title">Edytor pytań</div>
+            <div class="pin-subtitle">Wpisz PIN aby uzyskać dostęp</div>
+            <div class="pin-inputs" id="pinInputs">
+                <input class="pin-digit" type="password" maxlength="1"
+                       inputmode="numeric" pattern="[0-9]">
+                <input class="pin-digit" type="password" maxlength="1"
+                       inputmode="numeric" pattern="[0-9]">
+                <input class="pin-digit" type="password" maxlength="1"
+                       inputmode="numeric" pattern="[0-9]">
+                <input class="pin-digit" type="password" maxlength="1"
+                       inputmode="numeric" pattern="[0-9]">
+            </div>
+            <div class="pin-error" id="pinError"></div>
+            <button class="pin-btn" onclick="verifyPin()">Wejdź</button>
+            <a class="pin-back" href="/">&#8592; Wróć do panelu</a>
+        </div>
+    </div>
+
+    <!-- GŁÓWNY EDYTOR -->
+    <div class="editor-screen hidden" id="editorScreen">
+
+        <header class="editor-header">
+            <div class="editor-header-left">
+                <div class="editor-logo">RODZINIADA</div>
+                <div class="editor-title">Edytor pytań</div>
+            </div>
+            <div class="editor-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="statCategories">0</span>
+                    <span class="stat-label">kategorii</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statQuestions">0</span>
+                    <span class="stat-label">pytań</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statAnswers">0</span>
+                    <span class="stat-label">odpowiedzi</span>
+                </div>
+            </div>
+            <div class="editor-header-actions">
+                <button class="hbtn hbtn-import" onclick="importJSON()">Import</button>
+                <button class="hbtn hbtn-export" onclick="exportJSON()">Eksport</button>
+                <button class="hbtn hbtn-save"   onclick="saveAll()" id="btnSave">Zapisz</button>
+                <a      class="hbtn hbtn-back"   href="/">&#8592; Panel</a>
+            </div>
+        </header>
+
+        <div class="toast" id="toast"></div>
+
+        <div class="editor-layout">
+
+            <!-- LEWA: KATEGORIE -->
+            <div class="categories-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Kategorie</div>
+                    <button class="btn-add-cat" onclick="addCategory()">+ Dodaj</button>
+                </div>
+                <div class="categories-list" id="categoriesList"></div>
+            </div>
+
+            <!-- PRAWA: ZAWARTOŚĆ -->
+            <div class="content-panel">
+                <div class="content-empty" id="contentEmpty">
+                    <div class="content-empty-icon">&#128218;</div>
+                    <div class="content-empty-text">Wybierz kategorię aby edytować pytania</div>
+                </div>
+
+                <div class="category-editor hidden" id="categoryEditor">
+
+                    <div class="cat-info-bar">
+                        <div class="cat-info-fields">
+                            <div class="field-group">
+                                <label class="field-label">Ikona</label>
+                                <input type="text" class="field-input field-icon"
+                                       id="catIcon" placeholder="?" maxlength="4">
+                            </div>
+                            <div class="field-group" style="flex:1;">
+                                <label class="field-label">Nazwa kategorii</label>
+                                <input type="text" class="field-input"
+                                       id="catName" placeholder="Nazwa kategorii">
+                            </div>
+                        </div>
+                        <button class="btn-update-cat" onclick="updateCategoryInfo()">
+                            Zaktualizuj
+                        </button>
+                    </div>
+
+                    <div class="questions-header">
+                        <div class="questions-title">
+                            Pytania
+                            <span class="questions-count" id="questionsCount">0</span>
+                        </div>
+                        <button class="btn-add-q" onclick="addQuestion()">
+                            + Dodaj pytanie
+                        </button>
+                    </div>
+
+                    <div class="questions-list" id="questionsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDYTOR PYTANIA -->
+    <div class="modal-overlay hidden" id="questionModal">
+        <div class="modal-box modal-large">
+            <div class="modal-header">
+                <div class="modal-title" id="questionModalTitle">Edytuj pytanie</div>
+                <button class="modal-close" onclick="closeQuestionModal()">X</button>
+            </div>
+            <div class="modal-body">
+                <div class="field-group" style="margin-bottom:20px;">
+                    <label class="field-label">Treść pytania</label>
+                    <input type="text" class="field-input field-large"
+                           id="questionText" placeholder="Wpisz treść pytania...">
+                </div>
+
+                <div class="answers-editor-header">
+                    <div class="field-label">
+                        Odpowiedzi
+                        <span class="answers-count-badge" id="answersCountBadge">0/8</span>
+                    </div>
+                    <div class="answers-actions">
+                        <button class="btn-sort-answers" onclick="sortAnswersByPoints()">
+                            Sortuj po punktach
+                        </button>
+                        <button class="btn-add-answer" onclick="addAnswer()" id="btnAddAnswer">
+                            + Dodaj
+                        </button>
+                    </div>
+                </div>
+
+                <div class="answers-editor-list" id="answersEditorList"></div>
+
+                <div class="answers-hint">
+                    Przeciagnij odpowiedzi aby zmienic kolejnosc. Max 8 odpowiedzi.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeQuestionModal()">
+                    Anuluj
+                </button>
+                <button class="modal-btn modal-btn-save" onclick="saveQuestion()">
+                    Zapisz pytanie
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: POTWIERDZENIE -->
+    <div class="modal-overlay hidden" id="confirmModal">
+        <div class="modal-box modal-small">
+            <div class="modal-header">
+                <div class="modal-title">Potwierdź usunięcie</div>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-message" id="confirmMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel"
+                        onclick="closeConfirmModal()">Anuluj</button>
+                <button class="modal-btn modal-btn-delete"
+                        id="confirmDeleteBtn">Usuń</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importInput" accept=".json"
+           style="display:none" onchange="handleImport(event)">
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="/js/edytor.js"></script>
+</body>
+</html>

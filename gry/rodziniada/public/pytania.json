@@ -1,0 +1,1939 @@
+{
+  "categories": [
+    {
+      "id": "cat_zycie",
+      "name": "Życie codzienne",
+      "icon": "🏠",
+      "questions": [
+        {
+          "id": "q_1",
+          "text": "Co ludzie robią zaraz po przebudzeniu?",
+          "answers": [
+            {
+              "id": "a_1",
+              "text": "SPRAWDZAJĄ TELEFON",
+              "points": 35
+            },
+            {
+              "id": "a_2",
+              "text": "IDĄ DO ŁAZIENKI",
+              "points": 25
+            },
+            {
+              "id": "a_3",
+              "text": "PIJĄ KAWĘ",
+              "points": 18
+            },
+            {
+              "id": "a_4",
+              "text": "JEDZĄ ŚNIADANIE",
+              "points": 10
+            },
+            {
+              "id": "a_5",
+              "text": "WYŁĄCZAJĄ BUDZIK",
+              "points": 7
+            },
+            {
+              "id": "a_6",
+              "text": "PRZECIĄGAJĄ SIĘ",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_2",
+          "text": "Co ludzie najczęściej gubią?",
+          "answers": [
+            {
+              "id": "a_7",
+              "text": "KLUCZE",
+              "points": 35
+            },
+            {
+              "id": "a_8",
+              "text": "TELEFON",
+              "points": 25
+            },
+            {
+              "id": "a_9",
+              "text": "PORTFEL",
+              "points": 18
+            },
+            {
+              "id": "a_10",
+              "text": "PILOT OD TV",
+              "points": 10
+            },
+            {
+              "id": "a_11",
+              "text": "OKULARY",
+              "points": 7
+            },
+            {
+              "id": "a_12",
+              "text": "SKARPETKI",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_3",
+          "text": "Na co ludzie narzekają najczęściej?",
+          "answers": [
+            {
+              "id": "a_13",
+              "text": "NA POGODĘ",
+              "points": 30
+            },
+            {
+              "id": "a_14",
+              "text": "NA PRACĘ",
+              "points": 25
+            },
+            {
+              "id": "a_15",
+              "text": "NA PIENIĄDZE",
+              "points": 20
+            },
+            {
+              "id": "a_16",
+              "text": "NA ZDROWIE",
+              "points": 12
+            },
+            {
+              "id": "a_17",
+              "text": "NA SĄSIADÓW",
+              "points": 8
+            },
+            {
+              "id": "a_18",
+              "text": "NA POLITYKÓW",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_4",
+          "text": "Co ludzie robią w kolejce?",
+          "answers": [
+            {
+              "id": "a_19",
+              "text": "PRZEGLĄDAJĄ TELEFON",
+              "points": 35
+            },
+            {
+              "id": "a_20",
+              "text": "ROZMAWIAJĄ",
+              "points": 22
+            },
+            {
+              "id": "a_21",
+              "text": "DENERWUJĄ SIĘ",
+              "points": 18
+            },
+            {
+              "id": "a_22",
+              "text": "PATRZĄ NA ZEGAREK",
+              "points": 12
+            },
+            {
+              "id": "a_23",
+              "text": "CZYTAJĄ",
+              "points": 8
+            },
+            {
+              "id": "a_24",
+              "text": "JEDZĄ",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_5",
+          "text": "Czego ludzie szukają w internecie?",
+          "answers": [
+            {
+              "id": "a_25",
+              "text": "FILMÓW I SERIALI",
+              "points": 28
+            },
+            {
+              "id": "a_26",
+              "text": "WIADOMOŚCI",
+              "points": 22
+            },
+            {
+              "id": "a_27",
+              "text": "PRZEPISÓW KULINARNYCH",
+              "points": 18
+            },
+            {
+              "id": "a_28",
+              "text": "ZAKUPÓW",
+              "points": 14
+            },
+            {
+              "id": "a_29",
+              "text": "SOCIAL MEDIA",
+              "points": 10
+            },
+            {
+              "id": "a_30",
+              "text": "POGODY",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_6",
+          "text": "Co ludzie zabierają na plażę?",
+          "answers": [
+            {
+              "id": "a_31",
+              "text": "RĘCZNIK",
+              "points": 30
+            },
+            {
+              "id": "a_32",
+              "text": "KREM DO OPALANIA",
+              "points": 25
+            },
+            {
+              "id": "a_33",
+              "text": "WODĘ",
+              "points": 18
+            },
+            {
+              "id": "a_34",
+              "text": "TELEFON",
+              "points": 12
+            },
+            {
+              "id": "a_35",
+              "text": "OKULARY PRZECIWSŁONECZNE",
+              "points": 10
+            },
+            {
+              "id": "a_36",
+              "text": "KSIĄŻKĘ",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_jedzenie",
+      "name": "Jedzenie i picie",
+      "icon": "🍕",
+      "questions": [
+        {
+          "id": "q_7",
+          "text": "Popularne danie na obiad w Polsce",
+          "answers": [
+            {
+              "id": "a_37",
+              "text": "SCHABOWY Z ZIEMNIAKAMI",
+              "points": 35
+            },
+            {
+              "id": "a_38",
+              "text": "PIEROGI",
+              "points": 25
+            },
+            {
+              "id": "a_39",
+              "text": "ROSÓŁ",
+              "points": 18
+            },
+            {
+              "id": "a_40",
+              "text": "SPAGHETTI",
+              "points": 10
+            },
+            {
+              "id": "a_41",
+              "text": "NALEŚNIKI",
+              "points": 7
+            },
+            {
+              "id": "a_42",
+              "text": "BIGOS",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_8",
+          "text": "Co ludzie jedzą na śniadanie?",
+          "answers": [
+            {
+              "id": "a_43",
+              "text": "KANAPKI",
+              "points": 32
+            },
+            {
+              "id": "a_44",
+              "text": "JAJECZNICĘ",
+              "points": 24
+            },
+            {
+              "id": "a_45",
+              "text": "PŁATKI Z MLEKIEM",
+              "points": 18
+            },
+            {
+              "id": "a_46",
+              "text": "JOGURT",
+              "points": 12
+            },
+            {
+              "id": "a_47",
+              "text": "TOSTY",
+              "points": 8
+            },
+            {
+              "id": "a_48",
+              "text": "OWSIANKĘ",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_9",
+          "text": "Najpopularniejszy rodzaj pizzy",
+          "answers": [
+            {
+              "id": "a_49",
+              "text": "MARGHERITA",
+              "points": 30
+            },
+            {
+              "id": "a_50",
+              "text": "PEPPERONI",
+              "points": 25
+            },
+            {
+              "id": "a_51",
+              "text": "HAWAJSKA",
+              "points": 18
+            },
+            {
+              "id": "a_52",
+              "text": "CAPRICCIOSA",
+              "points": 12
+            },
+            {
+              "id": "a_53",
+              "text": "CZTERY SERY",
+              "points": 10
+            },
+            {
+              "id": "a_54",
+              "text": "KEBAB",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_10",
+          "text": "Co ludzie piją najchętniej latem?",
+          "answers": [
+            {
+              "id": "a_55",
+              "text": "WODĘ",
+              "points": 30
+            },
+            {
+              "id": "a_56",
+              "text": "PIWO",
+              "points": 25
+            },
+            {
+              "id": "a_57",
+              "text": "LODY / SHAKE",
+              "points": 15
+            },
+            {
+              "id": "a_58",
+              "text": "LEMONIADĘ",
+              "points": 12
+            },
+            {
+              "id": "a_59",
+              "text": "KAWĘ MROŻONĄ",
+              "points": 10
+            },
+            {
+              "id": "a_60",
+              "text": "HERBATĘ MROŻONĄ",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_11",
+          "text": "Co kupujesz w piekarni?",
+          "answers": [
+            {
+              "id": "a_61",
+              "text": "CHLEB",
+              "points": 35
+            },
+            {
+              "id": "a_62",
+              "text": "BUŁKI",
+              "points": 22
+            },
+            {
+              "id": "a_63",
+              "text": "DROŻDŻÓWKĘ",
+              "points": 16
+            },
+            {
+              "id": "a_64",
+              "text": "PĄCZKI",
+              "points": 12
+            },
+            {
+              "id": "a_65",
+              "text": "ROGALIKI",
+              "points": 8
+            },
+            {
+              "id": "a_66",
+              "text": "CIASTKA",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_12",
+          "text": "Popularne polskie słodycze",
+          "answers": [
+            {
+              "id": "a_67",
+              "text": "PTASIE MLECZKO",
+              "points": 28
+            },
+            {
+              "id": "a_68",
+              "text": "PRINCE POLO",
+              "points": 24
+            },
+            {
+              "id": "a_69",
+              "text": "MICHAŁKI",
+              "points": 18
+            },
+            {
+              "id": "a_70",
+              "text": "KROWKI",
+              "points": 14
+            },
+            {
+              "id": "a_71",
+              "text": "PAWEŁEK",
+              "points": 10
+            },
+            {
+              "id": "a_72",
+              "text": "GRZEŚKI",
+              "points": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_rozrywka",
+      "name": "Rozrywka i kultura",
+      "icon": "🎬",
+      "questions": [
+        {
+          "id": "q_13",
+          "text": "Popularna polska komedia",
+          "answers": [
+            {
+              "id": "a_73",
+              "text": "MIŚŚ",
+              "points": 28
+            },
+            {
+              "id": "a_74",
+              "text": "CHŁOPAKI NIE PŁACZĄ",
+              "points": 24
+            },
+            {
+              "id": "a_75",
+              "text": "KOGEL MOGEL",
+              "points": 18
+            },
+            {
+              "id": "a_76",
+              "text": "SEKSMISJA",
+              "points": 14
+            },
+            {
+              "id": "a_77",
+              "text": "DZIEŃ ŚWIRA",
+              "points": 10
+            },
+            {
+              "id": "a_78",
+              "text": "KILER",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_14",
+          "text": "Co ludzie robią w weekend?",
+          "answers": [
+            {
+              "id": "a_79",
+              "text": "OGLĄDAJĄ FILMY",
+              "points": 28
+            },
+            {
+              "id": "a_80",
+              "text": "ŚPIĄ DŁUŻEJ",
+              "points": 22
+            },
+            {
+              "id": "a_81",
+              "text": "SPOTYKAJĄ SIĘ ZE ZNAJOMYMI",
+              "points": 18
+            },
+            {
+              "id": "a_82",
+              "text": "ROBIĄ ZAKUPY",
+              "points": 14
+            },
+            {
+              "id": "a_83",
+              "text": "SPRZĄTAJĄ",
+              "points": 10
+            },
+            {
+              "id": "a_84",
+              "text": "GOTUJĄ",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_15",
+          "text": "Popularna gra planszowa",
+          "answers": [
+            {
+              "id": "a_85",
+              "text": "MONOPOLY",
+              "points": 30
+            },
+            {
+              "id": "a_86",
+              "text": "SCRABBLE",
+              "points": 22
+            },
+            {
+              "id": "a_87",
+              "text": "CHIŃCZYK",
+              "points": 18
+            },
+            {
+              "id": "a_88",
+              "text": "SZACHY",
+              "points": 14
+            },
+            {
+              "id": "a_89",
+              "text": "UNO",
+              "points": 10
+            },
+            {
+              "id": "a_90",
+              "text": "WARCABY",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_16",
+          "text": "Popularny polski serial",
+          "answers": [
+            {
+              "id": "a_91",
+              "text": "M JAK MIŁOŚĆ",
+              "points": 28
+            },
+            {
+              "id": "a_92",
+              "text": "NA DOBRE I NA ZŁE",
+              "points": 22
+            },
+            {
+              "id": "a_93",
+              "text": "KLAN",
+              "points": 18
+            },
+            {
+              "id": "a_94",
+              "text": "ŚWIAT WEDŁUG KIEPSKICH",
+              "points": 14
+            },
+            {
+              "id": "a_95",
+              "text": "RANCZO",
+              "points": 10
+            },
+            {
+              "id": "a_96",
+              "text": "RODZINKA.PL",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_17",
+          "text": "Co ludzie robią na imprezie?",
+          "answers": [
+            {
+              "id": "a_97",
+              "text": "TAŃCZĄ",
+              "points": 30
+            },
+            {
+              "id": "a_98",
+              "text": "PIJĄ",
+              "points": 24
+            },
+            {
+              "id": "a_99",
+              "text": "ROZMAWIAJĄ",
+              "points": 18
+            },
+            {
+              "id": "a_100",
+              "text": "JEDZĄ",
+              "points": 12
+            },
+            {
+              "id": "a_101",
+              "text": "ROBIĄ ZDJĘCIA",
+              "points": 10
+            },
+            {
+              "id": "a_102",
+              "text": "GRAJĄ W GRY",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_18",
+          "text": "Znany polski piosenkarz lub zespół",
+          "answers": [
+            {
+              "id": "a_103",
+              "text": "DODA",
+              "points": 25
+            },
+            {
+              "id": "a_104",
+              "text": "MARYLA RODOWICZ",
+              "points": 22
+            },
+            {
+              "id": "a_105",
+              "text": "BUDKA SUFLERA",
+              "points": 18
+            },
+            {
+              "id": "a_106",
+              "text": "PERFECT",
+              "points": 14
+            },
+            {
+              "id": "a_107",
+              "text": "SANAH",
+              "points": 12
+            },
+            {
+              "id": "a_108",
+              "text": "Lady PANK",
+              "points": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_rodzina",
+      "name": "Rodzina i święta",
+      "icon": "🎄",
+      "questions": [
+        {
+          "id": "q_19",
+          "text": "Co jest na stole wigilijnym?",
+          "answers": [
+            {
+              "id": "a_109",
+              "text": "KARP",
+              "points": 30
+            },
+            {
+              "id": "a_110",
+              "text": "BARSZCZ Z USZKAMI",
+              "points": 25
+            },
+            {
+              "id": "a_111",
+              "text": "PIEROGI",
+              "points": 18
+            },
+            {
+              "id": "a_112",
+              "text": "SAŁATKA JARZYNOWA",
+              "points": 12
+            },
+            {
+              "id": "a_113",
+              "text": "KUTIA",
+              "points": 8
+            },
+            {
+              "id": "a_114",
+              "text": "KOMPOT Z SUSZU",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_20",
+          "text": "Co dzieci dostają od Mikołaja?",
+          "answers": [
+            {
+              "id": "a_115",
+              "text": "ZABAWKI",
+              "points": 32
+            },
+            {
+              "id": "a_116",
+              "text": "SŁODYCZE",
+              "points": 24
+            },
+            {
+              "id": "a_117",
+              "text": "GRY / KONSOLĘ",
+              "points": 18
+            },
+            {
+              "id": "a_118",
+              "text": "UBRANIA",
+              "points": 10
+            },
+            {
+              "id": "a_119",
+              "text": "KSIĄŻKI",
+              "points": 8
+            },
+            {
+              "id": "a_120",
+              "text": "PIENIĄDZE",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_21",
+          "text": "O czym rozmawiają rodziny przy stole?",
+          "answers": [
+            {
+              "id": "a_121",
+              "text": "O PRACY",
+              "points": 28
+            },
+            {
+              "id": "a_122",
+              "text": "O DZIECIACH / SZKOLE",
+              "points": 22
+            },
+            {
+              "id": "a_123",
+              "text": "O ZDROWIU",
+              "points": 18
+            },
+            {
+              "id": "a_124",
+              "text": "O PIENIĄDZACH",
+              "points": 14
+            },
+            {
+              "id": "a_125",
+              "text": "O POLITYCE",
+              "points": 10
+            },
+            {
+              "id": "a_126",
+              "text": "O SĄSIADACH",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_22",
+          "text": "Co babcia zawsze mówi wnukom?",
+          "answers": [
+            {
+              "id": "a_127",
+              "text": "JEDZ WIĘCEJ",
+              "points": 35
+            },
+            {
+              "id": "a_128",
+              "text": "UBIERZ SIĘ CIEPLEJ",
+              "points": 25
+            },
+            {
+              "id": "a_129",
+              "text": "JAK TY UROSŁEŚ",
+              "points": 15
+            },
+            {
+              "id": "a_130",
+              "text": "MASZ DZIEWCZYNĘ/CHŁOPAKA?",
+              "points": 10
+            },
+            {
+              "id": "a_131",
+              "text": "BĄDŹ GRZECZNY",
+              "points": 8
+            },
+            {
+              "id": "a_132",
+              "text": "KIEDY ŚLUB?",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_23",
+          "text": "Typowy prezent na Dzień Matki",
+          "answers": [
+            {
+              "id": "a_133",
+              "text": "KWIATY",
+              "points": 35
+            },
+            {
+              "id": "a_134",
+              "text": "CZEKOLADKI",
+              "points": 22
+            },
+            {
+              "id": "a_135",
+              "text": "PERFUMY",
+              "points": 16
+            },
+            {
+              "id": "a_136",
+              "text": "LAURKA",
+              "points": 12
+            },
+            {
+              "id": "a_137",
+              "text": "BIŻUTERIA",
+              "points": 8
+            },
+            {
+              "id": "a_138",
+              "text": "KOLACJA",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_24",
+          "text": "Co rodzice mówią dzieciom codziennie?",
+          "answers": [
+            {
+              "id": "a_139",
+              "text": "POSPRZĄTAJ POKÓJ",
+              "points": 30
+            },
+            {
+              "id": "a_140",
+              "text": "ODŁÓŻ TELEFON",
+              "points": 24
+            },
+            {
+              "id": "a_141",
+              "text": "ODRABIAJ LEKCJE",
+              "points": 18
+            },
+            {
+              "id": "a_142",
+              "text": "IDŹ SPAĆ",
+              "points": 12
+            },
+            {
+              "id": "a_143",
+              "text": "UMYJ ZĘBY",
+              "points": 10
+            },
+            {
+              "id": "a_144",
+              "text": "JEDZ WARZYWA",
+              "points": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_praca",
+      "name": "Praca i szkoła",
+      "icon": "💼",
+      "questions": [
+        {
+          "id": "q_25",
+          "text": "Wymarzony zawód dziecka",
+          "answers": [
+            {
+              "id": "a_145",
+              "text": "PIŁKARZ",
+              "points": 28
+            },
+            {
+              "id": "a_146",
+              "text": "LEKARZ",
+              "points": 22
+            },
+            {
+              "id": "a_147",
+              "text": "STRAŻAK",
+              "points": 18
+            },
+            {
+              "id": "a_148",
+              "text": "POLICJANT",
+              "points": 14
+            },
+            {
+              "id": "a_149",
+              "text": "ASTRONAUTA",
+              "points": 10
+            },
+            {
+              "id": "a_150",
+              "text": "YOUTUBER",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_26",
+          "text": "Co ludzie robią w pracy zamiast pracować?",
+          "answers": [
+            {
+              "id": "a_151",
+              "text": "PRZEGLĄDAJĄ INTERNET",
+              "points": 30
+            },
+            {
+              "id": "a_152",
+              "text": "PIJĄ KAWĘ",
+              "points": 24
+            },
+            {
+              "id": "a_153",
+              "text": "PLOTKUJĄ",
+              "points": 18
+            },
+            {
+              "id": "a_154",
+              "text": "SIEDZĄ NA TELEFONIE",
+              "points": 12
+            },
+            {
+              "id": "a_155",
+              "text": "JEDZĄ",
+              "points": 10
+            },
+            {
+              "id": "a_156",
+              "text": "CHODZĄ NA PAPIEROSA",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_27",
+          "text": "Przedmiot szkolny którego ludzie nie lubili",
+          "answers": [
+            {
+              "id": "a_157",
+              "text": "MATEMATYKA",
+              "points": 32
+            },
+            {
+              "id": "a_158",
+              "text": "FIZYKA",
+              "points": 22
+            },
+            {
+              "id": "a_159",
+              "text": "CHEMIA",
+              "points": 18
+            },
+            {
+              "id": "a_160",
+              "text": "HISTORIA",
+              "points": 12
+            },
+            {
+              "id": "a_161",
+              "text": "POLSKI",
+              "points": 10
+            },
+            {
+              "id": "a_162",
+              "text": "WF",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_28",
+          "text": "Co zabierasz do pracy?",
+          "answers": [
+            {
+              "id": "a_163",
+              "text": "TELEFON",
+              "points": 28
+            },
+            {
+              "id": "a_164",
+              "text": "PORTFEL",
+              "points": 22
+            },
+            {
+              "id": "a_165",
+              "text": "LUNCH / JEDZENIE",
+              "points": 18
+            },
+            {
+              "id": "a_166",
+              "text": "LAPTOP",
+              "points": 14
+            },
+            {
+              "id": "a_167",
+              "text": "KLUCZE",
+              "points": 10
+            },
+            {
+              "id": "a_168",
+              "text": "SŁUCHAWKI",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_29",
+          "text": "Wymówka na spóźnienie do pracy",
+          "answers": [
+            {
+              "id": "a_169",
+              "text": "KORKI / RUCH",
+              "points": 32
+            },
+            {
+              "id": "a_170",
+              "text": "AUTOBUS SIĘ SPÓŹNIŁ",
+              "points": 22
+            },
+            {
+              "id": "a_171",
+              "text": "NIE SŁYSZAŁEM BUDZIKA",
+              "points": 18
+            },
+            {
+              "id": "a_172",
+              "text": "DZIECKO CHOROWAŁO",
+              "points": 12
+            },
+            {
+              "id": "a_173",
+              "text": "WYPADEK NA DRODZE",
+              "points": 10
+            },
+            {
+              "id": "a_174",
+              "text": "ZEGAREK MI STANĄŁ",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_30",
+          "text": "Co uczniowie robią na nudnej lekcji?",
+          "answers": [
+            {
+              "id": "a_175",
+              "text": "SIEDZĄ NA TELEFONIE",
+              "points": 30
+            },
+            {
+              "id": "a_176",
+              "text": "RYSUJĄ W ZESZYCIE",
+              "points": 22
+            },
+            {
+              "id": "a_177",
+              "text": "ROZMAWIAJĄ",
+              "points": 18
+            },
+            {
+              "id": "a_178",
+              "text": "ŚPIĄ",
+              "points": 14
+            },
+            {
+              "id": "a_179",
+              "text": "PATRZĄ PRZEZ OKNO",
+              "points": 10
+            },
+            {
+              "id": "a_180",
+              "text": "PISZĄ KARTECZKI",
+              "points": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_zakupy",
+      "name": "Zakupy i pieniądze",
+      "icon": "🛒",
+      "questions": [
+        {
+          "id": "q_31",
+          "text": "Co zawsze jest w koszyku w sklepie?",
+          "answers": [
+            {
+              "id": "a_181",
+              "text": "CHLEB",
+              "points": 30
+            },
+            {
+              "id": "a_182",
+              "text": "MLEKO",
+              "points": 24
+            },
+            {
+              "id": "a_183",
+              "text": "MASŁO",
+              "points": 16
+            },
+            {
+              "id": "a_184",
+              "text": "JAJKA",
+              "points": 12
+            },
+            {
+              "id": "a_185",
+              "text": "WODA",
+              "points": 10
+            },
+            {
+              "id": "a_186",
+              "text": "SER",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_32",
+          "text": "Na co ludzie oszczędzają pieniądze?",
+          "answers": [
+            {
+              "id": "a_187",
+              "text": "NA WAKACJE",
+              "points": 30
+            },
+            {
+              "id": "a_188",
+              "text": "NA SAMOCHÓD",
+              "points": 22
+            },
+            {
+              "id": "a_189",
+              "text": "NA MIESZKANIE",
+              "points": 20
+            },
+            {
+              "id": "a_190",
+              "text": "NA ELEKTRONIKĘ",
+              "points": 12
+            },
+            {
+              "id": "a_191",
+              "text": "NA EMERYTURĘ",
+              "points": 8
+            },
+            {
+              "id": "a_192",
+              "text": "NA UBRANIA",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_33",
+          "text": "Co ludzie kupują na wyprzedaży?",
+          "answers": [
+            {
+              "id": "a_193",
+              "text": "UBRANIA",
+              "points": 35
+            },
+            {
+              "id": "a_194",
+              "text": "BUTY",
+              "points": 22
+            },
+            {
+              "id": "a_195",
+              "text": "ELEKTRONIKĘ",
+              "points": 18
+            },
+            {
+              "id": "a_196",
+              "text": "KOSMETYKI",
+              "points": 10
+            },
+            {
+              "id": "a_197",
+              "text": "JEDZENIE",
+              "points": 8
+            },
+            {
+              "id": "a_198",
+              "text": "ZABAWKI",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_34",
+          "text": "Popularny sklep w Polsce",
+          "answers": [
+            {
+              "id": "a_199",
+              "text": "BIEDRONKA",
+              "points": 35
+            },
+            {
+              "id": "a_200",
+              "text": "LIDL",
+              "points": 25
+            },
+            {
+              "id": "a_201",
+              "text": "ŻABKA",
+              "points": 18
+            },
+            {
+              "id": "a_202",
+              "text": "IKEA",
+              "points": 8
+            },
+            {
+              "id": "a_203",
+              "text": "ROSSMANN",
+              "points": 7
+            },
+            {
+              "id": "a_204",
+              "text": "PEPCO",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_35",
+          "text": "Co ludzie kupują na stacji benzynowej oprócz paliwa?",
+          "answers": [
+            {
+              "id": "a_205",
+              "text": "KAWĘ",
+              "points": 28
+            },
+            {
+              "id": "a_206",
+              "text": "HOT DOGA",
+              "points": 24
+            },
+            {
+              "id": "a_207",
+              "text": "NAPOJE",
+              "points": 18
+            },
+            {
+              "id": "a_208",
+              "text": "PAPIEROSY",
+              "points": 12
+            },
+            {
+              "id": "a_209",
+              "text": "SŁODYCZE",
+              "points": 10
+            },
+            {
+              "id": "a_210",
+              "text": "PŁYN DO SPRYSKIWACZY",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_36",
+          "text": "Na co ludzie wydają najwięcej pieniędzy?",
+          "answers": [
+            {
+              "id": "a_211",
+              "text": "NA MIESZKANIE / CZYNSZ",
+              "points": 32
+            },
+            {
+              "id": "a_212",
+              "text": "NA JEDZENIE",
+              "points": 25
+            },
+            {
+              "id": "a_213",
+              "text": "NA SAMOCHÓD",
+              "points": 16
+            },
+            {
+              "id": "a_214",
+              "text": "NA RACHUNKI",
+              "points": 12
+            },
+            {
+              "id": "a_215",
+              "text": "NA UBRANIA",
+              "points": 8
+            },
+            {
+              "id": "a_216",
+              "text": "NA ROZRYWKĘ",
+              "points": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_polska",
+      "name": "Polska",
+      "icon": "🇵🇱",
+      "questions": [
+        {
+          "id": "q_37",
+          "text": "Największe miasta w Polsce",
+          "answers": [
+            {
+              "id": "a_217",
+              "text": "WARSZAWA",
+              "points": 35
+            },
+            {
+              "id": "a_218",
+              "text": "KRAKÓW",
+              "points": 25
+            },
+            {
+              "id": "a_219",
+              "text": "ŁÓDŹ",
+              "points": 15
+            },
+            {
+              "id": "a_220",
+              "text": "WROCŁAW",
+              "points": 10
+            },
+            {
+              "id": "a_221",
+              "text": "POZNAŃ",
+              "points": 8
+            },
+            {
+              "id": "a_222",
+              "text": "GDAŃSK",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_38",
+          "text": "Znany Polak / Polka",
+          "answers": [
+            {
+              "id": "a_223",
+              "text": "ROBERT LEWANDOWSKI",
+              "points": 32
+            },
+            {
+              "id": "a_224",
+              "text": "JAN PAWEŁ II",
+              "points": 22
+            },
+            {
+              "id": "a_225",
+              "text": "FRYDERYK CHOPIN",
+              "points": 16
+            },
+            {
+              "id": "a_226",
+              "text": "MARIA CURIE-SKŁODOWSKA",
+              "points": 12
+            },
+            {
+              "id": "a_227",
+              "text": "MIKOŁAJ KOPERNIK",
+              "points": 10
+            },
+            {
+              "id": "a_228",
+              "text": "ADAM MAŁYSZ",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_39",
+          "text": "Popularne polskie święto",
+          "answers": [
+            {
+              "id": "a_229",
+              "text": "BOŻE NARODZENIE",
+              "points": 32
+            },
+            {
+              "id": "a_230",
+              "text": "WIELKANOC",
+              "points": 25
+            },
+            {
+              "id": "a_231",
+              "text": "NOWY ROK",
+              "points": 16
+            },
+            {
+              "id": "a_232",
+              "text": "WSZYSTKICH ŚWIĘTYCH",
+              "points": 12
+            },
+            {
+              "id": "a_233",
+              "text": "DZIEŃ NIEPODLEGŁOŚCI",
+              "points": 8
+            },
+            {
+              "id": "a_234",
+              "text": "DZIEŃ KOBIET",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_40",
+          "text": "Z czego słynie Polska za granicą?",
+          "answers": [
+            {
+              "id": "a_235",
+              "text": "WÓDKA",
+              "points": 28
+            },
+            {
+              "id": "a_236",
+              "text": "PIEROGI",
+              "points": 24
+            },
+            {
+              "id": "a_237",
+              "text": "PIŁKA NOŻNA",
+              "points": 16
+            },
+            {
+              "id": "a_238",
+              "text": "KIEŁBASA",
+              "points": 12
+            },
+            {
+              "id": "a_239",
+              "text": "BIGOS",
+              "points": 10
+            },
+            {
+              "id": "a_240",
+              "text": "JAN PAWEŁ II",
+              "points": 10
+            }
+          ]
+        },
+        {
+          "id": "q_41",
+          "text": "Popularne miejsce na wakacje w Polsce",
+          "answers": [
+            {
+              "id": "a_241",
+              "text": "ZAKOPANE",
+              "points": 28
+            },
+            {
+              "id": "a_242",
+              "text": "TRÓJMIASTO",
+              "points": 22
+            },
+            {
+              "id": "a_243",
+              "text": "KRAKÓW",
+              "points": 18
+            },
+            {
+              "id": "a_244",
+              "text": "MAZURY",
+              "points": 14
+            },
+            {
+              "id": "a_245",
+              "text": "KOŁOBRZEG",
+              "points": 10
+            },
+            {
+              "id": "a_246",
+              "text": "WROCŁAW",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_42",
+          "text": "Typowy polski samochód na ulicy",
+          "answers": [
+            {
+              "id": "a_247",
+              "text": "VOLKSWAGEN",
+              "points": 28
+            },
+            {
+              "id": "a_248",
+              "text": "OPEL",
+              "points": 22
+            },
+            {
+              "id": "a_249",
+              "text": "SKODA",
+              "points": 18
+            },
+            {
+              "id": "a_250",
+              "text": "TOYOTA",
+              "points": 14
+            },
+            {
+              "id": "a_251",
+              "text": "BMW",
+              "points": 10
+            },
+            {
+              "id": "a_252",
+              "text": "FIAT",
+              "points": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_sport",
+      "name": "Sport i zdrowie",
+      "icon": "⚽",
+      "questions": [
+        {
+          "id": "q_43",
+          "text": "Popularny sport w Polsce",
+          "answers": [
+            {
+              "id": "a_253",
+              "text": "PIŁKA NOŻNA",
+              "points": 35
+            },
+            {
+              "id": "a_254",
+              "text": "SIATKÓWKA",
+              "points": 22
+            },
+            {
+              "id": "a_255",
+              "text": "SKOKI NARCIARSKIE",
+              "points": 16
+            },
+            {
+              "id": "a_256",
+              "text": "ŻUŻEL",
+              "points": 12
+            },
+            {
+              "id": "a_257",
+              "text": "TENIS",
+              "points": 8
+            },
+            {
+              "id": "a_258",
+              "text": "KOSZYKÓWKA",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_44",
+          "text": "Co ludzie robią żeby schudnąć?",
+          "answers": [
+            {
+              "id": "a_259",
+              "text": "ĆWICZĄ",
+              "points": 30
+            },
+            {
+              "id": "a_260",
+              "text": "JEDZĄ MNIEJ",
+              "points": 24
+            },
+            {
+              "id": "a_261",
+              "text": "STOSUJĄ DIETĘ",
+              "points": 18
+            },
+            {
+              "id": "a_262",
+              "text": "BIEGAJĄ",
+              "points": 12
+            },
+            {
+              "id": "a_263",
+              "text": "PIJĄ WIĘCEJ WODY",
+              "points": 10
+            },
+            {
+              "id": "a_264",
+              "text": "NIE JEDZĄ SŁODYCZY",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_45",
+          "text": "Wymówka żeby nie ćwiczyć",
+          "answers": [
+            {
+              "id": "a_265",
+              "text": "NIE MAM CZASU",
+              "points": 32
+            },
+            {
+              "id": "a_266",
+              "text": "JESTEM ZMĘCZONY",
+              "points": 24
+            },
+            {
+              "id": "a_267",
+              "text": "BOLI MNIE COŚ",
+              "points": 16
+            },
+            {
+              "id": "a_268",
+              "text": "ZŁA POGODA",
+              "points": 12
+            },
+            {
+              "id": "a_269",
+              "text": "ZACZNĘ OD PONIEDZIAŁKU",
+              "points": 10
+            },
+            {
+              "id": "a_270",
+              "text": "NIE MAM W CZYM",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_46",
+          "text": "Co boli ludzi najczęściej?",
+          "answers": [
+            {
+              "id": "a_271",
+              "text": "GŁOWA",
+              "points": 32
+            },
+            {
+              "id": "a_272",
+              "text": "PLECY",
+              "points": 24
+            },
+            {
+              "id": "a_273",
+              "text": "GARDŁO",
+              "points": 16
+            },
+            {
+              "id": "a_274",
+              "text": "BRZUCH",
+              "points": 12
+            },
+            {
+              "id": "a_275",
+              "text": "ZĘBY",
+              "points": 10
+            },
+            {
+              "id": "a_276",
+              "text": "KOLANA",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_47",
+          "text": "Popularny polski sportowiec",
+          "answers": [
+            {
+              "id": "a_277",
+              "text": "ROBERT LEWANDOWSKI",
+              "points": 35
+            },
+            {
+              "id": "a_278",
+              "text": "ADAM MAŁYSZ",
+              "points": 22
+            },
+            {
+              "id": "a_279",
+              "text": "IGA ŚWIĄTEK",
+              "points": 18
+            },
+            {
+              "id": "a_280",
+              "text": "KAMIL STOCH",
+              "points": 10
+            },
+            {
+              "id": "a_281",
+              "text": "ANITA WŁODARCZYK",
+              "points": 8
+            },
+            {
+              "id": "a_282",
+              "text": "JUSTYNA KOWALCZYK",
+              "points": 7
+            }
+          ]
+        },
+        {
+          "id": "q_48",
+          "text": "Co ludzie robią na siłowni?",
+          "answers": [
+            {
+              "id": "a_283",
+              "text": "ĆWICZĄ NA BIEŻNI",
+              "points": 28
+            },
+            {
+              "id": "a_284",
+              "text": "PODNOSZĄ CIĘŻARY",
+              "points": 24
+            },
+            {
+              "id": "a_285",
+              "text": "ROBIĄ PRZYSIADY",
+              "points": 16
+            },
+            {
+              "id": "a_286",
+              "text": "ROBIĄ ZDJĘCIA / SELFIE",
+              "points": 14
+            },
+            {
+              "id": "a_287",
+              "text": "ROZMAWIAJĄ",
+              "points": 10
+            },
+            {
+              "id": "a_288",
+              "text": "PIJĄ WODĘ",
+              "points": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_technologia",
+      "name": "Technologia",
+      "icon": "📱",
+      "questions": [
+        {
+          "id": "q_49",
+          "text": "Popularna aplikacja na telefonie",
+          "answers": [
+            {
+              "id": "a_289",
+              "text": "FACEBOOK",
+              "points": 28
+            },
+            {
+              "id": "a_290",
+              "text": "INSTAGRAM",
+              "points": 24
+            },
+            {
+              "id": "a_291",
+              "text": "TIKTOK",
+              "points": 18
+            },
+            {
+              "id": "a_292",
+              "text": "YOUTUBE",
+              "points": 14
+            },
+            {
+              "id": "a_293",
+              "text": "WHATSAPP",
+              "points": 10
+            },
+            {
+              "id": "a_294",
+              "text": "MESSENGER",
+              "points": 6
+            }
+          ]
+        },
+        {
+          "id": "q_50",
+          "text": "Co denerwuje w technologii?",
+          "answers": [
+            {
+              "id": "a_295",
+              "text": "WOLNY INTERNET",
+              "points": 32
+            },
+            {
+              "id": "a_296",
+              "text": "ROZŁADOWANY TELEFON",
+              "points": 24
+            },
+            {
+              "id": "a_297",
+              "text": "REKLAMY",
+              "points": 16
+            },
+            {
+              "id": "a_298",
+              "text": "ZAWIESZAJĄCY SIĘ KOMPUTER",
+              "points": 12
+            },
+            {
+              "id": "a_299",
+              "text": "AKTUALIZACJE",
+              "points": 8
+            },
+            {
+              "id": "a_300",
+              "text": "SPAM",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_51",
+          "text": "Co ludzie robią na telefonie w łóżku?",
+          "answers": [
+            {
+              "id": "a_301",
+              "text": "PRZEGLĄDAJĄ SOCIAL MEDIA",
+              "points": 32
+            },
+            {
+              "id": "a_302",
+              "text": "OGLĄDAJĄ FILMY",
+              "points": 22
+            },
+            {
+              "id": "a_303",
+              "text": "GRAJĄ W GRY",
+              "points": 16
+            },
+            {
+              "id": "a_304",
+              "text": "CZYTAJĄ WIADOMOŚCI",
+              "points": 12
+            },
+            {
+              "id": "a_305",
+              "text": "PISZĄ SMS",
+              "points": 10
+            },
+            {
+              "id": "a_306",
+              "text": "USTAWIAJĄ BUDZIK",
+              "points": 8
+            }
+          ]
+        },
+        {
+          "id": "q_52",
+          "text": "Popularna marka telefonu",
+          "answers": [
+            {
+              "id": "a_307",
+              "text": "APPLE / IPHONE",
+              "points": 32
+            },
+            {
+              "id": "a_308",
+              "text": "SAMSUNG",
+              "points": 28
+            },
+            {
+              "id": "a_309",
+              "text": "XIAOMI",
+              "points": 16
+            },
+            {
+              "id": "a_310",
+              "text": "HUAWEI",
+              "points": 10
+            },
+            {
+              "id": "a_311",
+              "text": "NOKIA",
+              "points": 8
+            },
+            {
+              "id": "a_312",
+              "text": "MOTOROLA",
+              "points": 6
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RodziniadaTV</title>
+    <link rel="stylesheet" href="css/display.css">
+    <link rel="icon" href="ikona.png" type="image/png">
+</head>
+<body>
+
+    <!-- EKRAN KODU TV -->
+    <div class="join-screen" id="joinScreen">
+        <div class="join-box">
+            <div class="join-title">Podaj kod TV</div>
+            <input type="text" id="joinCodeInput" maxlength="6"
+                   class="join-input" placeholder="6 cyfr">
+            <button class="join-button" onclick="joinWithEnteredCode()">Dołącz</button>
+            <div class="join-hint">Kod znajdziesz w panelu prowadzącego</div>
+            <div class="join-error" id="joinErrorTv"></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="tv-header">
+        <div class="tv-logo">RODZINIADA</div>
+    </div>
+
+    <button class="tv-fullscreen-button" onclick="enterFullscreen()"
+            title="Pełny ekran">⛶</button>
+
+    <!-- SCOREBOARD -->
+    <div class="tv-scoreboard">
+        <div class="tv-team" id="tvTeam1">
+            <div class="tv-team-name"  id="tvTeam1Name">DRUŻYNA 1</div>
+            <div class="tv-team-score" id="tvTeam1Score">0</div>
+        </div>
+        <div class="tv-round-info">
+            <div class="tv-round-score" id="tvRoundScore">0</div>
+            <div class="tv-round-label">pkt</div>
+            <div class="tv-multiplier"  id="tvMultiplier">×1</div>
+        </div>
+        <div class="tv-team" id="tvTeam2">
+            <div class="tv-team-name"  id="tvTeam2Name">DRUŻYNA 2</div>
+            <div class="tv-team-score" id="tvTeam2Score">0</div>
+        </div>
+    </div>
+
+    <!-- TABLICA -->
+    <div class="tv-board">
+        <div class="tv-strikes-side tv-strikes-left">
+            <span class="tv-strike" id="tvTeam1Strike1">X</span>
+            <span class="tv-strike" id="tvTeam1Strike2">X</span>
+            <span class="tv-strike" id="tvTeam1Strike3">X</span>
+        </div>
+        <div class="tv-board-inner">
+            <div class="tv-question hidden" id="tvQuestion">
+                <div class="tv-question-text question-mark" id="tvQuestionText">?</div>
+            </div>
+            <div class="tv-answers" id="tvAnswers"></div>
+        </div>
+        <div class="tv-strikes-side tv-strikes-right">
+            <span class="tv-strike" id="tvTeam2Strike1">X</span>
+            <span class="tv-strike" id="tvTeam2Strike2">X</span>
+            <span class="tv-strike" id="tvTeam2Strike3">X</span>
+        </div>
+    </div>
+
+    <!-- OVERLAYE GRY -->
+    <div class="tv-overlay" id="tvBigX">
+        <div class="tv-big-x" id="tvBigXContent">✖</div>
+    </div>
+
+    <div class="tv-overlay" id="tvPoints">
+        <div class="tv-points-display">
+            <div class="tv-points-value" id="tvPointsValue">+0</div>
+            <div class="tv-points-team"  id="tvPointsTeam">DRUŻYNA</div>
+        </div>
+    </div>
+
+    <div class="tv-overlay" id="tvWinner">
+        <div class="tv-winner-display">
+            <div class="tv-winner-trophy">&#127942;</div>
+            <div class="tv-winner-title">ZWYCIĘŻAJĄ</div>
+            <div class="tv-winner-name" id="tvWinnerName">DRUŻYNA</div>
+        </div>
+    </div>
+
+    <div class="tv-overlay" id="tvGameEnded">
+        <div class="tv-game-ended-display">
+            <div class="tv-game-ended-icon">&#127918;</div>
+            <div class="tv-game-ended-title">GRA ZAKOŃCZONA</div>
+            <div class="tv-game-ended-subtitle">Dziękujemy za grę!</div>
+        </div>
+    </div>
+
+    <div class="tv-overlay tv-reconnect-overlay" id="tvReconnect">
+        <div class="tv-reconnect-display">
+            <div class="tv-reconnect-spinner"></div>
+            <div class="tv-reconnect-title">Łączenie z grą</div>
+            <div class="tv-reconnect-message" id="tvReconnectMessage">
+                Proszę czekać...
+            </div>
+        </div>
+    </div>
+
+    <!-- INTRO -->
+<div class="tv-intro" id="tvIntro">
+    <div class="intro-countdown" id="introCountdown">
+        <canvas class="countdown-canvas" id="countdownCanvas"></canvas>
+    </div>
+    <div class="intro-video-wrap" id="introVideoWrap">
+        <video class="intro-video" id="introVideo"
+               src="/intro.mp4"
+               preload="auto"
+               playsinline
+               muted>
+        </video>
+    </div>
+</div>
+
+<!-- Split panele POZA intro - fixed na całym ekranie -->
+<div class="intro-split-left"  id="introSplitLeft"></div>
+<div class="intro-split-right" id="introSplitRight"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/display.js"></script>
+</body>
+</html>

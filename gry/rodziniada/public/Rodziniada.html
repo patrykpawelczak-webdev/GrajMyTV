@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodziniada</title>
+    <link rel="stylesheet" href="css/host.css">
+    <link rel="icon" href="ikona.png" type="image/png">
+</head>
+<body>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <div class="modal-title" id="modalTitle">Czy na pewno?</div>
+            <div class="modal-message" id="modalMessage"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Anuluj</button>
+                <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn">Potwierdź</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOBBY ===== -->
+    <div class="lobby-screen" id="lobbyScreen">
+        <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
+
+        <div class="lobby-header">
+            <div class="setup-logo">RODZINIADA</div>
+            <div class="setup-subtitle">Parodiowa wersja kultowego polskiego teleturnieju</div>
+        </div>
+
+        <div class="lobby-content">
+            <div class="lobby-toolbar">
+                <div class="lobby-search-wrap">
+                    <input type="text" class="lobby-search-input"
+                           id="lobbySearchInput"
+                           placeholder="Szukaj rozgrywki po nazwie..."
+                           oninput="filterGames()">
+                    <button class="lobby-search-btn" onclick="filterGames()">Szukaj</button>
+                </div>
+                <button class="lobby-create-btn" onclick="showSetupScreen()">+ Utwórz grę</button>
+            </div>
+
+            <div class="lobby-table-wrap">
+                <div class="lobby-table-header">
+                    <div class="lobby-col-name">Nazwa rozgrywki</div>
+                    <div class="lobby-col-actions">Dołącz</div>
+                </div>
+                <div class="lobby-table-body" id="lobbyTableBody">
+                    <div class="lobby-empty" id="lobbyEmpty">
+                        <div class="lobby-empty-icon">🎮</div>
+                        <div class="lobby-empty-text">Brak aktywnych rozgrywek</div>
+                        <div class="lobby-empty-sub">Utwórz nową grę aby zacząć</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SETUP ===== -->
+    <div class="setup-screen hidden" id="setupScreen">
+        <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
+
+        <div class="setup-header">
+            <div class="setup-logo">RODZINIADA</div>
+            <div class="setup-subtitle">Tworzenie nowej rozgrywki</div>
+        </div>
+
+        <div class="setup-content">
+            <button class="btn-back-to-lobby" onclick="backToLobby()">← Wróć do lobby</button>
+
+            <div class="game-name-section">
+                <div class="team-setup-title">🎮 Nazwa rozgrywki</div>
+                <input type="text" class="team-setup-input game-name-input"
+                       id="setupGameName" placeholder="Np. Rodzinka Kowalskich" maxlength="40">
+            </div>
+
+            <div class="team-setup">
+                <div class="team-setup-box">
+                    <div class="team-setup-title">👥 Drużyna 1</div>
+                    <input type="text" class="team-setup-input" id="setupTeam1Name" value="Drużyna 1">
+                </div>
+                <div class="team-setup-box">
+                    <div class="team-setup-title">👥 Drużyna 2</div>
+                    <input type="text" class="team-setup-input" id="setupTeam2Name" value="Drużyna 2">
+                </div>
+            </div>
+
+            <div class="categories-section">
+                <div class="categories-title">📚 Wybierz pytania do gry</div>
+
+                <div class="mode-tabs">
+                    <button class="mode-tab active" id="modeTabManual" onclick="switchMode('manual')">
+                        ✏️ Ręczny wybór
+                    </button>
+                    <button class="mode-tab" id="modeTabRandom" onclick="switchMode('random')">
+                        🎲 Losowy
+                    </button>
+                </div>
+
+                <!-- RĘCZNY -->
+                <div id="modeManual">
+                    <button class="btn-show-categories" id="btnShowCategories" onclick="showCategories()">
+                        Pokaż listę pytań
+                    </button>
+                    <div class="categories-grid hidden" id="categoriesGrid"></div>
+                </div>
+
+                <!-- LOSOWY -->
+                <div id="modeRandom" class="hidden">
+                    <div class="random-step">
+                        <div class="random-step-title">
+                            <span class="random-step-num">1</span>
+                            Wybierz kategorie do losowania
+                        </div>
+                        <div class="random-cats-grid" id="randomCatsGrid"></div>
+                    </div>
+
+                    <div class="random-step">
+                        <div class="random-step-title">
+                            <span class="random-step-num">2</span>
+                            Ile rund?
+                        </div>
+                        <div class="random-rounds-wrap">
+                            <div class="random-rounds-options">
+                                <button class="rounds-opt active" data-rounds="2" onclick="selectRounds(2)">2</button>
+                                <button class="rounds-opt" data-rounds="3" onclick="selectRounds(3)">3</button>
+                                <button class="rounds-opt" data-rounds="5" onclick="selectRounds(5)">5</button>
+                            </div>
+                            <div class="random-rounds-label">
+                                <span id="roundsLabel">2 rundy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="random-step" id="randomExcludeStep">
+                        <div class="random-step-title">
+                            <span class="random-step-num">3</span>
+                            Wyklucz pytania (opcjonalnie)
+                            <span class="random-step-sub">Odznacz pytania które chcesz pominąć</span>
+                        </div>
+                        <div class="random-exclude-list" id="randomExcludeList">
+                            <div class="random-exclude-empty">Najpierw wybierz kategorie powyżej</div>
+                        </div>
+                    </div>
+
+                    <div class="random-draw-wrap">
+                        <button class="btn-draw" id="btnDraw" onclick="drawQuestions()" disabled>
+                            🎲 Losuj pytania
+                        </button>
+                    </div>
+
+                    <div class="random-preview hidden" id="randomPreview">
+                        <div class="random-preview-title">
+                            ✅ Wylosowane pytania
+                            <button class="btn-redraw" onclick="drawQuestions()">🔄 Losuj ponownie</button>
+                        </div>
+                        <div class="random-preview-list" id="randomPreviewList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-actions">
+                <div class="selected-count" id="selectedCount">Wybrano: 0 pytań</div>
+                <button class="btn-start-game" id="btnStartGame" onclick="startGame()" disabled>
+                    🎮 START GRY
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== GRA ===== -->
+    <div class="game-screen" id="gameScreen">
+        <div class="container">
+            <header class="header">
+                <div class="logo">RODZINIADA</div>
+                <div class="header-codes" id="headerCodes">KOD HOSTA: ---- | KOD TV: ----</div>
+                <div class="header-buttons">
+                    <button class="icon-button" id="btnMute" onclick="toggleSound()" title="Wycisz/włącz">🔊</button>
+                    <button class="icon-button" onclick="toggleFullscreenHost()" title="Pełny ekran">⛶</button>
+                    <button class="start-display-button" onclick="startDisplay()">▶ START TV</button>
+                    <button class="menu-button"   onclick="endGameAndBackToMenu()">↩ MENU</button>
+                    <button class="reset-button"  onclick="resetGame()">🔄 RESET</button>
+                    <button class="tv-button"     onclick="openTV()">📺 TV</button>
+                    <button class="winner-button" onclick="showWinner()" disabled
+                            style="opacity:0.4;cursor:not-allowed;"
+                            title="Dostępne po ukończeniu wszystkich pytań">
+                        🏆 ZWYCIĘZCA
+                    </button>
+                </div>
+            </header>
+
+            <div class="main-grid">
+
+                <!-- DRUŻYNY -->
+                <div class="section" id="sectionTeams">
+                    <div class="section-title">👥 DRUŻYNY</div>
+                    <div class="teams-container">
+                        <div class="team-box" id="team1Box">
+                            <div class="team-name-display" id="team1NameDisplay">DRUŻYNA 1</div>
+                            <div class="team-score-display" id="team1Score">0 pkt</div>
+                            <div class="strikes-display">
+                                <span class="strike" id="team1Strike1">X</span>
+                                <span class="strike" id="team1Strike2">X</span>
+                                <span class="strike" id="team1Strike3">X</span>
+                            </div>
+                            <div class="team-controls">
+                                <button class="btn btn-select"  onclick="selectTeam(1)">Wybierz</button>
+                                <button class="btn btn-mistake" onclick="addStrike(1)">Błąd X</button>
+                            </div>
+                        </div>
+                        <div class="team-box" id="team2Box">
+                            <div class="team-name-display" id="team2NameDisplay">DRUŻYNA 2</div>
+                            <div class="team-score-display" id="team2Score">0 pkt</div>
+                            <div class="strikes-display">
+                                <span class="strike" id="team2Strike1">X</span>
+                                <span class="strike" id="team2Strike2">X</span>
+                                <span class="strike" id="team2Strike3">X</span>
+                            </div>
+                            <div class="team-controls">
+                                <button class="btn btn-select"  onclick="selectTeam(2)">Wybierz</button>
+                                <button class="btn btn-mistake" onclick="addStrike(2)">Błąd X</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PYTANIE + KONTROLA -->
+                <div class="section" id="sectionQuestion">
+                    <div class="section-title">❓ PYTANIE</div>
+                    <div class="question-status" id="questionStatus">🔒 Pytanie ukryte</div>
+                    <button class="btn-reveal" id="btnReveal" onclick="revealQuestion()">
+                        👁️ ODKRYJ PYTANIE
+                    </button>
+                    <div class="current-question" id="currentQuestionText">
+                        Naciśnij → aby załadować pytanie
+                    </div>
+                    <div class="round-info-row">
+                        <div class="round-info-item">
+                            <span class="round-info-label">PULA</span>
+                            <span class="round-info-value" id="roundPoints">0 pkt</span>
+                        </div>
+                        <div class="round-info-item">
+                            <span class="round-info-label">MNOŻNIK</span>
+                            <span class="round-info-value" id="multiplier">×1</span>
+                        </div>
+                        <div class="round-info-item">
+                            <span class="round-info-label">PYTANIE</span>
+                            <span class="round-info-value" id="questionProgress">0/0</span>
+                        </div>
+                    </div>
+                    <div class="section-title" style="margin-top:8px;">🎮 KONTROLA</div>
+                    <div class="controls-grid">
+                        <div class="round-controls">
+                            <button class="round-btn active" onclick="setMultiplier(1)">×1</button>
+                            <button class="round-btn"        onclick="setMultiplier(2)">×2</button>
+                            <button class="round-btn"        onclick="setMultiplier(3)">×3</button>
+                        </div>
+                        <div class="nav-controls">
+                            <button class="btn-nav" onclick="previousQuestion()">⬅ POPRZEDNIE</button>
+                            <button class="btn-nav" onclick="nextQuestion()">NASTĘPNE ➡</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ODPOWIEDZI -->
+                <div class="section" id="sectionAnswers">
+                    <div class="section-title">📋 ODPOWIEDZI</div>
+                    <div class="answers-container" id="answersContainer"></div>
+                    <button class="btn-reveal-all" id="btnRevealAll" onclick="revealAll()" disabled>
+                        Pokaż wszystkie nieodkryte
+                    </button>
+                </div>
+
+                <!-- PRAWA KOLUMNA -->
+                <div class="right-column" id="sectionRight">
+
+                    <!-- LISTA PYTAŃ -->
+<div class="section next-question-section" id="sectionNextQuestion">
+    <div class="section-title">📋 PYTANIA</div>
+    <div class="questions-list-preview" id="questionsListPreview">
+        <div class="next-q-empty">Brak pytań</div>
+    </div>
+</div>
+
+                    <!-- SKRÓTY -->
+                    <div class="section shortcuts-section" id="sectionShortcuts">
+                        <div class="section-title">⌨️ SKRÓTY</div>
+                        <div class="shortcuts-grid">
+                            <span class="shortcut-key">SPACJA</span><span class="shortcut-desc">Odkryj pytanie</span>
+                            <span class="shortcut-key">Q</span><span class="shortcut-desc">Drużyna 1</span>
+                            <span class="shortcut-key">W</span><span class="shortcut-desc">Drużyna 2</span>
+                            <span class="shortcut-key">X</span><span class="shortcut-desc">Błąd X</span>
+                            <span class="shortcut-key">1–8</span><span class="shortcut-desc">Odkryj odpowiedź</span>
+                            <span class="shortcut-key">R</span><span class="shortcut-desc">Pokaż wszystkie</span>
+                            <span class="shortcut-key">Z</span><span class="shortcut-desc">Zwycięzca</span>
+                            <span class="shortcut-key">← →</span><span class="shortcut-desc">Prev / Next</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/host.js"></script>
+</body>
+</html>

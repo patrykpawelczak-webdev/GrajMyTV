@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrajMyTV - Platforma gier telewizyjnych</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="site-logo">
+                <span class="logo-play">▶</span>
+                <span class="logo-text">GrajMyTV</span>
+            </div>
+            <nav class="site-nav">
+                <a href="#gry" class="nav-link">Gry</a>
+                <a href="#onas" class="nav-link">O nas</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">🎮 Platforma gier telewizyjnych</div>
+            <h1 class="hero-title">
+                Zagraj w swój<br>
+                <span class="hero-title-gold">ulubiony teleturniej</span>
+            </h1>
+            <p class="hero-subtitle">
+                Klasyczne teleturnieje w nowej odsłonie.<br>
+                Graj z przyjaciółmi online lub lokalnie.
+            </p>
+            <a href="#gry" class="hero-btn">
+                Przeglądaj gry
+                <span class="hero-btn-arrow">↓</span>
+            </a>
+        </div>
+        <div class="hero-scroll-hint">Przewiń w dół</div>
+    </section>
+
+    <!-- SEKCJA GIER -->
+    <section class="games-section" id="gry">
+        <div class="games-inner">
+            <div class="section-header">
+                <h2 class="section-title">Wybierz grę</h2>
+                <p class="section-sub">Kliknij kartę aby poznać szczegóły</p>
+            </div>
+
+            <!-- KARUZELA -->
+            <div class="carousel-wrap">
+                <button class="carousel-arrow carousel-prev" id="carouselPrev">‹</button>
+                <div class="carousel" id="carousel">
+
+                    <!-- RODZINIADA -->
+                    <div class="game-card active" data-game="rodziniada">
+                        <div class="card-glow"></div>
+                        <div class="card-badge available">Dostępna</div>
+                        <div class="card-icon">👨‍👩‍👧‍👦</div>
+                        <div class="card-name">Rodziniada</div>
+                        <div class="card-tagline">Parodia kultowego teleturnieju</div>
+                    </div>
+
+                    <!-- GRA 2 -->
+                    <div class="game-card coming-soon" data-game="gra2">
+                        <div class="card-badge soon">Wkrótce</div>
+                        <div class="card-icon card-icon-blur">💰</div>
+                        <div class="card-name">???</div>
+                        <div class="card-tagline">Tajemnicza gra</div>
+                        <div class="card-lock">🔒</div>
+                    </div>
+
+                    <!-- GRA 3 -->
+                    <div class="game-card coming-soon" data-game="gra3">
+                        <div class="card-badge soon">Wkrótce</div>
+                        <div class="card-icon card-icon-blur">🎰</div>
+                        <div class="card-name">???</div>
+                        <div class="card-tagline">Tajemnicza gra</div>
+                        <div class="card-lock">🔒</div>
+                    </div>
+
+                    <!-- GRA 4 -->
+                    <div class="game-card coming-soon" data-game="gra4">
+                        <div class="card-badge soon">Wkrótce</div>
+                        <div class="card-icon card-icon-blur">🔤</div>
+                        <div class="card-name">???</div>
+                        <div class="card-tagline">Tajemnicza gra</div>
+                        <div class="card-lock">🔒</div>
+                    </div>
+
+                </div>
+                <button class="carousel-arrow carousel-next" id="carouselNext">›</button>
+            </div>
+
+            <!-- OPIS AKTYWNEJ GRY -->
+            <div class="game-detail" id="gameDetail">
+
+                <!-- RODZINIADA DETAIL -->
+                <div class="detail-panel active" id="detail-rodziniada">
+                    <div class="detail-left">
+                        <div class="detail-title">Rodziniada</div>
+                        <div class="detail-desc">
+                            Parodiowa wersja kultowego polskiego teleturnieju.
+                            Dwie drużyny rywalizują odpowiadając na pytania
+                            o najpopularniejsze odpowiedzi Polaków.
+                            Prowadzący steruje grą z osobnego panelu,
+                            a widzowie śledzą wyniki na ekranie TV.
+                        </div>
+
+                        <div class="detail-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">👥</span>
+                                <div class="meta-info">
+                                    <span class="meta-label">Gracze</span>
+                                    <span class="meta-value">2 drużyny + widzowie</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">🎮</span>
+                                <div class="meta-info">
+                                    <span class="meta-label">Tryby</span>
+                                    <span class="meta-value">Lokalny · Online</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">⏱️</span>
+                                <div class="meta-info">
+                                    <span class="meta-label">Czas gry</span>
+                                    <span class="meta-value">15–45 minut</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📱</span>
+                                <div class="meta-info">
+                                    <span class="meta-label">Urządzenia</span>
+                                    <span class="meta-value">PC · Tablet · Telefon</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-actions">
+                            <a href="/rodziniada" class="btn-play">
+                                ▶ Graj teraz
+                            </a>
+                            <a href="/rodziniada/tv" class="btn-tv">
+                                📺 Ekran TV
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="detail-right">
+                        <div class="detail-screenshots">
+                            <div class="screenshot-main">
+                                <div class="screenshot-placeholder">
+                                    <span class="screenshot-icon">🎮</span>
+                                    <span class="screenshot-label">Panel prowadzącego</span>
+                                </div>
+                            </div>
+                            <div class="screenshot-thumbs">
+                                <div class="screenshot-thumb">
+                                    <div class="screenshot-placeholder small">
+                                        <span>📺</span>
+                                    </div>
+                                </div>
+                                <div class="screenshot-thumb">
+                                    <div class="screenshot-placeholder small">
+                                        <span>🏆</span>
+                                    </div>
+                                </div>
+                                <div class="screenshot-thumb">
+                                    <div class="screenshot-placeholder small">
+                                        <span>❓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMING SOON PANEL -->
+                <div class="detail-panel" id="detail-soon">
+                    <div class="detail-soon-content">
+                        <div class="soon-icon">🔒</div>
+                        <div class="soon-title">Wkrótce dostępne</div>
+                        <div class="soon-desc">
+                            Ta gra jest w trakcie produkcji.<br>
+                            Obserwuj nas żeby nie przegapić premiery!
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- O NAS -->
+    <section class="about-section" id="onas">
+        <div class="about-inner">
+            <h2 class="section-title">O GrajMyTV</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon">🎯</div>
+                    <div class="about-title">Dla każdego</div>
+                    <div class="about-desc">Gry dla całej rodziny i przyjaciół. Żadnej rejestracji, żadnych opłat.</div>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🌐</div>
+                    <div class="about-title">Online i lokalnie</div>
+                    <div class="about-desc">Graj przez internet z przyjaciółmi lub w tym samym pokoju.</div>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">📱</div>
+                    <div class="about-title">Na każdym urządzeniu</div>
+                    <div class="about-desc">Działa na komputerze, tablecie i telefonie. Bez instalacji.</div>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🚀</div>
+                    <div class="about-title">Więcej gier wkrótce</div>
+                    <div class="about-desc">Regularnie dodajemy nowe gry inspirowane popularnymi teleturniejszami.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <span class="logo-play">▶</span>
+                <span class="logo-text">GrajMyTV</span>
+            </div>
+            <div class="footer-copy">
+                © 2025 GrajMyTV · Wszystkie prawa zastrzeżone
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
