@@ -125,7 +125,7 @@ async function verifyPin() {
     }
 
     try {
-        const res  = await fetch('/api/verify-pin', {
+        const res  = await fetch('/rodziniada/api/verify-pin', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ pin })
@@ -161,7 +161,7 @@ function showPinError(msg) {
 // ===== LADOWANIE =====
 async function loadData() {
     try {
-        const res = await fetch('/api/questions');
+        const res = await fetch('/rodziniada/api/questions');
         data      = await res.json();
 
         data.categories.forEach(cat => {

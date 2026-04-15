@@ -62,3 +62,23 @@ router.post('/api/verify-pin', (req, res) => {
 });
 
 module.exports = router;
+
+router.get('/api/questions', (req, res) => {
+    try {
+        console.log('Szukam pliku:', QUESTIONS_FILE);
+        console.log('Plik istnieje:', fs.existsSync(QUESTIONS_FILE));
+        
+        if (!fs.existsSync(QUESTIONS_FILE)) {
+            console.log('BRAK PLIKU!');
+            return res.json({ categories: [] });
+        }
+        const raw = fs.readFileSync(QUESTIONS_FILE, 'utf8');
+        console.log('Rozmiar pliku:', raw.length, 'znaków');
+        const data = JSON.parse(raw);
+        console.log('Kategorii:', data.categories?.length);
+        res.json(data);
+    } catch(e) {
+        console.log('BLAD:', e.message);
+        res.json({ categories: [] });
+    }
+});
