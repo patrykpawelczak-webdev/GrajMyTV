@@ -1,29 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@300;400;700;900&display=swap');
-
 :root {
-    --gold:        #ffd700;
-    --gold-dark:   #ffb700;
-    --gold-dim:    rgba(255,215,0,0.15);
-    --bg:          #020617;
-    --bg2:         #0a0f1e;
-    --bg3:         #0f172a;
-    --text:        #f8fafc;
-    --text-dim:    #94a3b8;
-    --green:       #16a34a;
-    --purple:      #7c3aed;
-    --border:      rgba(255,215,0,0.15);
-    --radius:      16px;
+    --gold:        #FFD700;
+    --gold-dark:   #F59E0B;
+    --gold-dim:    rgba(255, 215, 0, 0.15);
+    --bg:          #030712;
+    --bg2:         #0B0F19;
+    --bg3:         rgba(15, 23, 42, 0.6);
+    --text:        #F8FAFC;
+    --text-dim:    #94A3B8;
+    --green:       #10B981;
+    --purple:      #8B5CF6;
+    --pink:        #EC4899;
+    --border:      rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(255, 215, 0, 0.3);
+    --radius:      20px;
+    --glass:       rgba(15, 23, 42, 0.4);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Outfit', sans-serif;
     background: var(--bg);
     color: var(--text);
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* ================== HEADER ================== */
@@ -31,8 +33,9 @@ body {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    background: rgba(2,6,23,0.85);
-    backdrop-filter: blur(12px);
+    background: rgba(3, 7, 18, 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
 }
 
@@ -97,32 +100,63 @@ body {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 50%, rgba(124,58,237,0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 20% 80%, rgba(22,163,74,0.06) 0%, transparent 50%);
+        radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.05) 0%, transparent 60%);
     z-index: 0;
+    overflow: hidden;
 }
 
-/* Animowane gwiazdy w tle */
-.hero-bg::before {
-    content: '';
+.orb {
     position: absolute;
-    inset: 0;
-    background-image:
-        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.2) 0%, transparent 100%),
-        radial-gradient(1px 1px at 50% 60%, rgba(255,255,255,0.15) 0%, transparent 100%),
-        radial-gradient(1px 1px at 10% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
-        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.25) 0%, transparent 100%),
-        radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.15) 0%, transparent 100%),
-        radial-gradient(1px 1px at 70% 45%, rgba(255,255,255,0.2) 0%, transparent 100%);
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 20s infinite ease-in-out alternate;
+    z-index: 0;
+}
+.orb-1 {
+    width: 400px; height: 400px;
+    background: var(--purple);
+    top: -10%; left: -10%;
+    animation-delay: 0s;
+}
+.orb-2 {
+    width: 500px; height: 500px;
+    background: var(--pink);
+    bottom: -20%; right: -10%;
+    animation-delay: -5s;
+    animation-duration: 25s;
+}
+.orb-3 {
+    width: 300px; height: 300px;
+    background: var(--gold-dark);
+    top: 40%; left: 60%;
+    animation-delay: -10s;
+    animation-duration: 18s;
+}
+@keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(100px, 50px) scale(1.2); }
+}
+.hero-noise {
+    position: absolute; inset: 0;
+    background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .hero-content {
     position: relative;
     z-index: 1;
     text-align: center;
-    max-width: 700px;
+    max-width: 800px;
+    animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .hero-badge {
@@ -147,13 +181,17 @@ body {
 }
 
 .hero-title-gold {
-    color: var(--gold);
-    text-shadow: 0 0 40px rgba(255,215,0,0.4);
+    background: linear-gradient(135deg, var(--gold) 0%, #FF9D00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    text-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
 }
 
 .hero-subtitle {
     font-size: clamp(1rem, 2.5vw, 1.2rem);
     color: var(--text-dim);
+    font-weight: 300;
     line-height: 1.6;
     margin-bottom: 36px;
 }
@@ -247,8 +285,10 @@ body {
     flex: 0 0 calc(25% - 12px);
     aspect-ratio: 3/4;
     border-radius: var(--radius);
-    border: 2px solid var(--border);
-    background: linear-gradient(135deg, var(--bg3) 0%, var(--bg) 100%);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
     display: flex;
@@ -270,9 +310,9 @@ body {
     border-color: var(--gold);
     box-shadow:
         0 0 0 1px var(--gold),
-        0 0 30px rgba(255,215,0,0.2),
-        0 12px 40px rgba(0,0,0,0.4);
-    transform: translateY(-8px) scale(1.02);
+        0 0 40px rgba(255,215,0,0.15),
+        inset 0 0 20px rgba(255,215,0,0.05);
+    transform: translateY(-10px) scale(1.02);
 }
 
 .game-card.coming-soon {
@@ -372,8 +412,11 @@ body {
 
 /* ================== DETAIL PANEL ================== */
 .game-detail {
-    background: var(--bg3);
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
     border-radius: var(--radius);
     overflow: hidden;
     min-height: 320px;
@@ -572,8 +615,9 @@ body {
 }
 
 .about-card {
-    padding: 28px 24px;
-    background: var(--bg3);
+    padding: 32px 24px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     text-align: center;

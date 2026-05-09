@@ -3,7 +3,7 @@ const path    = require('path');
 const fs      = require('fs');
 const router  = express.Router();
 
-const QUESTIONS_FILE = path.join(__dirname, 'pytania.json');
+const QUESTIONS_FILE = path.join(__dirname, 'public', 'pytania.json');
 const EDITOR_PIN     = process.env.EDITOR_PIN || '1234';
 
 // Pliki statyczne Rodziniady
@@ -30,14 +30,21 @@ router.get('/edytor', (req, res) => {
 
 // ===== API PYTAŃ =====
 router.get('/api/questions', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     try {
         if (!fs.existsSync(QUESTIONS_FILE)) {
-            return res.json({ categories: [] });
+            return res.json({ 
+                categories: [], 
+                debug: { error: 'File not found', path: QUESTIONS_FILE, dirname: __dirname }
+            });
         }
         const data = JSON.parse(fs.readFileSync(QUESTIONS_FILE, 'utf8'));
         res.json(data);
     } catch(e) {
-        res.json({ categories: [] });
+        res.json({ 
+            categories: [], 
+            debug: { error: 'Parse error', message: e.message, path: QUESTIONS_FILE }
+        });
     }
 });
 
@@ -62,23 +69,3 @@ router.post('/api/verify-pin', (req, res) => {
 });
 
 module.exports = router;
-
-router.get('/api/questions', (req, res) => {
-    try {
-        console.log('Szukam pliku:', QUESTIONS_FILE);
-        console.log('Plik istnieje:', fs.existsSync(QUESTIONS_FILE));
-        
-        if (!fs.existsSync(QUESTIONS_FILE)) {
-            console.log('BRAK PLIKU!');
-            return res.json({ categories: [] });
-        }
-        const raw = fs.readFileSync(QUESTIONS_FILE, 'utf8');
-        console.log('Rozmiar pliku:', raw.length, 'znaków');
-        const data = JSON.parse(raw);
-        console.log('Kategorii:', data.categories?.length);
-        res.json(data);
-    } catch(e) {
-        console.log('BLAD:', e.message);
-        res.json({ categories: [] });
-    }
-});
