@@ -65,39 +65,45 @@
                 <div class="carousel" id="carousel">
 
                     <!-- RODZINIADA -->
-                    <div class="game-card active" data-game="rodziniada">
-                        <div class="card-glow"></div>
-                        <div class="card-badge available">Dostępna</div>
-                        <div class="card-icon">👨‍👩‍👧‍👦</div>
-                        <div class="card-name">Rodziniada</div>
-                        <div class="card-tagline">Parodia kultowego teleturnieju</div>
+                    <div class="game-card active rodziniada-theme" data-game="rodziniada">
+                        <div class="card-bg"></div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <span class="card-badge available">Dostępna</span>
+                            </div>
+                            <div class="card-bottom">
+                                <div class="card-name">Rodziniada</div>
+                                <div class="card-tagline">Parodia kultowego teleturnieju</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- GRA 2 -->
                     <div class="game-card coming-soon" data-game="gra2">
-                        <div class="card-badge soon">Wkrótce</div>
-                        <div class="card-icon card-icon-blur">💰</div>
-                        <div class="card-name">???</div>
-                        <div class="card-tagline">Tajemnicza gra</div>
-                        <div class="card-lock">🔒</div>
+                        <div class="card-bg soon-bg"></div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <span class="card-badge soon">Wkrótce</span>
+                            </div>
+                            <div class="card-bottom">
+                                <div class="card-name">Tajemnica</div>
+                                <div class="card-tagline">Gra w produkcji</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- GRA 3 -->
                     <div class="game-card coming-soon" data-game="gra3">
-                        <div class="card-badge soon">Wkrótce</div>
-                        <div class="card-icon card-icon-blur">🎰</div>
-                        <div class="card-name">???</div>
-                        <div class="card-tagline">Tajemnicza gra</div>
-                        <div class="card-lock">🔒</div>
-                    </div>
-
-                    <!-- GRA 4 -->
-                    <div class="game-card coming-soon" data-game="gra4">
-                        <div class="card-badge soon">Wkrótce</div>
-                        <div class="card-icon card-icon-blur">🔤</div>
-                        <div class="card-name">???</div>
-                        <div class="card-tagline">Tajemnicza gra</div>
-                        <div class="card-lock">🔒</div>
+                        <div class="card-bg soon-bg"></div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <span class="card-badge soon">Wkrótce</span>
+                            </div>
+                            <div class="card-bottom">
+                                <div class="card-name">Tajemnica</div>
+                                <div class="card-tagline">Gra w produkcji</div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -109,82 +115,38 @@
 
                 <!-- RODZINIADA DETAIL -->
                 <div class="detail-panel active" id="detail-rodziniada">
-                    <div class="detail-left">
+                    <div class="detail-centered">
+                        <div class="detail-tags">
+                            <span class="detail-tag">Teleturniej</span>
+                            <span class="detail-tag">Dla rodziny</span>
+                            <span class="detail-tag">Wiedza ogólna</span>
+                        </div>
+                        
                         <div class="detail-title">Rodziniada</div>
+                        
                         <div class="detail-desc">
-                            Parodiowa wersja kultowego polskiego teleturnieju.
-                            Dwie drużyny rywalizują odpowiadając na pytania
-                            o najpopularniejsze odpowiedzi Polaków.
-                            Prowadzący steruje grą z osobnego panelu,
-                            a widzowie śledzą wyniki na ekranie TV.
+                            Klasyczna rozrywka powraca w nowej formie. Zbierz rodzinę lub przyjaciół i zgadujcie najpopularniejsze odpowiedzi w naszej autorskiej parodii legendarnego teleturnieju. Emocje i śmiech gwarantowane.
                         </div>
 
                         <div class="detail-meta">
-                            <div class="meta-item">
+                            <div class="meta-pill">
                                 <span class="meta-icon">👥</span>
-                                <div class="meta-info">
-                                    <span class="meta-label">Gracze</span>
-                                    <span class="meta-value">2 drużyny + widzowie</span>
-                                </div>
+                                <span class="meta-text">2 Drużyny</span>
                             </div>
-                            <div class="meta-item">
+                            <div class="meta-pill">
                                 <span class="meta-icon">🎮</span>
-                                <div class="meta-info">
-                                    <span class="meta-label">Tryby</span>
-                                    <span class="meta-value">Lokalny · Online</span>
-                                </div>
+                                <span class="meta-text">Lokalnie & Online</span>
                             </div>
-                            <div class="meta-item">
+                            <div class="meta-pill">
                                 <span class="meta-icon">⏱️</span>
-                                <div class="meta-info">
-                                    <span class="meta-label">Czas gry</span>
-                                    <span class="meta-value">15–45 minut</span>
-                                </div>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-icon">📱</span>
-                                <div class="meta-info">
-                                    <span class="meta-label">Urządzenia</span>
-                                    <span class="meta-value">PC · Tablet · Telefon</span>
-                                </div>
+                                <span class="meta-text">30 min</span>
                             </div>
                         </div>
 
                         <div class="detail-actions">
-                            <a href="/rodziniada" class="btn-play">
-                                ▶ Graj teraz
+                            <a href="/rodziniada" class="btn-play-massive">
+                                <span class="btn-play-icon">▶</span> Zagraj teraz
                             </a>
-                            <a href="/rodziniada/tv" class="btn-tv">
-                                📺 Ekran TV
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="detail-right">
-                        <div class="detail-screenshots">
-                            <div class="screenshot-main">
-                                <div class="screenshot-placeholder">
-                                    <span class="screenshot-icon">🎮</span>
-                                    <span class="screenshot-label">Panel prowadzącego</span>
-                                </div>
-                            </div>
-                            <div class="screenshot-thumbs">
-                                <div class="screenshot-thumb">
-                                    <div class="screenshot-placeholder small">
-                                        <span>📺</span>
-                                    </div>
-                                </div>
-                                <div class="screenshot-thumb">
-                                    <div class="screenshot-placeholder small">
-                                        <span>🏆</span>
-                                    </div>
-                                </div>
-                                <div class="screenshot-thumb">
-                                    <div class="screenshot-placeholder small">
-                                        <span>❓</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
