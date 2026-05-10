@@ -88,7 +88,7 @@ socket.on('gameEnded', () => {
 
     // ✅ Wróć do lobby po chwili
     setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = '/rodziniada';
     }, 1500);
 });
 

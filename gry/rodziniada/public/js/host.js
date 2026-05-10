@@ -179,7 +179,7 @@ function joinGameAsTv(tvCode) {
                 showToast('Nieprawidłowy kod TV!', 'error');
                 return;
             }
-            window.location.href = `/tv?code=${tvCode}`;
+            window.location.href = `/rodziniada/tv?code=${tvCode}`;
         }
     );
 
@@ -607,7 +607,7 @@ function updateHeaderCodes() {
 
 function openTV() {
     if (!currentTvCode) return;
-    window.open(`/tv?code=${currentTvCode}`, 'RodziniadaTV', 'width=1920,height=1080');
+    window.open(`/rodziniada/tv?code=${currentTvCode}`, 'RodziniadaTV', 'width=1920,height=1080');
 }
 
 function startDisplay() {
