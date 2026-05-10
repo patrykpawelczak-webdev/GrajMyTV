@@ -64,23 +64,10 @@
                 <button class="carousel-arrow carousel-prev" id="carouselPrev">‹</button>
                 <div class="carousel" id="carousel">
 
-                    <!-- RODZINIADA -->
-                    <div class="game-card active rodziniada-theme" data-game="rodziniada">
-                        <div class="card-bg"></div>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <span class="card-badge available">Dostępna</span>
-                            </div>
-                            <div class="card-bottom">
-                                <div class="card-name">Rodziniada</div>
-                                <div class="card-tagline">Parodia kultowego teleturnieju</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- GRA 2 -->
+                    <!-- GRA 1 (Wkrótce) -->
                     <div class="game-card coming-soon" data-game="gra2">
-                        <div class="card-bg soon-bg"></div>
+                        <div class="card-bg soon-bg" style="background-image: url('img/coming_soon_cover.png');"></div>
+                        <div class="card-glass-layer"></div>
                         <div class="card-content">
                             <div class="card-header">
                                 <span class="card-badge soon">Wkrótce</span>
@@ -92,9 +79,25 @@
                         </div>
                     </div>
 
-                    <!-- GRA 3 -->
+                    <!-- RODZINIADA (Środek) -->
+                    <div class="game-card active rodziniada-theme" data-game="rodziniada">
+                        <div class="card-bg" style="background-image: url('img/rodziniada_cover.png');"></div>
+                        <div class="card-glass-layer"></div>
+                        <div class="card-content">
+                            <div class="card-header">
+                                <span class="card-badge available">Dostępna</span>
+                            </div>
+                            <div class="card-bottom">
+                                <div class="card-name">Rodziniada</div>
+                                <div class="card-tagline">Parodia kultowego teleturnieju</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRA 3 (Wkrótce) -->
                     <div class="game-card coming-soon" data-game="gra3">
-                        <div class="card-bg soon-bg"></div>
+                        <div class="card-bg soon-bg" style="background-image: url('img/coming_soon_cover.png');"></div>
+                        <div class="card-glass-layer"></div>
                         <div class="card-content">
                             <div class="card-header">
                                 <span class="card-badge soon">Wkrótce</span>
@@ -115,38 +118,44 @@
 
                 <!-- RODZINIADA DETAIL -->
                 <div class="detail-panel active" id="detail-rodziniada">
-                    <div class="detail-centered">
-                        <div class="detail-tags">
-                            <span class="detail-tag">Teleturniej</span>
-                            <span class="detail-tag">Dla rodziny</span>
-                            <span class="detail-tag">Wiedza ogólna</span>
-                        </div>
-                        
-                        <div class="detail-title">Rodziniada</div>
-                        
-                        <div class="detail-desc">
-                            Klasyczna rozrywka powraca w nowej formie. Zbierz rodzinę lub przyjaciół i zgadujcie najpopularniejsze odpowiedzi w naszej autorskiej parodii legendarnego teleturnieju. Emocje i śmiech gwarantowane.
-                        </div>
-
-                        <div class="detail-meta">
-                            <div class="meta-pill">
-                                <span class="meta-icon">👥</span>
-                                <span class="meta-text">2 Drużyny</span>
-                            </div>
-                            <div class="meta-pill">
-                                <span class="meta-icon">🎮</span>
-                                <span class="meta-text">Lokalnie & Online</span>
-                            </div>
-                            <div class="meta-pill">
-                                <span class="meta-icon">⏱️</span>
-                                <span class="meta-text">30 min</span>
+                    <div class="detail-layout">
+                        <div class="detail-left">
+                            <div class="detail-title">Rodziniada</div>
+                            <div class="detail-desc">
+                                Klasyczna rozrywka powraca w nowej formie. Zmierzcie się w zgadywaniu najpopularniejszych odpowiedzi ankietowanych na nietypowe pytania w naszej autorskiej parodii legendarnego teleturnieju. Emocje i śmiech gwarantowane.
                             </div>
                         </div>
 
-                        <div class="detail-actions">
-                            <a href="/rodziniada" class="btn-play-massive">
-                                <span class="btn-play-icon">▶</span> Zagraj teraz
-                            </a>
+                        <div class="detail-right">
+                            <div class="detail-meta">
+                                <div class="meta-pill">
+                                    <span class="meta-icon">👥</span>
+                                    <div class="meta-info">
+                                        <span class="meta-label">Liczba graczy</span>
+                                        <span class="meta-text">3+ graczy</span>
+                                    </div>
+                                </div>
+                                <div class="meta-pill">
+                                    <span class="meta-icon">🎮</span>
+                                    <div class="meta-info">
+                                        <span class="meta-label">Rozgrywka</span>
+                                        <span class="meta-text">Lokalnie & Online</span>
+                                    </div>
+                                </div>
+                                <div class="meta-pill">
+                                    <span class="meta-icon">⏱️</span>
+                                    <div class="meta-info">
+                                        <span class="meta-label">Czas trwania</span>
+                                        <span class="meta-text">Zmienny</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-actions">
+                                <a href="/rodziniada" class="btn-play-massive">
+                                    <span class="btn-play-icon">▶</span> Zagraj teraz
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
