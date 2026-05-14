@@ -1,36 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@400;700;900&display=swap');
+@import url('./components/_utils.css');
+@import url('./components/_buttons.css');
+@import url('./components/_modals.css');
+@import url('./components/_toasts.css');
 
-:root {
-    --dark-blue:  #0f172a;
-    --medium-blue:#1e293b;
-    --light-blue: #334155;
-    --gold:       #FFC107;
-    --gold-dark:  #FF9800;
-    --red:        #ef4444;
-    --red-light:  #f87171;
-    --green:      #22c55e;
-    --orange:     #f97316;
-    --white:      #ffffff;
-    --gray:       #94a3b8;
-    --dark-gray:  #334155;
-    
-    --glass-bg: rgba(15, 23, 42, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 16px; }
-
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #050505;
-    background-image: 
-        radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.08), transparent 50%),
-        radial-gradient(circle at 85% 30%, rgba(255, 193, 7, 0.05), transparent 50%);
-    color: var(--white);
-    min-height: 100vh;
-}
+/* Host Specific Styles */
 
 .hidden { display: none !important; }
 
@@ -814,34 +787,7 @@ body {
 /* STATUS BAR - ukryty */
 .status-bar { display: none !important; }
 
-/* MODAL */
-.modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.75);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 9999; opacity: 0; visibility: hidden;
-    transition: opacity 0.2s, visibility 0.2s;
-}
-.modal-overlay.show { opacity: 1; visibility: visible; }
-.modal-box {
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: clamp(30px, 4vw, 50px);
-    max-width: min(500px, 90vw);
-    width: 100%;
-    box-shadow: 0 0 40px rgba(255,215,0,0.1), var(--glass-shadow);
-    animation: modal-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-@keyframes modal-in { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.modal-title { font-family: 'Russo One', sans-serif; font-size: clamp(1.1rem, 3vw, 1.5rem); color: var(--gold); margin-bottom: 12px; text-align: center; }
-.modal-message { font-size: clamp(0.85rem, 2vw, 1rem); color: var(--gray); line-height: 1.6; text-align: center; margin-bottom: 24px; }
-.modal-buttons { display: flex; gap: 12px; justify-content: center; }
-.modal-btn { padding: clamp(8px, 2vw, 12px) clamp(20px, 4vw, 32px); border-radius: 8px; border: none; font-size: clamp(0.85rem, 2vw, 1rem); font-weight: 700; cursor: pointer; transition: transform 0.15s; min-width: 100px; }
-.modal-btn:hover { transform: translateY(-2px); }
-.modal-btn-cancel  { background: var(--dark-gray); color: var(--white); border: 1px solid rgba(148,163,184,0.4); }
-.modal-btn-confirm { background: linear-gradient(135deg, var(--red) 0%, #991b1b 100%); color: var(--white); }
+/* Modals and Toasts are now in separate components */
 
 /* FULLSCREEN */
 .host-fullscreen-button {
@@ -854,18 +800,6 @@ body {
 }
 .host-fullscreen-button:hover { transform: scale(1.08); }
 
-/* TOAST */
-.host-toast {
-    position: fixed; bottom: 24px; right: 24px;
-    padding: 12px 20px; border-radius: 10px;
-    font-size: 0.9rem; font-weight: 600; z-index: 9999;
-    opacity: 0; transform: translateY(10px);
-    transition: opacity 0.3s, transform 0.3s;
-    pointer-events: none;
-}
-.host-toast.show { opacity: 1; transform: translateY(0); }
-.host-toast.error { background: var(--red); color: #fff; }
-.host-toast.info  { background: var(--medium-blue); color: #fff; border: 1px solid var(--gold); }
 
 /* SCROLLBAR */
 ::-webkit-scrollbar { width: 5px; height: 5px; }

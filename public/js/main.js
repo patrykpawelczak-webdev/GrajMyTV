@@ -62,9 +62,7 @@ function selectCard(card) {
     }, 150);
 }
 
-cards.forEach(card => {
-    card.addEventListener('click', () => selectCard(card));
-});
+// Klikanie wyłączone - nawigacja tylko strzałkami
 
 // ================== COMING SOON z URL ==================
 const urlParams = new URLSearchParams(window.location.search);

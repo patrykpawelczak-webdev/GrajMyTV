@@ -101,6 +101,12 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
                 socket.emit('joinError', { message: 'Ta rozgrywka ma już prowadzącego' });
                 return;
             }
+            
+            if (game.reconnectTimer) {
+                clearTimeout(game.reconnectTimer);
+                game.reconnectTimer = null;
+                logSuccess('RODZINIADA', `Host powrocil! Timer zreconnectu anulowany.`);
+            }
 
             socket.join(`game:${game.id}`);
             socket.data.gameId = game.id;
@@ -208,8 +214,14 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
             logWarn('RODZINIADA', `Host wyszedl: hostow=${c.yellow}${game.hostCount}${c.reset}`);
 
             if (game.hostCount === 0) {
-                io.to(`game:${gameId}`).emit('gameEnded');
-                cleanupGame(gameId);
+                logWarn('RODZINIADA', `Rozpoczynam timer 30s na powrot hosta dla: ${c.magenta}${gameId}${c.reset}`);
+                game.reconnectTimer = setTimeout(() => {
+                    if (games[gameId] && games[gameId].hostCount === 0) {
+                        logError('RODZINIADA', `Host nie wrocil, niszcze gre: ${c.magenta}${gameId}${c.reset}`);
+                        io.to(`game:${gameId}`).emit('gameEnded');
+                        cleanupGame(gameId);
+                    }
+                }, 30000);
             } else {
                 io.emit('gamesListUpdated', getGamesList());
             }

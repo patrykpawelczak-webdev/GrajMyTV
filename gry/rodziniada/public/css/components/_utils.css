@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@400;700;900&display=swap');
+
+:root {
+    --dark-blue:   #0f172a;
+    --medium-blue: #1e293b;
+    --light-blue:  #334155;
+    --gold:        #FFC107;
+    --gold-dark:   #FF9800;
+    --red:         #ef4444;
+    --red-light:   #f87171;
+    --green:       #22c55e;
+    --orange:      #f97316;
+    --white:       #ffffff;
+    --gray:        #94a3b8;
+    --dark-gray:   #334155;
+    
+    --glass-bg:     rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; }
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #050505;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(255, 193, 7, 0.08), transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(255, 193, 7, 0.05), transparent 50%);
+    color: var(--white);
+    min-height: 100vh;
+}
+
+.hidden { display: none !important; }

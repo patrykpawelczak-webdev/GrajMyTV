@@ -1,6 +1,7 @@
 const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
+const fsp     = require('fs').promises;
 const router  = express.Router();
 
 const QUESTIONS_FILE = path.join(__dirname, 'public', 'pytania.json');
@@ -29,7 +30,7 @@ router.get('/edytor', (req, res) => {
 });
 
 // ===== API PYTAŃ =====
-router.get('/api/questions', (req, res) => {
+router.get('/api/questions', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     try {
         if (!fs.existsSync(QUESTIONS_FILE)) {
@@ -38,7 +39,8 @@ router.get('/api/questions', (req, res) => {
                 debug: { error: 'File not found', path: QUESTIONS_FILE, dirname: __dirname }
             });
         }
-        const data = JSON.parse(fs.readFileSync(QUESTIONS_FILE, 'utf8'));
+        const fileData = await fsp.readFile(QUESTIONS_FILE, 'utf8');
+        const data = JSON.parse(fileData);
         res.json(data);
     } catch(e) {
         res.json({ 
@@ -48,16 +50,26 @@ router.get('/api/questions', (req, res) => {
     }
 });
 
-router.post('/api/questions', (req, res) => {
+router.post('/api/questions', async (req, res) => {
     const data = req.body;
+    const providedPin = req.headers['x-pin'];
+    
+    if (providedPin !== EDITOR_PIN) {
+        return res.status(401).json({ error: 'Brak autoryzacji (nieprawidłowy PIN)' });
+    }
+    
     if (!data || !Array.isArray(data.categories)) {
         return res.status(400).json({ error: 'Nieprawidlowy format' });
     }
     try {
         if (fs.existsSync(QUESTIONS_FILE)) {
-            fs.copyFileSync(QUESTIONS_FILE, QUESTIONS_FILE + '.backup');
+            await fsp.copyFile(QUESTIONS_FILE, QUESTIONS_FILE + '.backup');
         }
-        fs.writeFileSync(QUESTIONS_FILE, JSON.stringify(data, null, 2), 'utf8');
+        
+        const tempFile = QUESTIONS_FILE + '.tmp';
+        await fsp.writeFile(tempFile, JSON.stringify(data, null, 2), 'utf8');
+        await fsp.rename(tempFile, QUESTIONS_FILE);
+        
         res.json({ ok: true });
     } catch(e) {
         res.status(500).json({ error: 'Blad zapisu' });

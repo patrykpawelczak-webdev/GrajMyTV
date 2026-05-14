@@ -3,6 +3,7 @@ let data          = { categories: [] };
 let activeCatId   = null;
 let editingQIndex = null;
 let unsaved       = false;
+let currentPin    = '';
 
 let catSortable = null;
 let qSortable   = null;
@@ -133,6 +134,7 @@ async function verifyPin() {
         const json = await res.json();
 
         if (json.ok) {
+            currentPin = pin;
             document.getElementById('pinScreen').style.display = 'none';
             document.getElementById('editorScreen').classList.remove('hidden');
             await loadData();
@@ -187,7 +189,10 @@ async function saveAll() {
     try {
         const res  = await fetch('/rodziniada/api/questions', {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-PIN': currentPin
+            },
             body:    JSON.stringify(data)
         });
         const json = await res.json();

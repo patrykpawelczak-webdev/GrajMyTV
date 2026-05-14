@@ -540,21 +540,7 @@ function finishIntro() {
     }
 }
 
-function finishIntro() {
-    const intro = tv('tvIntro');
-    if (!intro) return;
 
-    intro.style.opacity    = '0';
-    intro.style.visibility = 'hidden';
-    intro.classList.remove('show');
-    introVisible   = false;
-    isCountingDown = false;
-
-    if (countdownAnimFrame) {
-        cancelAnimationFrame(countdownAnimFrame);
-        countdownAnimFrame = null;
-    }
-}
 
 // ================== GAME ENDED ==================
 function showGameEndedOverlay() { const o = tv('tvGameEnded'); if (o) o.classList.add('show'); }

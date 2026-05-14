@@ -1,36 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Roboto:wght@400;500;700;900&display=swap');
+@import url('./components/_utils.css');
+@import url('./components/_buttons.css');
+@import url('./components/_modals.css');
+@import url('./components/_toasts.css');
 
-:root {
-    --dark-blue:   #001848;
-    --medium-blue: #0a2472;
-    --light-blue:  #1e3a8a;
-    --gold:        #ffd700;
-    --gold-dark:   #ffb700;
-    --red:         #dc2626;
-    --red-dark:    #991b1b;
-    --green:       #16a34a;
-    --green-dark:  #059669;
-    --orange:      #f97316;
-    --white:       #ffffff;
-    --gray:        #94a3b8;
-    --dark-gray:   #334155;
-    --bg:          #020617;
-    --bg2:         #0f172a;
-    --bg3:         #1e293b;
-    --border:      rgba(255,215,0,0.2);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-html { font-size: 16px; }
-
-body {
-    font-family: 'Roboto', sans-serif;
-    background: var(--bg);
-    color: var(--white);
-    min-height: 100vh;
-    overflow-x: hidden;
-}
+/* Editor Specific Styles */
 
 /* ===== PIN SCREEN ===== */
 .pin-screen {

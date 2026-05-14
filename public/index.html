@@ -56,59 +56,62 @@
         <div class="games-inner">
             <div class="section-header">
                 <h2 class="section-title">Wybierz grę</h2>
-                <p class="section-sub">Kliknij kartę aby poznać szczegóły</p>
+                <p class="section-sub">Użyj strzałek aby wybrać grę</p>
             </div>
 
             <!-- KARUZELA -->
             <div class="carousel-wrap">
                 <button class="carousel-arrow carousel-prev" id="carouselPrev">‹</button>
-                <div class="carousel" id="carousel">
+                <div class="carousel-container">
+                    <div class="carousel" id="carousel">
 
-                    <!-- GRA 1 (Wkrótce) -->
-                    <div class="game-card coming-soon" data-game="gra2">
-                        <div class="card-bg soon-bg" style="background-image: url('img/coming_soon_cover.png');"></div>
-                        <div class="card-glass-layer"></div>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <span class="card-badge soon">Wkrótce</span>
-                            </div>
-                            <div class="card-bottom">
-                                <div class="card-name">Tajemnica</div>
-                                <div class="card-tagline">Gra w produkcji</div>
+                        <!-- GRA 1 (Wkrótce) -->
+                        <div class="game-card coming-soon" data-game="gra2">
+                            <div class="card-bg soon-bg mystery-filter" style="background-image: url('img/coming_soon_cover.png');"></div>
+                            <div class="card-glass-layer"></div>
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <span class="card-badge soon">Wkrótce</span>
+                                </div>
+                                <div class="card-bottom">
+                                    <div class="card-name">Tajemnica</div>
+                                    <div class="card-tagline">Gra w produkcji</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- RODZINIADA (Środek) -->
-                    <div class="game-card active rodziniada-theme" data-game="rodziniada">
-                        <div class="card-bg" style="background-image: url('img/rodziniada_cover.png');"></div>
-                        <div class="card-glass-layer"></div>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <span class="card-badge available">Dostępna</span>
-                            </div>
-                            <div class="card-bottom">
-                                <div class="card-name">Rodziniada</div>
-                                <div class="card-tagline">Parodia kultowego teleturnieju</div>
+                        <!-- RODZINIADA (Środek) -->
+                        <div class="game-card active rodziniada-theme" data-game="rodziniada">
+                            <div class="card-bg" style="background-image: url('img/rodziniada_cover.png');"></div>
+                            <div class="card-glass-layer"></div>
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <div class="card-badge available">Dostępna</div>
+                                </div>
+                                <div class="card-bottom">
+                                    <div class="card-name">Rodziniada</div>
+                                    <div class="card-tagline">Parodia kultowego teleturnieju</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- GRA 3 (Wkrótce) -->
-                    <div class="game-card coming-soon" data-game="gra3">
-                        <div class="card-bg soon-bg" style="background-image: url('img/coming_soon_cover.png');"></div>
-                        <div class="card-glass-layer"></div>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <span class="card-badge soon">Wkrótce</span>
-                            </div>
-                            <div class="card-bottom">
-                                <div class="card-name">Tajemnica</div>
-                                <div class="card-tagline">Gra w produkcji</div>
+                        <!-- GRA 3 (Wkrótce) -->
+                        <div class="game-card coming-soon" data-game="gra3">
+                            <div class="card-bg soon-bg mystery-filter" style="background-image: url('img/coming_soon_cover.png');"></div>
+                            <div class="card-glass-layer"></div>
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <span class="card-badge soon">Wkrótce</span>
+                                </div>
+                                <div class="card-bottom">
+                                    <div class="card-name">Tajemnica</div>
+                                    <div class="card-tagline">Gra w produkcji</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
+                    <div class="carousel-frame"></div>
                 </div>
                 <button class="carousel-arrow carousel-next" id="carouselNext">›</button>
             </div>
