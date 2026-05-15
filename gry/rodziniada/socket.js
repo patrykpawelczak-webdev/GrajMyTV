@@ -135,11 +135,6 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
                 socket.emit('joinError', { message: 'Gra nie istnieje' });
                 return;
             }
-            if (game.state && game.state.currentQuestionIndex >= 0) {
-                socket.emit('joinError', { message: 'Gra już się rozpoczęła' });
-                return;
-            }
-
             socket.join(`game:${game.id}`);
             socket.data.gameId = game.id;
             socket.data.role   = 'tv';

@@ -10,13 +10,13 @@
 <body>
 
     <!-- MODAL -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box">
-            <div class="modal-title" id="modalTitle">Czy na pewno?</div>
-            <div class="modal-message" id="modalMessage"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Anuluj</button>
-                <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn">Potwierdź</button>
+    <div class="modal" id="modalOverlay">
+        <div class="modal__box">
+            <div class="modal__title" id="modalTitle">Czy na pewno?</div>
+            <div class="modal__message" id="modalMessage"></div>
+            <div class="modal__footer">
+                <button class="btn btn--secondary" onclick="closeModal()">Anuluj</button>
+                <button class="btn btn--primary" id="modalConfirmBtn">Potwierdź</button>
             </div>
         </div>
     </div>

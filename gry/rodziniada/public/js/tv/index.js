@@ -8,6 +8,7 @@ const socket = io('/rodziniada');
 let countdownAnimFrame = null;
 let isCountingDown = false;
 let introVisible = false;
+let displayStarted = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     anim.initGrain();
@@ -30,7 +31,9 @@ socket.on('gameStateUpdated', ({ state }) => {
 });
 
 socket.on('startDisplay', () => {
-    startIntro();
+    displayStarted = true;
+    showWaitingScreen(false);
+    socket.emit('requestStateUpdate');
 });
 
 socket.on('showBigX', ({ count }) => {
@@ -59,68 +62,43 @@ socket.on('gameEnded', () => {
 
 function updateFullUI(state) {
     if (introVisible) return;
-    render.updateTeams(state.team1, state.team2);
+    
+    // Jeśli transmisja nie wystartowała LUB nie ma pytania, pokaż ekran oczekiwania
+    if (!displayStarted || (!state.currentQuestion && state.currentQuestionIndex === -1)) {
+        showWaitingScreen(true);
+        return;
+    }
+    showWaitingScreen(false);
+
+    render.updateTeams(state.team1, state.team2, state.currentTeam, state.isStealMode);
     render.updateStrikes(state.team1, state.team2);
     render.updateBoard(state.currentQuestion, state.revealedAnswers, state.questionRevealed);
     render.updateRoundPoints(state.roundPoints, state.multiplier);
 }
 
-function startIntro() {
-    introVisible = true;
-    const intro = tv('tvIntro');
-    const countdownCanvas = tv('countdownCanvas');
-    if (intro) {
-        intro.style.display = 'flex';
-        intro.style.opacity = '1';
-        intro.style.visibility = 'visible';
-        intro.classList.add('show');
+function showWaitingScreen(show) {
+    let ws = tv('tvWaitingScreen');
+    if (!ws) {
+        ws = document.createElement('div');
+        ws.id = 'tvWaitingScreen';
+        ws.className = 'tv-overlay tv-waiting-overlay';
+        ws.innerHTML = `
+            <div class="tv-waiting-display">
+                <div class="tv-waiting-title">OCZEKIWANIE NA GRĘ</div>
+                <div class="tv-waiting-subtitle">Prowadzący zaraz rozpocznie rundę...</div>
+            </div>
+        `;
+        document.body.appendChild(ws);
     }
-    
-    audio.play('intro');
-    
-    let seconds = 3;
-    isCountingDown = true;
-    
-    function loop() {
-        if (!isCountingDown) return;
-        anim.drawCountdown(countdownCanvas, seconds > 0 ? seconds.toString() : 'START');
-        countdownAnimFrame = requestAnimationFrame(loop);
-    }
-    loop();
+    ws.classList.toggle('show', show);
+}
 
-    const timer = setInterval(() => {
-        seconds--;
-        if (seconds < 0) {
-            clearInterval(timer);
-            setTimeout(finishIntro, 1000);
-        }
-    }, 1000);
+function startIntro() {
+    // Funkcja zachowana dla wstecznej kompatybilności, ale nieużywana
 }
 
 function finishIntro() {
-    isCountingDown = false;
-    if (countdownAnimFrame) {
-        cancelAnimationFrame(countdownAnimFrame);
-        countdownAnimFrame = null;
-    }
-
-    const splitLeft = tv('introSplitLeft');
-    const splitRight = tv('introSplitRight');
-    const intro = tv('tvIntro');
-
-    if (splitLeft) splitLeft.classList.add('exit');
-    if (splitRight) splitRight.classList.add('exit');
-
-    setTimeout(() => {
-        if (intro) {
-            intro.style.opacity = '0';
-            intro.style.visibility = 'hidden';
-            intro.classList.remove('show');
-        }
-        introVisible = false;
-        // Po intro upewnij się że plansza jest zaktualizowana
-        socket.emit('requestStateUpdate'); 
-    }, 800);
+    // Funkcja zachowana dla wstecznej kompatybilności, ale nieużywana
 }
 
 window.enterFullscreen = () => {
@@ -144,10 +122,4 @@ socket.on('joinError', ({ message }) => {
     if (screen) screen.classList.remove('hidden');
     const err = tv('joinErrorTv');
     if (err) err.textContent = message;
-});
-
-socket.on('joinedTv', ({ gameId, state }) => {
-    const screen = tv('joinScreen');
-    if (screen) screen.classList.add('hidden');
-    updateFullUI(state);
 });

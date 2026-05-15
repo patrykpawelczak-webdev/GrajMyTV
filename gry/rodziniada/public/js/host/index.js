@@ -58,7 +58,8 @@ const netHandlers = {
         ui.updateUI(gameState, revealAnswer);
     },
     onGameEnded: () => {
-        backToMenuUIOnly();
+        // Usunięto automatyczny powrót do lobby na prośbę użytkownika
+        // backToMenuUIOnly();
     },
     onGamesListUpdated: (games) => {
         allGames = games;
@@ -106,7 +107,7 @@ window.filterGames = () => {
 };
 
 window.joinGameAsTv = (tvCode) => {
-    ui.showModal('Dołącz jako ekran TV', '', 'Dołącz', 'modal-btn-confirm', () => {
+    ui.showModal('Dołącz jako ekran TV', '', 'Dołącz', 'btn--primary', () => {
         const code = $('lobbyTvCodeInput')?.value?.trim();
         if (!code) { ui.showToast('Wpisz kod TV!', 'error'); return; }
         if (code !== tvCode) { ui.showToast('Nieprawidłowy kod TV!', 'error'); return; }
@@ -271,7 +272,9 @@ window.awardPoints = (n) => {
     const team = n === 1 ? gameState.team1 : gameState.team2;
     team.score += gameState.roundPoints;
     net.showPoints(socket, currentGameId, gameState.roundPoints, team.name);
-    gameState.pointsAwarded = true; gameState.roundPoints = 0;
+    gameState.pointsAwarded = true; 
+    gameState.roundPoints = 0;
+    
     ui.updateUI(gameState, window.revealAnswer); sendStateUpdate();
 };
 
@@ -307,11 +310,8 @@ window.nextQuestion = () => {
 };
 
 window.previousQuestion = () => {
-    if (gameState.questionRevealed && !gameState.pointsAwarded) {
-        ui.showModal('Cofnij pytanie', 'Runda jest w toku! Cofnąć?', 'Cofnij', 'modal-btn-confirm', () => { if (gameState.currentQuestionIndex > 0) loadQuestion(gameState.currentQuestionIndex - 1); });
-        return;
-    }
-    if (gameState.currentQuestionIndex > 0) loadQuestion(gameState.currentQuestionIndex - 1);
+    // Funkcja cofania pytań została zablokowana na prośbę użytkownika
+    ui.showToast('Cofanie pytań jest zablokowane', 'info');
 };
 
 function loadQuestion(i) {
@@ -333,7 +333,7 @@ window.setMultiplier = (v) => {
 };
 
 window.resetGame = () => {
-    ui.showModal('Reset gry', 'Czy na pewno chcesz zresetować grę?', 'Resetuj', 'modal-btn-confirm', () => {
+    ui.showModal('Reset gry', 'Czy na pewno chcesz zresetować grę?', 'Resetuj', 'btn--danger', () => {
         if (currentGameId) net.hideWinner(socket, currentGameId);
         gameState.team1.score = 0; gameState.team1.strikes = 0;
         gameState.team2.score = 0; gameState.team2.strikes = 0;
@@ -349,7 +349,7 @@ window.resetGame = () => {
 };
 
 window.endGameAndBackToMenu = () => {
-    ui.showModal('Powrót do menu', 'Czy na pewno chcesz zakończyć grę?', 'Zakończ grę', 'modal-btn-confirm', () => {
+    ui.showModal('Powrót do menu', 'Czy na pewno chcesz zakończyć grę?', 'Zakończ grę', 'btn--danger', () => {
         if (currentGameId) net.endGame(socket, currentGameId);
         backToMenuUIOnly();
     });
@@ -388,7 +388,7 @@ window.showWinner = () => {
     if (s1 === s2) { ui.showToast('Remis! Nie można ogłosić zwycięzcy.', 'error'); return; }
     const winnerName = s1 > s2 ? gameState.team1.name : gameState.team2.name;
     net.showWinner(socket, currentGameId, winnerName);
-    setTimeout(() => { if (currentGameId) net.endGame(socket, currentGameId); backToMenuUIOnly(); }, 10000);
+    setTimeout(() => { if (currentGameId) net.endGame(socket, currentGameId); }, 10000);
 };
 
 window.closeModal = ui.closeModal;

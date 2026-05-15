@@ -4,12 +4,22 @@
 /* Display Specific Styles */
 
 /* ================== HEADER ================== */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+}
+
 .tv-header {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     height: clamp(6vh, 8vh, 9vh);
+    margin-top: 1.5vh;
 }
 .tv-logo {
     font-family: 'Russo One', sans-serif;
@@ -67,12 +77,28 @@
     box-shadow: var(--glass-shadow);
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.tv-team:first-of-type { background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(153,27,27,0.1) 100%); border-top: 2px solid rgba(239,68,68,0.4); }
-.tv-team:last-of-type  { background: linear-gradient(135deg, rgba(30,58,138,0.2) 0%, rgba(15,23,42,0.1) 100%); border-top: 2px solid rgba(255,193,7,0.4); }
+.tv-team:first-of-type { 
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.45) 0%, rgba(153, 27, 27, 0.3) 100%); 
+    border-top: 3px solid #ef4444; 
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+}
+.tv-team:last-of-type  { 
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.45) 0%, rgba(30, 58, 138, 0.3) 100%); 
+    border-top: 3px solid #3b82f6; 
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+}
 .tv-team.active {
-    box-shadow: 0 0 clamp(15px, 3vw, 30px) rgba(255,193,7,0.5), inset 0 0 20px rgba(255,193,7,0.2);
-    transform: scale(1.03);
-    border-color: var(--gold);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+    border-color: #fff;
+    z-index: 10;
+}
+.tv-team.pulse {
+    animation: team-pulse 1.5s ease-in-out infinite;
+}
+@keyframes team-pulse {
+    0%, 100% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 255, 255, 0.4); }
+    50% { transform: scale(1.08); box-shadow: 0 0 50px rgba(255, 255, 255, 0.6); }
 }
 .tv-team.stealing {
     border-color: #ff6b6b;
@@ -391,17 +417,16 @@
     line-height: 1.1;
 }
 
-.tv-game-ended-display { text-align: center; animation: winner-entrance 0.8s ease; }
-.tv-game-ended-icon    { font-size: clamp(8vh, 14vh, 18vh); margin-bottom: 2vh; }
-.tv-game-ended-title {
+.tv-waiting-display { text-align: center; }
+.tv-waiting-title {
     font-family: 'Russo One', sans-serif;
-    font-size: clamp(4vh, 7vh, 9vh);
+    font-size: clamp(3vh, 5vh, 6vh);
     color: var(--gold);
-    text-shadow: 0 0 40px rgba(255,215,0,0.8);
-    letter-spacing: clamp(4px, 1vw, 8px);
-    margin-bottom: 1vh;
+    letter-spacing: 4px;
+    margin-bottom: 2vh;
+    text-shadow: 0 0 30px rgba(255,215,0,0.4);
 }
-.tv-game-ended-subtitle { font-size: clamp(2vh, 3vh, 4vh); color: rgba(255,255,255,0.8); }
+.tv-waiting-subtitle { font-size: clamp(1.5vh, 2.2vh, 3vh); color: rgba(255,255,255,0.6); }
 
 .tv-reconnect-overlay { z-index: 1400; background: rgba(2,6,23,0.95); }
 .tv-reconnect-display {
@@ -497,7 +522,7 @@
 .tv-intro {
     position: fixed;
     inset: 0;
-    z-index: 1200;
+    z-index: 3000;
     overflow: hidden;
     opacity: 0;
     visibility: hidden;
@@ -574,6 +599,20 @@
     pointer-events: none;
     /* Tło ustawiane dynamicznie przez JS */
 }
+
+.intro-split-left.exit {
+    transform: translateX(-100%);
+    transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.intro-split-right.exit {
+    transform: translateX(100%);
+    transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Stan aktywny (połączone) */
+.intro-split-left.active { transform: translateX(0); }
+.intro-split-right.active { transform: translateX(0); }
 
 /* ================== RESPONSYWNOŚĆ ================== */
 @media (max-width: 768px) {

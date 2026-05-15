@@ -8,7 +8,7 @@ export function showModal(title, message, confirmText, confirmClass, onConfirm) 
     const newBtn = oldBtn.cloneNode(true);
     oldBtn.parentNode.replaceChild(newBtn, oldBtn);
     newBtn.textContent = confirmText || 'Potwierdź';
-    newBtn.className = `modal-btn ${confirmClass || 'modal-btn-confirm'}`;
+    newBtn.className = `btn ${confirmClass || 'btn--primary'}`;
     newBtn.addEventListener('click', () => { closeModal(); if (onConfirm) onConfirm(); });
     $('modalOverlay').classList.add('show');
 }
@@ -22,11 +22,11 @@ export function showToast(msg, type = 'info') {
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'hostToast';
-        toast.className = 'host-toast';
+        toast.className = 'toast';
         document.body.appendChild(toast);
     }
     toast.textContent = msg;
-    toast.className = `host-toast show ${type}`;
+    toast.className = `toast show toast--${type}`;
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
 }
@@ -144,6 +144,13 @@ export function updateUI(gameState, revealAnswerCallback) {
             qs.classList.add('revealed');
         }
         br.style.display = 'none';
+    }
+
+    const bra = $('btnRevealAll');
+    if (bra) {
+        bra.disabled = !gameState.pointsAwarded;
+        bra.style.opacity = gameState.pointsAwarded ? '1' : '0.5';
+        bra.style.cursor = gameState.pointsAwarded ? 'pointer' : 'not-allowed';
     } else if (gameState.currentQuestion) {
         qs.textContent = 'Pytanie ukryte'; br.style.display = 'block';
     } else {
