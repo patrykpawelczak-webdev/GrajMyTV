@@ -58,6 +58,52 @@
         </div>
     </div>
 
+    <!-- ===== GAME TYPE SELECTION ===== -->
+    <div class="setup-screen hidden" id="gameTypeSelectionScreen">
+        <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
+        <div class="setup-header">
+            <div class="setup-logo">RODZINIADA</div>
+            <div class="setup-subtitle">Wybierz tryb rozgrywki</div>
+        </div>
+        <div class="setup-content">
+            <button class="btn-back-to-lobby" onclick="backToLobby()">← Wróć do lobby</button>
+            <div class="game-type-cards">
+                <div class="game-type-card" onclick="selectGameType('local')">
+                    <div class="game-type-icon">👥</div>
+                    <div class="game-type-title">GRA LOKALNA</div>
+                    <div class="game-type-desc">Wszyscy gracze i prowadzący grają przy jednym wspólnym ekranie TV. Klasyczne domowe doświadczenie teleturnieju.</div>
+                </div>
+                <div class="game-type-card" onclick="selectGameType('online')">
+                    <div class="game-type-icon">🌐</div>
+                    <div class="game-type-title">GRA ONLINE</div>
+                    <div class="game-type-desc">Gracze dołączają z własnych urządzeń w swoim domu, ogrodzie, aucie czy w aptece. Żadnych ograniczeń.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SETUP ONLINE ===== -->
+    <div class="setup-screen hidden" id="setupScreenOnline">
+        <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
+        <div class="setup-header">
+            <div class="setup-logo">RODZINIADA</div>
+            <div class="setup-subtitle">Tworzenie nowej rozgrywki Online</div>
+        </div>
+        <div class="setup-content">
+            <button class="btn-back-to-lobby" onclick="backToGameTypeSelection()">← Zmień tryb gry</button>
+            
+            <div class="game-name-section" style="max-width: 600px; margin: 40px auto; padding: 40px 30px; text-align: center;">
+                <div class="team-setup-title" style="font-size: 1.3rem; margin-bottom: 20px;">👤 Wpisz swoją nazwę gracza</div>
+                <input type="text" class="team-setup-input game-name-input" id="setupGameNameOnline" 
+                       placeholder="Np. Patryk" maxlength="30" style="text-align: center;">
+                <div style="margin-top: 30px;">
+                    <button class="btn btn--primary" id="btnOnlineNext" onclick="goToOnlineStep2()" 
+                            style="padding: 12px 30px; font-size: 1.1rem; min-width: 180px;">Stwórz Pokój →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== SETUP ===== -->
     <div class="setup-screen hidden" id="setupScreen">
         <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
@@ -68,7 +114,7 @@
         </div>
 
         <div class="setup-content">
-            <button class="btn-back-to-lobby" onclick="backToLobby()">← Wróć do lobby</button>
+            <button class="btn-back-to-lobby" id="btnSetupBack" onclick="backFromSetup()">← Zmień tryb gry</button>
 
             <div class="game-name-section">
                 <div class="team-setup-title">🎮 Nazwa rozgrywki</div>
@@ -76,7 +122,7 @@
                        id="setupGameName" placeholder="Np. Rodzinka Kowalskich" maxlength="40">
             </div>
 
-            <div class="team-setup">
+            <div class="team-setup" id="setupTeamNamesContainer">
                 <div class="team-setup-box">
                     <div class="team-setup-title">👥 Drużyna 1</div>
                     <input type="text" class="team-setup-input" id="setupTeam1Name" value="Drużyna 1">
@@ -87,8 +133,22 @@
                 </div>
             </div>
 
-            <div class="categories-section">
-                <div class="categories-title">📚 Wybierz pytania do gry</div>
+            <div class="team-setup-box" style="margin-top: 20px;">
+                <div class="team-setup-title" style="margin-bottom: 12px; text-align: left;">⏳ Ile rund chcesz zagrać?</div>
+                <div class="random-rounds-wrap">
+                    <div class="random-rounds-options">
+                        <button class="rounds-opt active" data-rounds="3" onclick="selectRounds(3)">3</button>
+                        <button class="rounds-opt" data-rounds="5" onclick="selectRounds(5)">5</button>
+                        <button class="rounds-opt" data-rounds="7" onclick="selectRounds(7)">7</button>
+                    </div>
+                    <div class="random-rounds-label" style="display: flex; align-items: center; justify-content: center; min-width: 80px;">
+                        <span id="roundsLabel" style="font-weight: 600; font-size: 1.1rem; color: #facc15;">3 rundy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="categories-section" style="margin-top: 20px;">
+                <div class="categories-title" style="text-align: left;">📚 Wybierz pytania do gry</div>
 
                 <div class="mode-tabs">
                     <button class="mode-tab active" id="modeTabManual" onclick="switchMode('manual')">
@@ -117,26 +177,10 @@
                         <div class="random-cats-grid" id="randomCatsGrid"></div>
                     </div>
 
-                    <div class="random-step">
-                        <div class="random-step-title">
-                            <span class="random-step-num">2</span>
-                            Ile rund?
-                        </div>
-                        <div class="random-rounds-wrap">
-                            <div class="random-rounds-options">
-                                <button class="rounds-opt active" data-rounds="2" onclick="selectRounds(2)">2</button>
-                                <button class="rounds-opt" data-rounds="3" onclick="selectRounds(3)">3</button>
-                                <button class="rounds-opt" data-rounds="5" onclick="selectRounds(5)">5</button>
-                            </div>
-                            <div class="random-rounds-label">
-                                <span id="roundsLabel">2 rundy</span>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="random-step" id="randomExcludeStep">
                         <div class="random-step-title">
-                            <span class="random-step-num">3</span>
+                            <span class="random-step-num">2</span>
                             Wyklucz pytania (opcjonalnie)
                             <span class="random-step-sub">Odznacz pytania które chcesz pominąć</span>
                         </div>
@@ -170,6 +214,59 @@
         </div>
     </div>
 
+    <!-- ===== LOBBY ONLINE ===== -->
+    <div class="setup-screen hidden" id="onlineLobbyScreen">
+        <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
+        <div class="setup-header">
+            <div class="setup-logo">RODZINIADA ONLINE</div>
+            <div class="setup-subtitle" id="lobbyRoomName">Nazwa pokoju: ----</div>
+        </div>
+        <div class="setup-content" style="max-width: 900px; text-align: center;">
+            <!-- Wielki kod dołączenia -->
+            <div class="game-name-section" style="padding: 30px; margin-bottom: 30px; border-color: rgba(255, 215, 0, 0.3);">
+                <div class="team-setup-title" style="font-size: 1.1rem; color: var(--gray); text-transform: uppercase; letter-spacing: 2px;">Kod dołączenia dla graczy</div>
+                <div id="lobbyJoinCode" style="font-family: 'Russo One', sans-serif; font-size: clamp(3.5rem, 8vw, 5.5rem); color: var(--gold); letter-spacing: 10px; margin: 15px 0; text-shadow: 0 0 25px rgba(255, 215, 0, 0.4); animation: pulse-glow 2s infinite alternate;">------</div>
+                <p style="color: var(--gray); font-size: 0.95rem; font-weight: 300;">
+                    Wejdź na stronę gry na swoim telefonie, wybierz dołącz i wpisz powyższy kod!
+                </p>
+            </div>
+
+            <!-- Lista połączonych drużyn -->
+            <div class="game-type-cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                <!-- Drużyna 1 -->
+                <div class="game-type-card" style="cursor: default; align-items: stretch; text-align: left; padding: 25px; border-color: rgba(59, 130, 246, 0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px;">
+                        <span style="font-family: 'Russo One', sans-serif; font-size: 1.2rem; color: #3b82f6;">🔵 DRUŻYNA 1</span>
+                        <span class="random-step-num" id="lobbyTeam1Count" style="width: 28px; height: 28px; font-size: 0.85rem; background: #3b82f6;">0</span>
+                    </div>
+                    <div id="lobbyPlayers1" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem; color: var(--gray); min-height: 100px;">
+                        <div style="text-align: center; color: rgba(255,255,255,0.25); padding-top: 30px; font-style: italic;">Oczekiwanie na graczy...</div>
+                    </div>
+                </div>
+
+                <!-- Drużyna 2 -->
+                <div class="game-type-card" style="cursor: default; align-items: stretch; text-align: left; padding: 25px; border-color: rgba(239, 68, 68, 0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px;">
+                        <span style="font-family: 'Russo One', sans-serif; font-size: 1.2rem; color: #ef4444;">🔴 DRUŻYNA 2</span>
+                        <span class="random-step-num" id="lobbyTeam2Count" style="width: 28px; height: 28px; font-size: 0.85rem; background: #ef4444;">0</span>
+                    </div>
+                    <div id="lobbyPlayers2" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.95rem; color: var(--gray); min-height: 100px;">
+                        <div style="text-align: center; color: rgba(255,255,255,0.25); padding-top: 30px; font-style: italic;">Oczekiwanie na graczy...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Przyciski akcji -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;">
+                <button class="btn-back-to-lobby" onclick="cancelOnlineLobby()" style="margin: 0; padding: 12px 24px;">← Anuluj pokój</button>
+                <button class="btn btn--primary" id="btnStartOnlineActive" onclick="startOnlineActiveGame()" 
+                        style="padding: 12px 40px; font-size: 1.1rem; border-radius: 12px; font-weight: 600;">
+                    🎮 ROZPOCZNIJ TELEKURS
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== GRA ===== -->
     <div class="game-screen" id="gameScreen">
         <div class="container">
@@ -191,7 +288,13 @@
                 </div>
             </header>
 
-            <div class="main-grid">
+            <div class="main-grid" style="position: relative;">
+                
+                <!-- NAKŁADKA BLOKUJĄCA PRZED START TV -->
+                <div id="hostBlockOverlay" class="host-block-overlay">
+                    <h2>Rozpocznij transmisję</h2>
+                    <p>Kliknij <strong>▶ START TV</strong> w górnym menu, aby uruchomić planszę dla graczy i odblokować swój panel sterowania.</p>
+                </div>
 
                 <!-- DRUŻYNY -->
                 <div class="section" id="sectionTeams">

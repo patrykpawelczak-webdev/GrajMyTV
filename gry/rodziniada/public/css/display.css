@@ -104,15 +104,14 @@ body {
     border-color: #ff6b6b;
     box-shadow: 0 0 clamp(15px, 3vw, 30px) rgba(255,107,107,0.6), inset 0 0 20px rgba(255,107,107,0.2);
 }
-.tv-team.warning {
-    border-color: var(--orange);
-    box-shadow: 0 0 clamp(15px, 3vw, 30px) rgba(249,115,22,0.6), inset 0 0 20px rgba(249,115,22,0.2);
-}
 .tv-team-name {
+    font-family: 'Russo One', sans-serif;
     font-size: clamp(1.4vh, 2vh, 2.5vh);
     text-transform: uppercase;
     margin-bottom: 0.3vh;
     letter-spacing: clamp(1px, 0.3vw, 3px);
+    color: var(--gold);
+    text-shadow: 0 0 8px rgba(255,215,0,0.4);
 }
 .tv-team-score {
     font-size: clamp(3vh, 4.5vh, 6vh);

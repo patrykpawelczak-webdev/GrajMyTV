@@ -10,12 +10,13 @@ let questionCategories = [];
 let allGames = [];
 let categoriesRendered = false;
 let currentMode = 'manual';
-let selectedRounds = 2;
+let selectedRounds = 3;
 let drawnQuestions = [];
 let gameState = createEmptyState();
 let currentGameId = null;
 let currentHostCode = null;
 let currentTvCode = null;
+let isOnlineMode = false;
 
 // ===== INICJALIZACJA =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -38,9 +39,15 @@ const netHandlers = {
     onGameCreated: ({ gameId, hostCode, tvCode, state }) => {
         currentGameId = gameId; currentHostCode = hostCode; currentTvCode = tvCode;
         gameState = state;
-        ui.showGameScreen();
+        loadQuestion(0);
         ui.updateHeaderCodes(currentHostCode, currentTvCode);
         ui.updateUI(gameState, revealAnswer);
+        
+        if (isOnlineMode) {
+            ui.showOnlineLobbyScreen(gameState.name || 'Pokój Online', tvCode);
+        } else {
+            ui.showGameScreen();
+        }
     },
     onJoinedHost: ({ gameId, hostCode, tvCode, state }) => {
         currentGameId = gameId; currentHostCode = hostCode; currentTvCode = tvCode;
@@ -77,7 +84,135 @@ function sendStateUpdate() {
 // ===== FUNKCJE LOGIKI (EKSPORTOWANE DO WINDOW) =====
 
 window.showSetupScreen = () => {
-    ui.showSetupScreen();
+    ui.showGameTypeSelectionScreen();
+};
+
+window.selectGameType = (type) => {
+    if (type === 'local') {
+        isOnlineMode = false;
+        
+        // Pokaż sekcję nazwy gry
+        const nameSection = document.querySelector('.game-name-section');
+        if (nameSection) {
+            nameSection.classList.remove('hidden');
+        }
+
+        // Przywróć stan przycisku startu dla gry lokalnej
+        const startBtn = $('btnStartGame');
+        if (startBtn) {
+            startBtn.innerText = '🎮 START GRY';
+        }
+        
+        // Pokaż nazwy drużyn
+        const teamNamesContainer = $('setupTeamNamesContainer');
+        if (teamNamesContainer) {
+            teamNamesContainer.classList.remove('hidden');
+        }
+        
+        // Przywróć tekst powrotu do wyboru trybu
+        const backBtn = $('btnSetupBack');
+        if (backBtn) {
+            backBtn.innerText = '← Zmień tryb gry';
+        }
+
+        ui.showSetupScreenLocal();
+        currentMode = 'manual';
+        drawnQuestions = [];
+        $('modeTabManual')?.classList.add('active');
+        $('modeTabRandom')?.classList.remove('active');
+        $('modeManual')?.classList.remove('hidden');
+        $('modeRandom')?.classList.add('hidden');
+        $('randomPreview')?.classList.add('hidden');
+
+        loadQuestionsFromServer().then(() => {
+            categoriesRendered = false;
+            const btn = $('btnShowCategories');
+            const grid = $('categoriesGrid');
+            if (btn && grid) {
+                btn.classList.remove('hidden');
+                grid.classList.add('hidden');
+                grid.innerHTML = '';
+            }
+            updateSelectedQuestions();
+        });
+    } else if (type === 'online') {
+        isOnlineMode = true;
+        ui.showSetupScreenOnline();
+    }
+};
+
+window.goToOnlineStep2 = () => {
+    const playerName = ($('setupGameNameOnline').value || '').trim();
+    if (!playerName) {
+        ui.showToast('Wpisz swoją nazwę gracza!', 'error');
+        return;
+    }
+
+    const lobbyName = `${playerName}'s lobby`;
+
+    // Sprawdź czy pokój o takiej nazwie już istnieje na serwerze (wśród aktywnych gier)
+    const exists = allGames.some(g => g.name.toLowerCase() === lobbyName.toLowerCase());
+    if (exists) {
+        ui.showToast('Pokój o takiej nazwie gracza już istnieje! Wybierz inny nick.', 'error');
+        return;
+    }
+    
+    // Tworzymy grę/lobby online OD RAZU!
+    const initialState = createEmptyState();
+    initialState.isOnline = true;
+    initialState.name = lobbyName;
+    
+    net.createGame(socket, initialState, lobbyName, true);
+};
+
+window.goToOnlineStep1 = () => {
+    ui.showSetupScreenOnline();
+};
+
+window.backFromSetup = () => {
+    if (isOnlineMode) {
+        // Powrót do poczekalni online!
+        ui.showOnlineLobbyScreen(gameState.name || 'Pokój Online', currentTvCode);
+    } else {
+        window.backToGameTypeSelection();
+    }
+};
+
+window.backToGameTypeSelection = () => {
+    ui.showGameTypeSelectionScreen();
+};
+
+window.backToLobby = ui.showLobbyScreen;
+
+window.startOnlineActiveGame = () => {
+    // Ukryj sekcję nazwy gry w setupScreen, bo gra już istnieje i ma nazwę!
+    const nameSection = document.querySelector('.game-name-section');
+    if (nameSection) {
+        nameSection.classList.add('hidden');
+    }
+    
+    // Ukryj nazwy drużyn w setupScreen
+    const teamNamesContainer = $('setupTeamNamesContainer');
+    if (teamNamesContainer) {
+        teamNamesContainer.classList.add('hidden');
+    }
+    
+    // Zmień przycisk startu na "URUCHOM TELEKURS"
+    const startBtn = $('btnStartGame');
+    if (startBtn) {
+        startBtn.innerText = '🎮 URUCHOM TELEKURS';
+    }
+    
+    // Zmień przycisk powrotu w setupScreen na powrót do lobby online
+    const backBtn = $('btnSetupBack');
+    if (backBtn) {
+        backBtn.innerText = '← Wróć do Lobby';
+    }
+
+    // Pokaż ekran konfiguracji
+    ui.showSetupScreenLocal(); // Wykorzystujemy ten sam widok wyboru rund/pytań!
+    
+    // Załaduj dane i zresetuj
     currentMode = 'manual';
     drawnQuestions = [];
     $('modeTabManual')?.classList.add('active');
@@ -99,7 +234,12 @@ window.showSetupScreen = () => {
     });
 };
 
-window.backToLobby = ui.showLobbyScreen;
+window.cancelOnlineLobby = () => {
+    if (currentGameId) {
+        net.endGame(socket, currentGameId);
+    }
+    ui.showLobbyScreen();
+};
 
 window.filterGames = () => {
     const query = ($('lobbySearchInput').value || '').trim();
@@ -107,10 +247,10 @@ window.filterGames = () => {
 };
 
 window.joinGameAsTv = (tvCode) => {
-    ui.showModal('Dołącz jako ekran TV', '', 'Dołącz', 'btn--primary', () => {
+    ui.showModal('Dołącz do gry', '', 'Dołącz', 'btn--primary', () => {
         const code = $('lobbyTvCodeInput')?.value?.trim();
-        if (!code) { ui.showToast('Wpisz kod TV!', 'error'); return; }
-        if (code !== tvCode) { ui.showToast('Nieprawidłowy kod TV!', 'error'); return; }
+        if (!code) { ui.showToast('Wpisz kod pokoju!', 'error'); return; }
+        if (code !== tvCode) { ui.showToast('Nieprawidłowy kod pokoju!', 'error'); return; }
         window.location.href = `/rodziniada/tv?code=${tvCode}`;
     });
 
@@ -118,7 +258,7 @@ window.joinGameAsTv = (tvCode) => {
         const msgEl = $('modalMessage');
         if (msgEl) {
             msgEl.innerHTML = `
-                <p style="margin-bottom:14px;color:#94a3b8;">Wpisz kod TV podany przez prowadzącego.</p>
+                <p style="margin-bottom:14px;color:#94a3b8;">Wpisz kod pokoju podany przez prowadzącego.</p>
                 <input type="text" id="lobbyTvCodeInput" maxlength="6" inputmode="numeric" placeholder="------" class="tv-code-input-modal">
             `;
             setTimeout(() => {
@@ -162,8 +302,8 @@ window.updateSelectedQuestions = () => {
     } else {
         count = drawnQuestions.length;
     }
-    $('selectedCount').textContent = `Wybrano: ${count} ${count === 1 ? 'pytanie' : count < 5 ? 'pytania' : 'pytań'}`;
-    $('btnStartGame').disabled = count === 0;
+    $('selectedCount').textContent = `Wybrano: ${count} z ${selectedRounds}`;
+    $('btnStartGame').disabled = count !== selectedRounds;
 };
 
 window.switchMode = (mode) => {
@@ -174,7 +314,11 @@ window.switchMode = (mode) => {
     $('modeRandom').classList.toggle('hidden', mode !== 'random');
     drawnQuestions = [];
     $('randomPreview')?.classList.add('hidden');
-    if (mode === 'random') ui.renderRandomCats(questionCategories, window.toggleRandomCat);
+    if (mode === 'random') {
+        ui.renderRandomCats(questionCategories, window.toggleRandomCat);
+        const btn = $('btnDraw');
+        if (btn) btn.disabled = questionCategories.length === 0;
+    }
     updateSelectedQuestions();
 };
 
@@ -188,6 +332,8 @@ window.toggleRandomCat = (ci) => {
     ui.updateExcludeList(questionCategories, selectedIndexes);
     drawnQuestions = [];
     $('randomPreview')?.classList.add('hidden');
+    const btn = $('btnDraw');
+    if (btn) btn.disabled = selectedIndexes.length === 0;
     updateSelectedQuestions();
 };
 
@@ -195,7 +341,7 @@ window.selectRounds = (n) => {
     selectedRounds = n;
     document.querySelectorAll('.rounds-opt').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.rounds) === n));
     const label = $('roundsLabel');
-    if (label) label.textContent = n === 2 ? '2 rundy' : n === 3 ? '3 rundy' : '5 rund';
+    if (label) label.textContent = n === 3 ? '3 rundy' : n === 5 ? '5 rund' : '7 rund';
     drawnQuestions = [];
     $('randomPreview')?.classList.add('hidden');
     updateSelectedQuestions();
@@ -221,9 +367,26 @@ window.drawQuestions = () => {
 };
 
 window.startGame = () => {
-    const gameName = $('setupGameName').value.trim() || 'Rozgrywka';
-    const initialState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions);
-    net.createGame(socket, initialState, gameName);
+    if (isOnlineMode) {
+        // Gry online: aktualizujemy stan istniejącej gry i przechodzimy do planszy!
+        const setupState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions);
+        
+        // Przenosimy wybrane pytania do aktywnego stanu gry
+        gameState.selectedQuestions = setupState.selectedQuestions;
+        gameState.displayStarted = false; // Rozpoczynamy od ekranu powitalnego dla TV
+        
+        // Zapisujemy i rozsyłamy zaktualizowany stan
+        sendStateUpdate();
+        loadQuestion(0);
+        
+        ui.showGameScreen();
+    } else {
+        // Gra lokalna: tworzymy nową grę
+        const gameName = $('setupGameName').value.trim() || 'Rozgrywka';
+        const initialState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions);
+        initialState.isOnline = isOnlineMode;
+        net.createGame(socket, initialState, gameName, false);
+    }
 };
 
 window.selectTeam = (n) => {
@@ -240,14 +403,17 @@ window.addStrike = (n) => {
         gameState.stealUsed = true; team.strikes = 1;
         net.showBigX(socket, currentGameId, 1);
         setTimeout(() => {
-            if (gameState.roundPoints > 0 && gameState.failedTeam) awardPoints(gameState.failedTeam);
-            else gameState.pointsAwarded = true;
+            gameState.pointsAwarded = true;
+            gameState.roundPoints = 0;
             endStealMode();
         }, 1500);
     } else {
         team.strikes++;
         net.showBigX(socket, currentGameId, team.strikes);
-        if (team.strikes >= 3 && !gameState.stealUsed) activateStealMode(n);
+        if (team.strikes >= 3 && !gameState.stealUsed) {
+            gameState.currentTeam = n === 1 ? 2 : 1; // Auto switch
+            activateStealMode(n);
+        }
         else if (team.strikes >= 3 && gameState.stealUsed) {
             setTimeout(() => { gameState.roundPoints = 0; gameState.pointsAwarded = true; ui.updateUI(gameState, window.revealAnswer); sendStateUpdate(); }, 1500);
         }
@@ -267,11 +433,15 @@ function endStealMode() {
     ui.updateUI(gameState, window.revealAnswer); sendStateUpdate();
 }
 
-window.awardPoints = (n) => {
-    if (!gameState.roundPoints || gameState.pointsAwarded) return;
+window.awardPoints = (n, qIdx) => {
+    if (gameState.pointsAwarded) return;
+    if (qIdx !== undefined && qIdx !== gameState.currentQuestionIndex) return;
+
     const team = n === 1 ? gameState.team1 : gameState.team2;
-    team.score += gameState.roundPoints;
-    net.showPoints(socket, currentGameId, gameState.roundPoints, team.name);
+    if (gameState.roundPoints > 0) {
+        team.score += gameState.roundPoints;
+        net.showPoints(socket, currentGameId, gameState.roundPoints, team.name);
+    }
     gameState.pointsAwarded = true; 
     gameState.roundPoints = 0;
     
@@ -286,14 +456,17 @@ window.revealQuestion = () => {
 
 window.revealAnswer = (i) => {
     if (!gameState.questionRevealed || gameState.revealedAnswers.includes(i) || gameState.pointsAwarded) return;
-    if (!gameState.currentTeam && gameState.revealedAnswers.length >= 2) return;
+    const hasTopAnswer = gameState.revealedAnswers.includes(0);
+    if (!gameState.currentTeam && (hasTopAnswer || gameState.revealedAnswers.length >= 2)) return;
     gameState.revealedAnswers.push(i);
     gameState.roundPoints += gameState.currentQuestion.answers[i].points * gameState.multiplier;
     net.playRevealSound(socket, currentGameId);
+    
+    const qIdx = gameState.currentQuestionIndex;
     if (gameState.isStealMode && gameState.currentTeam) {
-        setTimeout(() => { window.awardPoints(gameState.currentTeam); endStealMode(); }, 800);
+        setTimeout(() => { window.awardPoints(gameState.currentTeam, qIdx); endStealMode(); }, 800);
     } else if (gameState.revealedAnswers.length === gameState.currentQuestion.answers.length && gameState.currentTeam && !gameState.pointsAwarded) {
-        setTimeout(() => window.awardPoints(gameState.currentTeam), 500);
+        setTimeout(() => window.awardPoints(gameState.currentTeam, qIdx), 500);
     }
     ui.updateUI(gameState, window.revealAnswer); sendStateUpdate();
 };
@@ -344,7 +517,7 @@ window.resetGame = () => {
         gameState.stealUsed = false; gameState.pointsAwarded = false;
         gameState.failedTeam = null;
         document.querySelectorAll('.round-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
-        ui.updateUI(gameState, window.revealAnswer); sendStateUpdate();
+        loadQuestion(0);
     });
 };
 
@@ -368,7 +541,11 @@ window.openTV = () => {
 };
 
 window.startDisplay = () => {
-    if (currentGameId) net.startDisplay(socket, currentGameId);
+    if (currentGameId) {
+        gameState.displayStarted = true;
+        net.startDisplay(socket, currentGameId);
+        sendStateUpdate();
+    }
 };
 
 window.toggleSound = () => {

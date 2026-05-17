@@ -14,14 +14,15 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
         return 'g_' + Math.random().toString(36).substring(2, 10);
     }
 
-    function createGame(initialState, name) {
+    function createGame(initialState, name, isOnline) {
         const gameId   = generateGameId();
         const hostCode = generateCode();
         const tvCode   = generateCode();
         games[gameId] = {
             id: gameId, name: name || 'Rozgrywka',
             hostCode, tvCode, state: initialState,
-            hostCount: 0, createdAt: Date.now()
+            hostCount: 0, createdAt: Date.now(),
+            isOnline: !!isOnline
         };
         codeToGame[hostCode] = { gameId, role: 'host' };
         codeToGame[tvCode]   = { gameId, role: 'tv' };
@@ -39,14 +40,16 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
     }
 
     function getGamesList() {
-        return Object.values(games).map(g => ({
+        const list = Object.values(games).map(g => ({
             gameId:    g.id,
             name:      g.name,
             hasHost:   g.hostCount >= 1,
             createdAt: g.createdAt,
             hostCode:  g.hostCode,
-            tvCode:    g.tvCode
+            tvCode:    g.tvCode,
+            isOnline:  !!g.isOnline
         }));
+        return list;
     }
 
     function getRoomInfo(gameId) {
@@ -68,8 +71,8 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
                 `${c.cyan}${socket.id.slice(0,8)}${c.reset} [${c.yellow}${socket.data.role||'?'}${c.reset}] >> ${c.bright}${event}${c.reset}`);
         });
 
-        socket.on('createGame', ({ initialState, name }) => {
-            const game = createGame(initialState, name);
+        socket.on('createGame', ({ initialState, name, isOnline }) => {
+            const game = createGame(initialState, name, isOnline);
             socket.join(`game:${game.id}`);
             socket.data.gameId = game.id;
             socket.data.role   = 'host';

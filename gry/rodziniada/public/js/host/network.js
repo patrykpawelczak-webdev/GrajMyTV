@@ -7,8 +7,8 @@ export function setupSocket(socket, handlers) {
     socket.on('gamesListUpdated', handlers.onGamesListUpdated);
 }
 
-export function createGame(socket, initialState, name) {
-    socket.emit('createGame', { initialState, name });
+export function createGame(socket, initialState, name, isOnline) {
+    socket.emit('createGame', { initialState, name, isOnline });
 }
 
 export function updateGameState(socket, gameId, state) {

@@ -34,32 +34,80 @@ export function showToast(msg, type = 'info') {
 // ===== EKRANY =====
 export function showLobbyScreen() {
     $('lobbyScreen').classList.remove('hidden');
+    $('gameTypeSelectionScreen').classList.add('hidden');
     $('setupScreen').classList.add('hidden');
+    $('setupScreenOnline').classList.add('hidden');
+    $('onlineLobbyScreen').classList.add('hidden');
     $('gameScreen').classList.remove('active');
 }
 
-export function showSetupScreen() {
+export function showGameTypeSelectionScreen() {
     $('lobbyScreen').classList.add('hidden');
+    $('gameTypeSelectionScreen').classList.remove('hidden');
+    $('setupScreen').classList.add('hidden');
+    $('setupScreenOnline').classList.add('hidden');
+    $('onlineLobbyScreen').classList.add('hidden');
+    $('gameScreen').classList.remove('active');
+}
+
+export function showSetupScreenLocal() {
+    $('lobbyScreen').classList.add('hidden');
+    $('gameTypeSelectionScreen').classList.add('hidden');
     $('setupScreen').classList.remove('hidden');
+    $('setupScreenOnline').classList.add('hidden');
+    $('onlineLobbyScreen').classList.add('hidden');
+    $('gameScreen').classList.remove('active');
     $('setupGameName').value = '';
     $('setupTeam1Name').value = 'Drużyna 1';
     $('setupTeam2Name').value = 'Drużyna 2';
 }
 
+export function showSetupScreenOnline() {
+    $('lobbyScreen').classList.add('hidden');
+    $('gameTypeSelectionScreen').classList.add('hidden');
+    $('setupScreen').classList.add('hidden');
+    $('setupScreenOnline').classList.remove('hidden');
+    $('onlineLobbyScreen').classList.add('hidden');
+    $('gameScreen').classList.remove('active');
+    $('setupGameNameOnline').value = '';
+}
+
+export function showOnlineLobbyScreen(roomName, code) {
+    $('lobbyScreen').classList.add('hidden');
+    $('gameTypeSelectionScreen').classList.add('hidden');
+    $('setupScreen').classList.add('hidden');
+    $('setupScreenOnline').classList.add('hidden');
+    $('onlineLobbyScreen').classList.remove('hidden');
+    $('gameScreen').classList.remove('active');
+
+    // Formatuj kod jako 3 spacje 3 (np. 123 456) dla lepszej czytelności
+    const formattedCode = String(code).replace(/(\d{3})(\d{3})/, '$1 $2');
+    $('lobbyJoinCode').textContent = formattedCode;
+    $('lobbyRoomName').textContent = `Nazwa pokoju: ${roomName}`;
+}
+
 export function showGameScreen() {
     $('lobbyScreen').classList.add('hidden');
+    $('gameTypeSelectionScreen').classList.add('hidden');
     $('setupScreen').classList.add('hidden');
+    $('setupScreenOnline').classList.add('hidden');
+    $('onlineLobbyScreen').classList.add('hidden');
     $('gameScreen').classList.add('active');
 }
 
 // ===== RENDEROWANIE =====
 export function renderGamesList(games, filterQuery = '', joinGameAsTvCallback) {
+    console.log("RODZINIADA renderGamesList received all games:", games);
     const body = $('lobbyTableBody');
     const empty = $('lobbyEmpty');
 
-    const filtered = filterQuery 
-        ? games.filter(g => g.name.toLowerCase().includes(filterQuery.toLowerCase()))
-        : games;
+    // Filtruj tylko i wyłącznie gry ONLINE
+    let filtered = games.filter(g => g.isOnline);
+    console.log("RODZINIADA renderGamesList filtered online games:", filtered);
+
+    if (filterQuery) {
+        filtered = filtered.filter(g => g.name.toLowerCase().includes(filterQuery.toLowerCase()));
+    }
 
     if (!filtered || filtered.length === 0) {
         body.innerHTML = '';
@@ -76,7 +124,7 @@ export function renderGamesList(games, filterQuery = '', joinGameAsTvCallback) {
             </div>
             <div class="lobby-col-actions">
                 <button class="lobby-btn lobby-btn-tv" onclick="joinGameAsTv('${g.tvCode}')">
-                    Dołącz jako ekran TV
+                    Dołącz do gry
                 </button>
             </div>
         </div>
@@ -90,6 +138,12 @@ export function updateHeaderCodes(hostCode, tvCode) {
 export function updateUI(gameState, revealAnswerCallback) {
     if (!gameState) return;
     
+    const hostBlockOverlay = $('hostBlockOverlay');
+    if (hostBlockOverlay) {
+        if (gameState.displayStarted) hostBlockOverlay.classList.add('hidden');
+        else hostBlockOverlay.classList.remove('hidden');
+    }
+
     const bm = $('btnMute');
     if (bm) bm.textContent = gameState.soundEnabled ? '🔊' : '🔇';
 
@@ -107,12 +161,9 @@ export function updateUI(gameState, revealAnswerCallback) {
     t1.classList.remove('active', 'warning');
     t2.classList.remove('active', 'warning');
 
-    if (gameState.currentTeam === 1) {
-        t1.classList.add('active');
-        if (gameState.team1.strikes === 2 && gameState.questionRevealed && !gameState.pointsAwarded && !gameState.isStealMode) t2.classList.add('warning');
-    } else if (gameState.currentTeam === 2) {
-        t2.classList.add('active');
-        if (gameState.team2.strikes === 2 && gameState.questionRevealed && !gameState.pointsAwarded && !gameState.isStealMode) t1.classList.add('warning');
+    if (!gameState.isStealMode) {
+        if (gameState.currentTeam === 1) t1.classList.add('active');
+        else if (gameState.currentTeam === 2) t2.classList.add('active');
     }
 
     $('roundPoints').textContent = `${gameState.roundPoints} pkt`;
@@ -122,7 +173,8 @@ export function updateUI(gameState, revealAnswerCallback) {
         : `0 / ${gameState.selectedQuestions.length}`;
 
     const qs = $('questionStatus'), br = $('btnReveal');
-    const nt = !gameState.currentTeam && gameState.revealedAnswers.length >= 2 && gameState.questionRevealed && !gameState.pointsAwarded;
+    const hasTopAnswer = gameState.revealedAnswers.includes(0);
+    const nt = !gameState.currentTeam && (hasTopAnswer || gameState.revealedAnswers.length >= 2) && gameState.questionRevealed && !gameState.pointsAwarded;
 
     qs.className = 'question-status';
 
@@ -136,14 +188,15 @@ export function updateUI(gameState, revealAnswerCallback) {
         if (gameState.isStealMode) {
             qs.textContent = 'PRZEJĘCIE - jedna szansa!';
             qs.classList.add('warning');
-        } else if ((gameState.team1.strikes === 2 && gameState.currentTeam === 1) || (gameState.team2.strikes === 2 && gameState.currentTeam === 2)) {
-            qs.textContent = 'Ostatnia szansa - 2 błędy!';
-            qs.classList.add('warning');
         } else {
             qs.textContent = 'Gra aktywna';
             qs.classList.add('revealed');
         }
         br.style.display = 'none';
+    } else if (gameState.currentQuestion) {
+        qs.textContent = 'Pytanie ukryte'; br.style.display = 'block';
+    } else {
+        qs.textContent = 'Załaduj pytanie strzałką →'; br.style.display = 'none';
     }
 
     const bra = $('btnRevealAll');
@@ -151,10 +204,6 @@ export function updateUI(gameState, revealAnswerCallback) {
         bra.disabled = !gameState.pointsAwarded;
         bra.style.opacity = gameState.pointsAwarded ? '1' : '0.5';
         bra.style.cursor = gameState.pointsAwarded ? 'pointer' : 'not-allowed';
-    } else if (gameState.currentQuestion) {
-        qs.textContent = 'Pytanie ukryte'; br.style.display = 'block';
-    } else {
-        qs.textContent = 'Załaduj pytanie strzałką →'; br.style.display = 'none';
     }
 
     $('currentQuestionText').textContent = gameState.currentQuestion ? gameState.currentQuestion.text : 'Naciśnij → aby załadować pytanie';
@@ -170,7 +219,8 @@ function renderAnswers(gameState, revealAnswerCallback) {
         c.innerHTML = '<div class="answers-empty">Naciśnij → aby załadować pytanie</div>';
         return;
     }
-    const nt = !gameState.currentTeam && gameState.revealedAnswers.length >= 2 && !gameState.pointsAwarded;
+    const hasTopAnswer = gameState.revealedAnswers.includes(0);
+    const nt = !gameState.currentTeam && (hasTopAnswer || gameState.revealedAnswers.length >= 2) && !gameState.pointsAwarded;
 
     c.innerHTML = gameState.currentQuestion.answers.map((a, i) => {
         const r = gameState.revealedAnswers.includes(i);
@@ -263,11 +313,11 @@ export function renderCategoriesSetup(questionCategories, toggleCategoryCallback
                 </div>
                 <div class="category-questions">
                     ${category.questions.map((q, qi) => `
-                        <div class="category-question-item" onclick="event.stopPropagation()">
+                        <label class="category-question-item" style="cursor: pointer;" onclick="event.stopPropagation()">
                             <input type="checkbox" class="category-question-checkbox"
                                    id="q${ci}_${qi}" onchange="updateSelectedQuestions()">
                             <span class="category-question-text">${escapeHtml(q.text)}</span>
-                        </div>
+                        </label>
                     `).join('')}
                 </div>
             </div>
@@ -286,11 +336,11 @@ export function renderRandomCats(questionCategories, toggleRandomCatCallback) {
     grid.innerHTML = nonEmpty.map((cat, i) => {
         const ci = questionCategories.indexOf(cat);
         return `
-            <div class="random-cat-card ${i === 0 ? 'selected' : ''}" id="randomCat_${ci}" onclick="toggleRandomCat(${ci})">
+            <div class="random-cat-card" id="randomCat_${ci}" onclick="toggleRandomCat(${ci})">
                 <span class="random-cat-icon">${cat.icon}</span>
                 <span class="random-cat-name">${cat.name}</span>
                 <span class="random-cat-count">${cat.questions.length} pyt.</span>
-                <div class="random-cat-check">${i === 0 ? '✓' : ''}</div>
+                <div class="random-cat-check"></div>
             </div>
         `;
     }).join('');

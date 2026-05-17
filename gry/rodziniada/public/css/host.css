@@ -214,18 +214,30 @@
 .btn-back-to-lobby {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    color: var(--gray);
-    font-size: 0.85rem;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 20px;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-.btn-back-to-lobby:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+.btn-back-to-lobby:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+    border-color: rgba(255, 215, 0, 0.35);
+    color: var(--gold);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.08);
+    transform: translateX(-4px);
+}
+.btn-back-to-lobby:active {
+    transform: translateX(-2px);
+    opacity: 0.9;
+}
 
 .game-name-section {
     background: var(--glass-bg);
@@ -385,25 +397,26 @@
 .btn-start-game:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
 /* Tryb wyboru */
-.mode-tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+.mode-tabs { display: flex; gap: 4px; margin-bottom: 20px; justify-content: flex-start; border-bottom: 2px solid rgba(255,215,0,0.3); padding-left: 10px; }
 
 .mode-tab {
-    padding: 9px 24px;
-    border-radius: 999px;
-    border: 2px solid rgba(148,163,184,0.4);
-    background: rgba(15,23,42,0.6);
+    padding: 10px 24px;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    background: rgba(255,255,255,0.05);
     color: var(--gray);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    margin-bottom: -2px; /* overlap border */
 }
-.mode-tab:hover { border-color: rgba(255,215,0,0.4); color: var(--white); }
+.mode-tab:hover { background: rgba(255,215,0,0.1); color: var(--white); }
 .mode-tab.active {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    border-color: var(--gold);
-    color: var(--dark-blue);
-    box-shadow: 0 0 14px rgba(255,215,0,0.4);
+    background: rgba(255,215,0,0.15);
+    color: var(--gold);
+    border-bottom: 2px solid var(--gold);
+    box-shadow: none;
 }
 
 .random-step {
@@ -621,11 +634,7 @@
 .team-box:first-child { background: linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(153, 27, 27, 0.2) 100%); border-top: 3px solid #ef4444; }
 .team-box:last-child  { background: linear-gradient(135deg, rgba(37, 99, 235, 0.3) 0%, rgba(30, 58, 138, 0.2) 100%); border-top: 3px solid #3b82f6; }
 .team-box.active { box-shadow: 0 0 16px rgba(255,215,0,0.7); transform: scale(1.02); border-color: var(--gold); }
-.team-box.warning { animation: warning-blink 0.8s ease-in-out infinite; }
-@keyframes warning-blink {
-    0%,100% { border-color: var(--gray); }
-    50%     { border-color: var(--orange); box-shadow: 0 0 14px rgba(249,115,22,0.7); }
-}
+
 .team-name-display { font-size: clamp(0.75rem, 2vw, 1rem); font-weight: bold; text-align: center; color: var(--gold); text-transform: uppercase; margin-bottom: 2px; }
 .team-score-display { text-align: center; font-size: clamp(1.2rem, 3.5vw, 2rem); font-weight: 900; color: var(--gold); margin: 2px 0; }
 .strikes-display { display: flex; justify-content: center; gap: 6px; margin: 4px 0; }
@@ -798,6 +807,27 @@
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 0 12px rgba(0,0,0,0.6); transition: transform 0.2s;
 }
+
+/* BLOKADA PRZED START TV */
+.host-block-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    color: var(--white);
+    text-align: center;
+    padding: 20px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+.host-block-overlay h2 { color: var(--gold); margin-bottom: 10px; font-size: 1.5rem; }
+.host-block-overlay p { font-size: 1.1rem; line-height: 1.5; color: var(--gray); }
+.host-block-overlay.hidden { display: none; }
 .host-fullscreen-button:hover { transform: scale(1.08); }
 
 
@@ -947,3 +977,83 @@
 .qlist-icon.done    { color: var(--green); }
 .qlist-icon.current { color: var(--gold); }
 .qlist-icon.next    { color: #7c3aed; opacity: 0.8; }
+
+/* WYBÓR TRYBU ROZGRYWKI */
+.game-type-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(20px, 4vw, 40px);
+    margin-top: 30px;
+}
+.game-type-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: clamp(25px, 4vw, 45px);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+.game-type-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,215,0,0.05) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+.game-type-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 15px 30px rgba(255, 215, 0, 0.1), var(--glass-shadow);
+}
+.game-type-card:hover::before {
+    opacity: 1;
+}
+.game-type-icon {
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+    transition: transform 0.3s ease;
+}
+.game-type-card:hover .game-type-icon {
+    transform: scale(1.1);
+}
+.game-type-title {
+    font-family: 'Russo One', sans-serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(255,215,0,0.3);
+    margin-top: 10px;
+}
+.game-type-desc {
+    font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+    color: var(--gray);
+    line-height: 1.6;
+    margin-bottom: 15px;
+    flex: 1;
+}
+.game-type-btn {
+    width: 100%;
+    max-width: 200px;
+    margin-top: auto;
+}
+
+@keyframes pulse-glow {
+    0% {
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 0 30px rgba(255, 215, 0, 0.1);
+        transform: scale(1);
+    }
+    100% {
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 215, 0, 0.3);
+        transform: scale(1.02);
+    }
+}

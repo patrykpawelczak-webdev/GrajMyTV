@@ -11,12 +11,20 @@ export function updateTeams(t1, t2, currentTeam, isStealMode) {
     if (s2) s2.textContent = t2.score;
 
     if (b1) {
-        b1.classList.toggle('active', currentTeam === 1);
-        b1.classList.toggle('pulse', currentTeam === 1 && isStealMode);
+        b1.classList.remove('active', 'pulse', 'stealing');
+        if (isStealMode) {
+            if (currentTeam === 1) b1.classList.add('stealing');
+        } else {
+            if (currentTeam === 1) b1.classList.add('active');
+        }
     }
     if (b2) {
-        b2.classList.toggle('active', currentTeam === 2);
-        b2.classList.toggle('pulse', currentTeam === 2 && isStealMode);
+        b2.classList.remove('active', 'pulse', 'stealing');
+        if (isStealMode) {
+            if (currentTeam === 2) b2.classList.add('stealing');
+        } else {
+            if (currentTeam === 2) b2.classList.add('active');
+        }
     }
 }
 

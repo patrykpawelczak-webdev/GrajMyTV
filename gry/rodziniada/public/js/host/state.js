@@ -9,7 +9,8 @@ export function createEmptyState() {
         questionRevealed: false, revealedAnswers: [],
         isStealMode: false, stealUsed: false,
         pointsAwarded: false, failedTeam: null,
-        selectedQuestions: [], soundEnabled: true
+        selectedQuestions: [], soundEnabled: true,
+        displayStarted: false
     };
 }
 

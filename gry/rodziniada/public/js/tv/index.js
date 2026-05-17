@@ -8,7 +8,6 @@ const socket = io('/rodziniada');
 let countdownAnimFrame = null;
 let isCountingDown = false;
 let introVisible = false;
-let displayStarted = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     anim.initGrain();
@@ -30,11 +29,7 @@ socket.on('gameStateUpdated', ({ state }) => {
     updateFullUI(state);
 });
 
-socket.on('startDisplay', () => {
-    displayStarted = true;
-    showWaitingScreen(false);
-    socket.emit('requestStateUpdate');
-});
+
 
 socket.on('showBigX', ({ count }) => {
     render.showBigX(count);
@@ -63,8 +58,8 @@ socket.on('gameEnded', () => {
 function updateFullUI(state) {
     if (introVisible) return;
     
-    // Jeśli transmisja nie wystartowała LUB nie ma pytania, pokaż ekran oczekiwania
-    if (!displayStarted || (!state.currentQuestion && state.currentQuestionIndex === -1)) {
+    // Jeśli transmisja nie wystartowała, pokaż ekran oczekiwania
+    if (!state.displayStarted) {
         showWaitingScreen(true);
         return;
     }
