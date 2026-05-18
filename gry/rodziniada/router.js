@@ -10,9 +10,27 @@ const EDITOR_PIN     = process.env.EDITOR_PIN || '1234';
 // Pliki statyczne Rodziniady
 router.use(express.static(path.join(__dirname, 'public')));
 
-// Panel hosta
+// Panel hosta (Lobby)
 router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'Rodziniada.html'));
+});
+
+// Panel hosta - gra lokalna
+router.get('/local', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'RodziniadaLocal.html'));
+});
+
+// Panel hosta - gra online
+router.get('/online', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'RodziniadaOnline.html'));
+});
+
+// Przyjazne przekierowania
+router.get('/rodziniadaLocal', (req, res) => {
+    res.redirect('/rodziniada/local');
+});
+router.get('/rodziniadaOnline', (req, res) => {
+    res.redirect('/rodziniada/online');
 });
 
 // Ekran TV - tylko z kodem

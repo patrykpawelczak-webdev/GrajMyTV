@@ -10,7 +10,13 @@ export function createEmptyState() {
         isStealMode: false, stealUsed: false,
         pointsAwarded: false, failedTeam: null,
         selectedQuestions: [], soundEnabled: true,
-        displayStarted: false
+        displayStarted: false,
+        lobby: {
+            unassigned: [],
+            presenter: null,
+            team1: [],
+            team2: []
+        }
     };
 }
 

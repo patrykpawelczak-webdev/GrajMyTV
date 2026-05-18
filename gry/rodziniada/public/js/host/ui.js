@@ -1,19 +1,39 @@
 import { $, escapeHtml, normalizeStr } from './utils.js';
 
-// ===== MODAL =====
-export function showModal(title, message, confirmText, confirmClass, onConfirm) {
-    $('modalTitle').textContent = title;
-    $('modalMessage').textContent = message;
-    const oldBtn = $('modalConfirmBtn');
-    const newBtn = oldBtn.cloneNode(true);
-    oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-    newBtn.textContent = confirmText || 'Potwierdź';
-    newBtn.className = `btn ${confirmClass || 'btn--primary'}`;
-    newBtn.addEventListener('click', () => { closeModal(); if (onConfirm) onConfirm(); });
-    $('modalOverlay').classList.add('show');
+// ===== SAFE DOM HELPERS =====
+function safeClass(id, className, action) {
+    const el = $(id);
+    if (!el) return;
+    if (action === 'add') el.classList.add(className);
+    else if (action === 'remove') el.classList.remove(className);
+    else if (action === 'toggle') el.classList.toggle(className);
 }
 
-export function closeModal() { $('modalOverlay').classList.remove('show'); }
+export function safeAdd(id, className) { safeClass(id, className, 'add'); }
+export function safeRemove(id, className) { safeClass(id, className, 'remove'); }
+
+// ===== MODAL =====
+export function showModal(title, message, confirmText, confirmClass, onConfirm) {
+    const t = $('modalTitle');
+    if (t) t.textContent = title;
+    const m = $('modalMessage');
+    if (m) m.textContent = message;
+    const oldBtn = $('modalConfirmBtn');
+    if (oldBtn) {
+        const newBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        newBtn.textContent = confirmText || 'Potwierdź';
+        newBtn.className = `btn ${confirmClass || 'btn--primary'}`;
+        newBtn.addEventListener('click', () => { closeModal(); if (onConfirm) onConfirm(); });
+    }
+    const o = $('modalOverlay');
+    if (o) o.classList.add('show');
+}
+
+export function closeModal() {
+    const o = $('modalOverlay');
+    if (o) o.classList.remove('show');
+}
 
 // ===== TOAST =====
 let toastTimer = null;
@@ -33,66 +53,119 @@ export function showToast(msg, type = 'info') {
 
 // ===== EKRANY =====
 export function showLobbyScreen() {
-    $('lobbyScreen').classList.remove('hidden');
-    $('gameTypeSelectionScreen').classList.add('hidden');
-    $('setupScreen').classList.add('hidden');
-    $('setupScreenOnline').classList.add('hidden');
-    $('onlineLobbyScreen').classList.add('hidden');
-    $('gameScreen').classList.remove('active');
+    safeRemove('lobbyScreen', 'hidden');
+    safeAdd('gameTypeSelectionScreen', 'hidden');
+    safeAdd('setupScreen', 'hidden');
+    safeAdd('setupScreenOnline', 'hidden');
+    safeAdd('onlineLobbyScreen', 'hidden');
+    safeRemove('gameScreen', 'active');
 }
 
 export function showGameTypeSelectionScreen() {
-    $('lobbyScreen').classList.add('hidden');
-    $('gameTypeSelectionScreen').classList.remove('hidden');
-    $('setupScreen').classList.add('hidden');
-    $('setupScreenOnline').classList.add('hidden');
-    $('onlineLobbyScreen').classList.add('hidden');
-    $('gameScreen').classList.remove('active');
+    safeAdd('lobbyScreen', 'hidden');
+    safeRemove('gameTypeSelectionScreen', 'hidden');
+    safeAdd('setupScreen', 'hidden');
+    safeAdd('setupScreenOnline', 'hidden');
+    safeAdd('onlineLobbyScreen', 'hidden');
+    safeRemove('gameScreen', 'active');
 }
 
 export function showSetupScreenLocal() {
-    $('lobbyScreen').classList.add('hidden');
-    $('gameTypeSelectionScreen').classList.add('hidden');
-    $('setupScreen').classList.remove('hidden');
-    $('setupScreenOnline').classList.add('hidden');
-    $('onlineLobbyScreen').classList.add('hidden');
-    $('gameScreen').classList.remove('active');
-    $('setupGameName').value = '';
-    $('setupTeam1Name').value = 'Drużyna 1';
-    $('setupTeam2Name').value = 'Drużyna 2';
+    safeAdd('lobbyScreen', 'hidden');
+    safeAdd('gameTypeSelectionScreen', 'hidden');
+    safeRemove('setupScreen', 'hidden');
+    safeAdd('setupScreenOnline', 'hidden');
+    safeAdd('onlineLobbyScreen', 'hidden');
+    safeRemove('gameScreen', 'active');
+    
+    const nameInput = $('setupGameName');
+    if (nameInput) nameInput.value = '';
+    const team1Input = $('setupTeam1Name');
+    if (team1Input) team1Input.value = 'Drużyna 1';
+    const team2Input = $('setupTeam2Name');
+    if (team2Input) team2Input.value = 'Drużyna 2';
 }
 
 export function showSetupScreenOnline() {
-    $('lobbyScreen').classList.add('hidden');
-    $('gameTypeSelectionScreen').classList.add('hidden');
-    $('setupScreen').classList.add('hidden');
-    $('setupScreenOnline').classList.remove('hidden');
-    $('onlineLobbyScreen').classList.add('hidden');
-    $('gameScreen').classList.remove('active');
-    $('setupGameNameOnline').value = '';
+    safeAdd('lobbyScreen', 'hidden');
+    safeAdd('gameTypeSelectionScreen', 'hidden');
+    safeAdd('setupScreen', 'hidden');
+    safeRemove('setupScreenOnline', 'hidden');
+    safeAdd('onlineLobbyScreen', 'hidden');
+    safeRemove('gameScreen', 'active');
+    
+    const nameInput = $('setupGameNameOnline');
+    if (nameInput) nameInput.value = '';
 }
 
 export function showOnlineLobbyScreen(roomName, code) {
-    $('lobbyScreen').classList.add('hidden');
-    $('gameTypeSelectionScreen').classList.add('hidden');
-    $('setupScreen').classList.add('hidden');
-    $('setupScreenOnline').classList.add('hidden');
-    $('onlineLobbyScreen').classList.remove('hidden');
-    $('gameScreen').classList.remove('active');
+    safeAdd('lobbyScreen', 'hidden');
+    safeAdd('gameTypeSelectionScreen', 'hidden');
+    safeAdd('setupScreen', 'hidden');
+    safeAdd('setupScreenOnline', 'hidden');
+    safeRemove('onlineLobbyScreen', 'hidden');
+    safeRemove('gameScreen', 'active');
 
-    // Formatuj kod jako 3 spacje 3 (np. 123 456) dla lepszej czytelności
-    const formattedCode = String(code).replace(/(\d{3})(\d{3})/, '$1 $2');
-    $('lobbyJoinCode').textContent = formattedCode;
-    $('lobbyRoomName').textContent = `Nazwa pokoju: ${roomName}`;
+    // Formatuj kod bez spacji (zgodnie z wymaganiem użytkownika)
+    const formattedCode = String(code);
+    const codeEl = $('lobbyJoinCode');
+    if (codeEl) codeEl.textContent = formattedCode;
+    const nameEl = $('lobbyRoomName');
+    if (nameEl) nameEl.textContent = roomName;
+
+    // Pusta lista zostanie wyrenderowana przez zdarzenie z serwera, ale możemy tu zresetować widok
+}
+
+export function renderLobbyPlayers(lobby, isHost) {
+    if (!lobby) return;
+
+    function createPlayerHTML(p) {
+        if (!p) return '';
+        const isCreator = (p.id === 'creator');
+        return `
+            <div class="player-item ${isCreator ? 'creator' : ''}" data-player-id="${p.id}" ${isHost ? 'draggable="true"' : ''}>
+                ${isCreator ? '<span class="player-crown">👑</span>' : '<span class="player-icon">👤</span>'}
+                <span class="player-name">${escapeHtml(p.name)}</span>
+                ${isCreator ? '<span class="player-role-badge">Założyciel</span>' : ''}
+            </div>
+        `;
+    }
+
+    const unassignedContainer = $('lobbyPlayerList');
+    if (unassignedContainer) {
+        unassignedContainer.innerHTML = lobby.unassigned.map(createPlayerHTML).join('');
+    }
+
+    const presenterContainer = $('rolePresenterContainer');
+    if (presenterContainer) {
+        presenterContainer.innerHTML = lobby.presenter ? createPlayerHTML(lobby.presenter) : '';
+    }
+
+    const team1Container = $('lobbyPlayers1');
+    if (team1Container) {
+        team1Container.innerHTML = lobby.team1.map(createPlayerHTML).join('');
+    }
+
+    const team2Container = $('lobbyPlayers2');
+    if (team2Container) {
+        team2Container.innerHTML = lobby.team2.map(createPlayerHTML).join('');
+    }
+
+    checkEmptyZones();
+    updateTeamCounts();
+
+    if (isHost) {
+        initDragAndDrop(window.onLobbyDrop);
+    }
 }
 
 export function showGameScreen() {
-    $('lobbyScreen').classList.add('hidden');
-    $('gameTypeSelectionScreen').classList.add('hidden');
-    $('setupScreen').classList.add('hidden');
-    $('setupScreenOnline').classList.add('hidden');
-    $('onlineLobbyScreen').classList.add('hidden');
-    $('gameScreen').classList.add('active');
+    safeAdd('lobbyScreen', 'hidden');
+    safeAdd('gameTypeSelectionScreen', 'hidden');
+    safeAdd('setupScreen', 'hidden');
+    safeAdd('setupScreenOnline', 'hidden');
+    safeAdd('onlineLobbyScreen', 'hidden');
+    safeAdd('gameScreen', 'active');
 }
 
 // ===== RENDEROWANIE =====
@@ -242,6 +315,125 @@ function updateWinnerButton(gameState) {
         btn.style.cursor = can ? 'pointer' : 'not-allowed';
         btn.title = can ? 'Ogłoś zwycięzcę' : 'Dostępne po ukończeniu wszystkich pytań (bez remisu)';
     });
+}
+
+// ===== DRAG & DROP W LOBBY =====
+let currentDropCallback = null;
+
+export function initDragAndDrop(onDropCallback) {
+    if (onDropCallback) currentDropCallback = onDropCallback;
+
+    const draggables = document.querySelectorAll('.player-item[draggable="true"]');
+    const dropZones = document.querySelectorAll('.drop-zone');
+
+    draggables.forEach(draggable => {
+        draggable.removeEventListener('dragstart', handleDragStart);
+        draggable.removeEventListener('dragend', handleDragEnd);
+        draggable.addEventListener('dragstart', handleDragStart);
+        draggable.addEventListener('dragend', handleDragEnd);
+    });
+
+    dropZones.forEach(zone => {
+        zone.removeEventListener('dragover', handleDragOver);
+        zone.removeEventListener('drop', handleDrop);
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+    });
+}
+
+function handleDragStart(e) {
+    this.classList.add('dragging');
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    checkEmptyZones();
+}
+
+function handleDragOver(e) {
+    e.preventDefault(); // Pozwala na upuszczenie
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.dragging');
+    if (dragging) {
+        // Jeśli wrzucamy do prowadzącego (rolę hosta), może tam być tylko jedna osoba
+        if (this.id === 'rolePresenterContainer') {
+            const existingPlayers = this.querySelectorAll('.player-item');
+            if (existingPlayers.length > 0) {
+                // Przenieś obecnego prowadzącego z powrotem do listy nieprzydzielonych
+                const unassignedZone = document.getElementById('lobbyPlayerList');
+                if (unassignedZone) {
+                    existingPlayers.forEach(p => unassignedZone.appendChild(p));
+                }
+            }
+        }
+
+        const emptyItalic = this.querySelector('.player-item-empty-italic');
+        if (emptyItalic) emptyItalic.remove();
+        
+        this.appendChild(dragging);
+        updateTeamCounts();
+        
+        if (currentDropCallback) {
+            currentDropCallback(rebuildLobbyStateFromDOM());
+        }
+    }
+}
+
+function rebuildLobbyStateFromDOM() {
+    const parseList = (containerId) => {
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        return Array.from(container.querySelectorAll('.player-item')).map(el => ({
+            id: el.dataset.playerId,
+            name: el.querySelector('.player-name').textContent
+        }));
+    };
+
+    const presenterList = parseList('rolePresenterContainer');
+    return {
+        unassigned: parseList('lobbyPlayerList'),
+        presenter: presenterList.length > 0 ? presenterList[0] : null,
+        team1: parseList('lobbyPlayers1'),
+        team2: parseList('lobbyPlayers2')
+    };
+}
+
+function checkEmptyZones() {
+    const dropZones = document.querySelectorAll('.drop-zone');
+    dropZones.forEach(zone => {
+        const players = zone.querySelectorAll('.player-item');
+        if (players.length === 0) {
+            let emptyText = "Brak graczy";
+            if (zone.id === 'rolePresenterContainer') emptyText = "Przeciągnij tutaj prowadzącego";
+            else if (zone.id === 'lobbyPlayers1' || zone.id === 'lobbyPlayers2') emptyText = "Przeciągnij graczy";
+            else emptyText = "Oczekiwanie na graczy...";
+            
+            if (!zone.querySelector('.player-item-empty-italic')) {
+                const el = document.createElement('div');
+                el.className = 'player-item-empty-italic';
+                el.textContent = emptyText;
+                zone.appendChild(el);
+            }
+        }
+    });
+}
+
+function updateTeamCounts() {
+    const t1 = document.getElementById('lobbyPlayers1');
+    if (t1) {
+        const count = t1.querySelectorAll('.player-item').length;
+        const badge = document.getElementById('lobbyTeam1Count');
+        if (badge) badge.textContent = count;
+    }
+    const t2 = document.getElementById('lobbyPlayers2');
+    if (t2) {
+        const count = t2.querySelectorAll('.player-item').length;
+        const badge = document.getElementById('lobbyTeam2Count');
+        if (badge) badge.textContent = count;
+    }
 }
 
 function canShowWinner(gameState) {

@@ -100,11 +100,7 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
                 socket.emit('joinError', { message: 'Gra nie istnieje' });
                 return;
             }
-            if (game.hostCount >= 1) {
-                socket.emit('joinError', { message: 'Ta rozgrywka ma już prowadzącego' });
-                return;
-            }
-            
+
             if (game.reconnectTimer) {
                 clearTimeout(game.reconnectTimer);
                 game.reconnectTimer = null;
@@ -146,6 +142,38 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
                 `TV dolaczyl: gra=${c.magenta}${game.id}${c.reset}`);
 
             socket.emit('joinedTv', { gameId: game.id, state: game.state });
+        });
+
+        socket.on('joinAsPlayer', ({ code, name }) => {
+            const entry = codeToGame[code];
+            if (!entry) {
+                socket.emit('joinError', { message: 'Nieprawidłowy kod pokoju' });
+                return;
+            }
+            const game = games[entry.gameId];
+            if (!game) {
+                socket.emit('joinError', { message: 'Gra nie istnieje' });
+                return;
+            }
+
+            socket.join(`game:${game.id}`);
+            socket.data.gameId = game.id;
+            socket.data.role   = 'player';
+            socket.data.name   = name;
+
+            const playerId = 'p_' + Math.random().toString(36).substring(2, 8);
+            socket.data.playerId = playerId;
+
+            if (!game.state.lobby) {
+                game.state.lobby = { unassigned: [], presenter: null, team1: [], team2: [] };
+            }
+
+            game.state.lobby.unassigned.push({ id: playerId, name: name });
+
+            logSuccess('RODZINIADA', `Gracz ${c.cyan}${name}${c.reset} dolaczyl: gra=${c.magenta}${game.id}${c.reset}`);
+
+            socket.emit('joinedPlayer', { gameId: game.id, state: game.state, playerId, tvCode: game.tvCode, hostCode: game.hostCode });
+            io.to(`game:${game.id}`).emit('gameStateUpdated', { gameId: game.id, state: game.state });
         });
 
         socket.on('updateGameState', ({ gameId, state }) => {
@@ -203,25 +231,42 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
         });
 
         socket.on('disconnect', (reason) => {
-            const { gameId, role } = socket.data;
-            if (!gameId || role !== 'host') return;
+            const { gameId, role, playerId } = socket.data;
+            if (!gameId) return;
             const game = games[gameId];
             if (!game) return;
 
-            game.hostCount = Math.max(0, game.hostCount - 1);
-            logWarn('RODZINIADA', `Host wyszedl: hostow=${c.yellow}${game.hostCount}${c.reset}`);
+            if (role === 'host') {
+                game.hostCount = Math.max(0, game.hostCount - 1);
+                logWarn('RODZINIADA', `Host wyszedl: hostow=${c.yellow}${game.hostCount}${c.reset}`);
 
-            if (game.hostCount === 0) {
-                logWarn('RODZINIADA', `Rozpoczynam timer 30s na powrot hosta dla: ${c.magenta}${gameId}${c.reset}`);
-                game.reconnectTimer = setTimeout(() => {
-                    if (games[gameId] && games[gameId].hostCount === 0) {
-                        logError('RODZINIADA', `Host nie wrocil, niszcze gre: ${c.magenta}${gameId}${c.reset}`);
-                        io.to(`game:${gameId}`).emit('gameEnded');
-                        cleanupGame(gameId);
+                if (game.hostCount === 0) {
+                    logWarn('RODZINIADA', `Rozpoczynam timer 30s na powrot hosta dla: ${c.magenta}${gameId}${c.reset}`);
+                    game.reconnectTimer = setTimeout(() => {
+                        if (games[gameId] && games[gameId].hostCount === 0) {
+                            logError('RODZINIADA', `Host nie wrocil, niszcze gre: ${c.magenta}${gameId}${c.reset}`);
+                            io.to(`game:${gameId}`).emit('gameEnded');
+                            cleanupGame(gameId);
+                        }
+                    }, 30000);
+                } else {
+                    io.emit('gamesListUpdated', getGamesList());
+                }
+            } else if (role === 'player') {
+                if (game.state.lobby) {
+                    // Usuwamy gracza z każdej listy w lobby, w której mógł się znajdować
+                    ['unassigned', 'team1', 'team2'].forEach(key => {
+                        if (Array.isArray(game.state.lobby[key])) {
+                            game.state.lobby[key] = game.state.lobby[key].filter(p => p.id !== playerId);
+                        }
+                    });
+                    if (game.state.lobby.presenter && game.state.lobby.presenter.id === playerId) {
+                        game.state.lobby.presenter = null;
                     }
-                }, 30000);
-            } else {
-                io.emit('gamesListUpdated', getGamesList());
+                    
+                    logWarn('RODZINIADA', `Gracz ${c.cyan}${socket.data.name}${c.reset} opuscil gre`);
+                    io.to(`game:${gameId}`).emit('gameStateUpdated', { gameId: gameId, state: game.state });
+                }
             }
         });
     });

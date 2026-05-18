@@ -45,6 +45,8 @@ app.get('/', (req, res) => {
 // Rodziniada
 const rodziniadaRouter = require('./gry/rodziniada/router');
 app.use('/rodziniada', rodziniadaRouter);
+app.get('/rodziniadaLocal', (req, res) => res.redirect('/rodziniada/local'));
+app.get('/rodziniadaOnline', (req, res) => res.redirect('/rodziniada/online'));
 
 // Przyszłe gry (placeholder)
 app.get('/gra2', (req, res) => res.redirect('/?soon=gra2'));

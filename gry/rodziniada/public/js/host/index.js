@@ -17,13 +17,86 @@ let currentGameId = null;
 let currentHostCode = null;
 let currentTvCode = null;
 let isOnlineMode = false;
+let currentRole = null;
+
+// ===== DETEKCJA STRONY =====
+const path = window.location.pathname;
+const isLocalPage = path.includes('/local') || path.includes('Local');
+const isOnlinePage = path.includes('/online') || path.includes('Online');
 
 // ===== INICJALIZACJA =====
 document.addEventListener('DOMContentLoaded', async () => {
-    $('modalOverlay').addEventListener('click', (e) => {
-        if (e.target === $('modalOverlay')) ui.closeModal();
-    });
-    await loadQuestionsFromServer();
+    const overlay = $('modalOverlay');
+    if (overlay) {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) ui.closeModal();
+        });
+    }
+
+    if (isLocalPage) {
+        isOnlineMode = false;
+        ui.showSetupScreenLocal();
+        currentMode = 'manual';
+        drawnQuestions = [];
+        const manualTab = $('modeTabManual');
+        if (manualTab) manualTab.classList.add('active');
+        const randomTab = $('modeTabRandom');
+        if (randomTab) randomTab.classList.remove('active');
+        
+        await loadQuestionsFromServer();
+        categoriesRendered = false;
+        const btn = $('btnShowCategories');
+        const grid = $('categoriesGrid');
+        if (btn && grid) {
+            btn.classList.remove('hidden');
+            grid.classList.add('hidden');
+            grid.innerHTML = '';
+        }
+        updateSelectedQuestions();
+    } else if (isOnlinePage) {
+        isOnlineMode = true;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const joinCode = urlParams.get('code');
+        
+        if (joinCode) {
+            const joinName = urlParams.get('name');
+            if (!joinName) {
+                window.location.href = '/rodziniada';
+                return;
+            }
+            
+            ui.showOnlineLobbyScreen('Oczekiwanie...', joinCode);
+            
+            const startBtn = document.getElementById('btnStartOnlineActive');
+            if (startBtn) startBtn.style.display = 'none';
+            const cancelBtn = document.querySelector('.btn-dashboard-cancel');
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            
+            socket.emit('joinAsPlayer', { code: joinCode, name: joinName });
+            
+            socket.on('joinedPlayer', (data) => {
+                currentGameId = data.gameId;
+                gameState = data.state;
+                currentRole = 'player';
+                currentTvCode = data.tvCode;
+                currentHostCode = data.hostCode;
+                window.myPlayerId = data.playerId;
+                ui.renderLobbyPlayers(gameState.lobby, false);
+                ui.showToast('Pomyślnie dołączono do pokoju!', 'success');
+            });
+            
+            socket.on('joinError', (data) => {
+                ui.showToast(data.message, 'error');
+                setTimeout(() => { window.location.href = '/rodziniada'; }, 2000);
+            });
+        } else {
+            ui.showSetupScreenOnline();
+        }
+    } else {
+        // Główna strona lobby
+        ui.showLobbyScreen();
+    }
 });
 
 async function loadQuestionsFromServer() {
@@ -39,12 +112,14 @@ const netHandlers = {
     onGameCreated: ({ gameId, hostCode, tvCode, state }) => {
         currentGameId = gameId; currentHostCode = hostCode; currentTvCode = tvCode;
         gameState = state;
+        currentRole = 'host';
         loadQuestion(0);
         ui.updateHeaderCodes(currentHostCode, currentTvCode);
         ui.updateUI(gameState, revealAnswer);
         
         if (isOnlineMode) {
             ui.showOnlineLobbyScreen(gameState.name || 'Pokój Online', tvCode);
+            ui.renderLobbyPlayers(gameState.lobby, true);
         } else {
             ui.showGameScreen();
         }
@@ -52,6 +127,7 @@ const netHandlers = {
     onJoinedHost: ({ gameId, hostCode, tvCode, state }) => {
         currentGameId = gameId; currentHostCode = hostCode; currentTvCode = tvCode;
         gameState = state;
+        currentRole = 'host';
         ui.showGameScreen();
         ui.updateHeaderCodes(currentHostCode, currentTvCode);
         ui.updateUI(gameState, revealAnswer);
@@ -62,6 +138,36 @@ const netHandlers = {
     onGameStateUpdated: ({ gameId, state }) => {
         if (gameId !== currentGameId) return;
         gameState = state;
+        
+        // Jeśli jesteśmy w poczekalni online (widoczny ekran lobby)
+        const lobbyScreen = document.getElementById('onlineLobbyScreen');
+        if (lobbyScreen && !lobbyScreen.classList.contains('hidden')) {
+            ui.renderLobbyPlayers(gameState.lobby, currentRole === 'host');
+            const nameEl = document.getElementById('lobbyRoomName');
+            if (nameEl) nameEl.textContent = gameState.name;
+        }
+        
+        // Logika autoryzacji do odpowiednich widoków przy starcie gry
+        if (gameState.displayStarted) {
+            if (currentRole === 'player') {
+                if (gameState.lobby && gameState.lobby.presenter && gameState.lobby.presenter.id === window.myPlayerId) {
+                    // Ten gracz został przypisany jako Prowadzący! Staje się hostem.
+                    socket.emit('joinAsHost', { code: currentHostCode });
+                    return; // przerwij dalsze ładowanie jako gracz
+                } else {
+                    // Zwykli gracze lądują na ekranie TV
+                    window.location.href = `/rodziniada/tv?code=${currentTvCode}`;
+                    return;
+                }
+            } else if (currentRole === 'host') {
+                // Założyciel: Jeśli z jakiegoś powodu przeniósł sam siebie gdzie indziej i ktoś inny jest hostem
+                if (gameState.lobby && gameState.lobby.presenter && gameState.lobby.presenter.id !== 'creator') {
+                    window.location.href = `/rodziniada/tv?code=${currentTvCode}`;
+                    return;
+                }
+            }
+        }
+        
         ui.updateUI(gameState, revealAnswer);
     },
     onGameEnded: () => {
@@ -89,55 +195,9 @@ window.showSetupScreen = () => {
 
 window.selectGameType = (type) => {
     if (type === 'local') {
-        isOnlineMode = false;
-        
-        // Pokaż sekcję nazwy gry
-        const nameSection = document.querySelector('.game-name-section');
-        if (nameSection) {
-            nameSection.classList.remove('hidden');
-        }
-
-        // Przywróć stan przycisku startu dla gry lokalnej
-        const startBtn = $('btnStartGame');
-        if (startBtn) {
-            startBtn.innerText = '🎮 START GRY';
-        }
-        
-        // Pokaż nazwy drużyn
-        const teamNamesContainer = $('setupTeamNamesContainer');
-        if (teamNamesContainer) {
-            teamNamesContainer.classList.remove('hidden');
-        }
-        
-        // Przywróć tekst powrotu do wyboru trybu
-        const backBtn = $('btnSetupBack');
-        if (backBtn) {
-            backBtn.innerText = '← Zmień tryb gry';
-        }
-
-        ui.showSetupScreenLocal();
-        currentMode = 'manual';
-        drawnQuestions = [];
-        $('modeTabManual')?.classList.add('active');
-        $('modeTabRandom')?.classList.remove('active');
-        $('modeManual')?.classList.remove('hidden');
-        $('modeRandom')?.classList.add('hidden');
-        $('randomPreview')?.classList.add('hidden');
-
-        loadQuestionsFromServer().then(() => {
-            categoriesRendered = false;
-            const btn = $('btnShowCategories');
-            const grid = $('categoriesGrid');
-            if (btn && grid) {
-                btn.classList.remove('hidden');
-                grid.classList.add('hidden');
-                grid.innerHTML = '';
-            }
-            updateSelectedQuestions();
-        });
+        window.location.href = '/rodziniada/local';
     } else if (type === 'online') {
-        isOnlineMode = true;
-        ui.showSetupScreenOnline();
+        window.location.href = '/rodziniada/online';
     }
 };
 
@@ -148,7 +208,7 @@ window.goToOnlineStep2 = () => {
         return;
     }
 
-    const lobbyName = `${playerName}'s lobby`;
+    const lobbyName = `Pokój gracza: ${playerName}`;
 
     // Sprawdź czy pokój o takiej nazwie już istnieje na serwerze (wśród aktywnych gier)
     const exists = allGames.some(g => g.name.toLowerCase() === lobbyName.toLowerCase());
@@ -162,7 +222,16 @@ window.goToOnlineStep2 = () => {
     initialState.isOnline = true;
     initialState.name = lobbyName;
     
+    // Zapiszmy założyciela w lobby
+    initialState.lobby.unassigned.push({ id: 'creator', name: playerName });
+
     net.createGame(socket, initialState, lobbyName, true);
+};
+
+window.onLobbyDrop = (newLobbyState) => {
+    if (currentRole !== 'host') return;
+    gameState.lobby = newLobbyState;
+    socket.emit('updateGameState', { gameId: currentGameId, state: gameState });
 };
 
 window.goToOnlineStep1 = () => {
@@ -174,71 +243,82 @@ window.backFromSetup = () => {
         // Powrót do poczekalni online!
         ui.showOnlineLobbyScreen(gameState.name || 'Pokój Online', currentTvCode);
     } else {
-        window.backToGameTypeSelection();
+        window.location.href = '/rodziniada';
     }
 };
 
 window.backToGameTypeSelection = () => {
-    ui.showGameTypeSelectionScreen();
+    window.location.href = '/rodziniada';
 };
 
-window.backToLobby = ui.showLobbyScreen;
+window.backToLobby = () => {
+    window.location.href = '/rodziniada';
+};
 
-window.startOnlineActiveGame = () => {
-    // Ukryj sekcję nazwy gry w setupScreen, bo gra już istnieje i ma nazwę!
-    const nameSection = document.querySelector('.game-name-section');
-    if (nameSection) {
-        nameSection.classList.add('hidden');
+window.startOnlineActiveGame = async () => {
+    if (questionCategories.length === 0) {
+        await loadQuestionsFromServer();
     }
     
-    // Ukryj nazwy drużyn w setupScreen
-    const teamNamesContainer = $('setupTeamNamesContainer');
-    if (teamNamesContainer) {
-        teamNamesContainer.classList.add('hidden');
-    }
-    
-    // Zmień przycisk startu na "URUCHOM TELEKURS"
-    const startBtn = $('btnStartGame');
-    if (startBtn) {
-        startBtn.innerText = '🎮 URUCHOM TELEKURS';
-    }
-    
-    // Zmień przycisk powrotu w setupScreen na powrót do lobby online
-    const backBtn = $('btnSetupBack');
-    if (backBtn) {
-        backBtn.innerText = '← Wróć do Lobby';
+    const allQ = [];
+    if (questionCategories && questionCategories.length > 0) {
+        questionCategories.forEach((cat) => {
+            if (cat.questions) {
+                cat.questions.forEach((q) => {
+                    allQ.push({
+                        text: q.text,
+                        answers: q.answers.map(a => ({ text: a.text, points: a.points }))
+                    });
+                });
+            }
+        });
     }
 
-    // Pokaż ekran konfiguracji
-    ui.showSetupScreenLocal(); // Wykorzystujemy ten sam widok wyboru rund/pytań!
-    
-    // Załaduj dane i zresetuj
-    currentMode = 'manual';
-    drawnQuestions = [];
-    $('modeTabManual')?.classList.add('active');
-    $('modeTabRandom')?.classList.remove('active');
-    $('modeManual')?.classList.remove('hidden');
-    $('modeRandom')?.classList.add('hidden');
-    $('randomPreview')?.classList.add('hidden');
+    const shuffled = allQ.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 5);
 
-    loadQuestionsFromServer().then(() => {
-        categoriesRendered = false;
-        const btn = $('btnShowCategories');
-        const grid = $('categoriesGrid');
-        if (btn && grid) {
-            btn.classList.remove('hidden');
-            grid.classList.add('hidden');
-            grid.innerHTML = '';
-        }
-        updateSelectedQuestions();
-    });
+    if (selected.length === 0) {
+        ui.showToast('Błąd: brak pytań w bazie!', 'error');
+        return;
+    }
+
+    const newState = createEmptyState();
+    newState.isOnline = true;
+    newState.selectedQuestions = selected;
+    newState.name = gameState.name;
+    
+    if (gameState && gameState.lobby) {
+        newState.lobby = gameState.lobby;
+    }
+
+    if (newState.lobby && newState.lobby.team1 && newState.lobby.team1.length > 0) {
+        newState.team1.name = "Drużyna Niebieskich";
+    }
+    if (newState.lobby && newState.lobby.team2 && newState.lobby.team2.length > 0) {
+        newState.team2.name = "Drużyna Czerwonych";
+    }
+    
+    newState.currentQuestionIndex = 0;
+    newState.currentQuestion = newState.selectedQuestions[0];
+    newState.displayStarted = true;
+    
+    gameState = newState;
+    net.updateGameState(socket, currentGameId, gameState);
+    
+    if (gameState.lobby && gameState.lobby.presenter && gameState.lobby.presenter.id !== 'creator') {
+        window.location.href = `/rodziniada/tv?code=${currentTvCode}`;
+    } else {
+        ui.showGameScreen();
+        ui.updateHeaderCodes(currentHostCode, currentTvCode);
+        ui.updateUI(gameState, revealAnswer);
+    }
 };
 
 window.cancelOnlineLobby = () => {
     if (currentGameId) {
         net.endGame(socket, currentGameId);
     }
-    ui.showLobbyScreen();
+    window.location.href = '/rodziniada';
 };
 
 window.filterGames = () => {
@@ -247,25 +327,45 @@ window.filterGames = () => {
 };
 
 window.joinGameAsTv = (tvCode) => {
-    ui.showModal('Dołącz do gry', '', 'Dołącz', 'btn--primary', () => {
+    ui.showModal('DOŁĄCZ DO LOBBY', '', 'Dołącz', 'btn--primary', () => {
         const code = $('lobbyTvCodeInput')?.value?.trim();
+        const playerName = $('lobbyPlayerNameInput')?.value?.trim();
+        
         if (!code) { ui.showToast('Wpisz kod pokoju!', 'error'); return; }
+        if (!playerName) { ui.showToast('Wpisz swoją nazwę (Nick)!', 'error'); return; }
         if (code !== tvCode) { ui.showToast('Nieprawidłowy kod pokoju!', 'error'); return; }
-        window.location.href = `/rodziniada/tv?code=${tvCode}`;
+        
+        // Przenosi gracza do poczekalni online (lobby) wraz z jego nickiem
+        window.location.href = `/rodziniada/online?code=${tvCode}&name=${encodeURIComponent(playerName)}`;
     });
 
     setTimeout(() => {
         const msgEl = $('modalMessage');
         if (msgEl) {
             msgEl.innerHTML = `
-                <p style="margin-bottom:14px;color:#94a3b8;">Wpisz kod pokoju podany przez prowadzącego.</p>
-                <input type="text" id="lobbyTvCodeInput" maxlength="6" inputmode="numeric" placeholder="------" class="tv-code-input-modal">
+                <div style="text-align:center; margin-bottom: 10px; color: var(--gray); font-size: 0.95rem;">
+                    Kod pokoju:
+                </div>
+                <input type="text" id="lobbyTvCodeInput" 
+                       style="width: 100%; text-align: center; font-size: 2rem; font-family: 'Russo One', sans-serif; letter-spacing: 8px; color: var(--gold); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.3); padding: 15px; border-radius: 12px; outline: none; margin-bottom: 20px;" 
+                       placeholder="------" maxlength="6" autocomplete="off" inputmode="numeric">
+                
+                <div style="text-align:center; margin-bottom: 10px; color: var(--gray); font-size: 0.95rem;">
+                    Twój Nick:
+                </div>
+                <input type="text" id="lobbyPlayerNameInput" 
+                       style="width: 100%; text-align: center; font-size: 1.5rem; font-family: 'Russo One', sans-serif; color: var(--white); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; outline: none;" 
+                       placeholder="Wpisz imię..." maxlength="15" autocomplete="off">
             `;
             setTimeout(() => {
-                const inp = $('lobbyTvCodeInput');
-                if (inp) {
-                    inp.focus();
-                    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') $('modalConfirmBtn')?.click(); });
+                const inpCode = $('lobbyTvCodeInput');
+                const inpName = $('lobbyPlayerNameInput');
+                if (inpCode) {
+                    inpCode.focus();
+                    inpCode.addEventListener('keydown', (e) => { if (e.key === 'Enter') inpName.focus(); });
+                }
+                if (inpName) {
+                    inpName.addEventListener('keydown', (e) => { if (e.key === 'Enter') $('modalConfirmBtn')?.click(); });
                 }
             }, 50);
         }
@@ -531,8 +631,9 @@ window.endGameAndBackToMenu = () => {
 function backToMenuUIOnly() {
     currentGameId = currentHostCode = currentTvCode = null;
     gameState = createEmptyState();
-    $('gameScreen').classList.remove('active');
-    ui.showLobbyScreen();
+    const gameScreen = $('gameScreen');
+    if (gameScreen) gameScreen.classList.remove('active');
+    window.location.href = '/rodziniada';
 }
 
 window.openTV = () => {
