@@ -3,7 +3,7 @@ import * as anim from './animations.js';
 import * as render from './render.js';
 
 const tv = id => document.getElementById(id);
-const socket = io('/rodziniada');
+const socket = io('/rodziniada', { transports: ['websocket'] });
 
 let countdownAnimFrame = null;
 let isCountingDown = false;
@@ -51,8 +51,7 @@ socket.on('showWinner', ({ winnerName }) => {
 });
 
 socket.on('gameEnded', () => {
-    const o = tv('tvGameEnded');
-    if (o) o.classList.add('show');
+    window.location.href = '/rodziniada';
 });
 
 function updateFullUI(state) {

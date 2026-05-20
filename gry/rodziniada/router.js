@@ -33,12 +33,8 @@ router.get('/rodziniadaOnline', (req, res) => {
     res.redirect('/rodziniada/online');
 });
 
-// Ekran TV - tylko z kodem
+// Ekran TV
 router.get('/tv', (req, res) => {
-    const code = req.query.code;
-    if (!code || !/^\d{6}$/.test(code)) {
-        return res.redirect('/rodziniada');
-    }
     res.sendFile(path.join(__dirname, 'public', 'RodziniadaTV.html'));
 });
 

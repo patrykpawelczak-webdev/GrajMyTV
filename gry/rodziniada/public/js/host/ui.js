@@ -174,9 +174,8 @@ export function renderGamesList(games, filterQuery = '', joinGameAsTvCallback) {
     const body = $('lobbyTableBody');
     const empty = $('lobbyEmpty');
 
-    // Filtruj tylko i wyłącznie gry ONLINE
-    let filtered = games.filter(g => g.isOnline);
-    console.log("RODZINIADA renderGamesList filtered online games:", filtered);
+    // Przywracamy wyświetlanie wszystkich gier (zarówno lokalnych, jak i online)
+    let filtered = [...games];
 
     if (filterQuery) {
         filtered = filtered.filter(g => g.name.toLowerCase().includes(filterQuery.toLowerCase()));
@@ -190,22 +189,35 @@ export function renderGamesList(games, filterQuery = '', joinGameAsTvCallback) {
     }
 
     empty.style.display = 'none';
-    body.innerHTML = filtered.map(g => `
-        <div class="lobby-row" data-id="${g.gameId}">
-            <div class="lobby-col-name">
-                <div class="lobby-game-name">${escapeHtml(g.name)}</div>
+    body.innerHTML = filtered.map(g => {
+        const isOnline = !!g.isOnline;
+        const rowClass = isOnline ? 'lobby-row-online' : 'lobby-row-local';
+        const badgeClass = isOnline ? 'game-badge-online' : 'game-badge-local';
+        const badgeText = isOnline ? 'Online' : 'Lokalna';
+        const btnClass = isOnline ? 'lobby-btn-online' : 'lobby-btn-local';
+        const btnText = isOnline ? 'Dołącz do lobby' : 'Ekran TV';
+        const onClickHandler = isOnline 
+            ? `joinGameAsTv('${g.tvCode}')` 
+            : `openTvDirectly()`;
+
+        return `
+            <div class="lobby-row ${rowClass}" data-id="${g.gameId}">
+                <div class="lobby-col-name" style="display: flex; align-items: center; gap: 4px;">
+                    <span class="game-badge ${badgeClass}">${badgeText}</span>
+                    <div class="lobby-game-name">${escapeHtml(g.name)}</div>
+                </div>
+                <div class="lobby-col-actions">
+                    <button class="lobby-btn ${btnClass}" onclick="${onClickHandler}">
+                        ${btnText}
+                    </button>
+                </div>
             </div>
-            <div class="lobby-col-actions">
-                <button class="lobby-btn lobby-btn-tv" onclick="joinGameAsTv('${g.tvCode}')">
-                    Dołącz do gry
-                </button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 export function updateHeaderCodes(hostCode, tvCode) {
-    $('headerCodes').textContent = `KOD HOSTA: ${hostCode} | KOD TV: ${tvCode}`;
+    $('headerCodes').textContent = `KOD TV: ${tvCode}`;
 }
 
 export function updateUI(gameState, revealAnswerCallback) {
@@ -507,7 +519,7 @@ export function renderCategoriesSetup(questionCategories, toggleCategoryCallback
                     ${category.questions.map((q, qi) => `
                         <label class="category-question-item" style="cursor: pointer;" onclick="event.stopPropagation()">
                             <input type="checkbox" class="category-question-checkbox"
-                                   id="q${ci}_${qi}" onchange="updateSelectedQuestions()">
+                                   id="q${ci}_${qi}" onchange="onQuestionCheckChange(${ci}, ${qi}, this.checked)">
                             <span class="category-question-text">${escapeHtml(q.text)}</span>
                         </label>
                     `).join('')}
@@ -571,7 +583,7 @@ export function updateExcludeList(questionCategories, selectedCatIndexes) {
             <div class="exclude-cat-label">${cat.icon} ${cat.name}</div>
             ${cat.questions.map((q, qi) => `
                 <label class="exclude-question-item">
-                    <input type="checkbox" class="exclude-checkbox" id="excl_${ci}_${qi}" checked>
+                    <input type="checkbox" class="exclude-checkbox" id="excl_${ci}_${qi}" onchange="onExcludeCheckChange()" checked>
                     <span class="exclude-question-text">${escapeHtml(q.text)}</span>
                 </label>
             `).join('')}

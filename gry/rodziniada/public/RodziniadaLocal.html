@@ -31,12 +31,13 @@
         </div>
 
         <div class="setup-content">
-            <button class="btn-back-to-lobby" id="btnSetupBack" onclick="backFromSetup()">← Wróć do Lobby</button>
+            <button class="btn-back-to-lobby" id="btnSetupBack" onclick="backFromSetup()">Wróć do Lobby</button>
 
             <div class="game-name-section">
                 <div class="team-setup-title">🎮 Nazwa rozgrywki</div>
                 <input type="text" class="team-setup-input game-name-input"
-                       id="setupGameName" placeholder="Np. Rodzinka Kowalskich" maxlength="40">
+                       id="setupGameName" placeholder="Np. Rodzinka Kowalskich" maxlength="40"
+                       oninput="this.classList.remove('input-error')">
             </div>
 
             <div class="team-setup" id="setupTeamNamesContainer">
@@ -57,9 +58,6 @@
                         <button class="rounds-opt active" data-rounds="3" onclick="selectRounds(3)">3</button>
                         <button class="rounds-opt" data-rounds="5" onclick="selectRounds(5)">5</button>
                         <button class="rounds-opt" data-rounds="7" onclick="selectRounds(7)">7</button>
-                    </div>
-                    <div class="random-rounds-label" style="display: flex; align-items: center; justify-content: center; min-width: 80px;">
-                        <span id="roundsLabel" style="font-weight: 600; font-size: 1.1rem; color: #facc15;">3 rundy</span>
                     </div>
                 </div>
             </div>
@@ -109,6 +107,7 @@
                         <button class="btn-draw" id="btnDraw" onclick="drawQuestions()" disabled>
                             🎲 Losuj pytania
                         </button>
+                        <div id="randomDrawWarning" class="random-draw-warning"></div>
                     </div>
 
                     <div class="random-preview hidden" id="randomPreview">
@@ -119,6 +118,12 @@
                         <div class="random-preview-list" id="randomPreviewList"></div>
                     </div>
                 </div>
+            </div>
+
+            <!-- KOLEJNOŚĆ PYTAŃ -->
+            <div class="team-setup-box selected-questions-order-section hidden" id="selectedQuestionsOrderSection" style="margin-top: 20px;">
+                <div class="team-setup-title" style="text-align: left;">📋 Kolejność wybranych pytań</div>
+                <div class="selected-questions-list" id="selectedQuestionsList"></div>
             </div>
 
             <div class="setup-actions">
@@ -135,12 +140,12 @@
         <div class="container">
             <header class="header">
                 <div class="logo">RODZINIADA</div>
-                <div class="header-codes" id="headerCodes">KOD HOSTA: ---- | KOD TV: ----</div>
+                <div class="header-codes" id="headerCodes">KOD TV: ----</div>
                 <div class="header-buttons">
                     <button class="icon-button" id="btnMute" onclick="toggleSound()" title="Wycisz/włącz">🔊</button>
                     <button class="icon-button" onclick="toggleFullscreenHost()" title="Pełny ekran">⛶</button>
-                    <button class="start-display-button" onclick="startDisplay()">▶ START TV</button>
-                    <button class="menu-button"   onclick="endGameAndBackToMenu()">↩ MENU</button>
+                    <button class="start-display-button" onclick="startDisplay()">START TV</button>
+                    <button class="menu-button"   onclick="endGameAndBackToMenu()">MENU</button>
                     <button class="reset-button"  onclick="resetGame()">🔄 RESET</button>
                     <button class="tv-button"     onclick="openTV()">📺 TV</button>
                     <button class="winner-button" onclick="showWinner()" disabled
@@ -156,7 +161,7 @@
                 <!-- NAKŁADKA BLOKUJĄCA PRZED START TV -->
                 <div id="hostBlockOverlay" class="host-block-overlay">
                     <h2>Rozpocznij transmisję</h2>
-                    <p>Kliknij <strong>▶ START TV</strong> w górnym menu, aby uruchomić planszę dla graczy i odblokować swój panel sterowania.</p>
+                    <p>Kliknij <strong>START TV</strong> w górnym menu, aby uruchomić planszę dla graczy i odblokować swój panel sterowania.</p>
                 </div>
 
                 <!-- DRUŻYNY -->
@@ -224,8 +229,7 @@
                             <button class="round-btn"        onclick="setMultiplier(3)">×3</button>
                         </div>
                         <div class="nav-controls">
-                            <button class="btn-nav" onclick="previousQuestion()">⬅ POPRZEDNIE</button>
-                            <button class="btn-nav" onclick="nextQuestion()">NASTĘPNE ➡</button>
+                            <button class="btn-nav" onclick="nextQuestion()">NASTĘPNE PYTANIE</button>
                         </div>
                     </div>
                 </div>
@@ -261,7 +265,7 @@
                             <span class="shortcut-key">1–8</span><span class="shortcut-desc">Odkryj odpowiedź</span>
                             <span class="shortcut-key">R</span><span class="shortcut-desc">Pokaż wszystkie</span>
                             <span class="shortcut-key">Z</span><span class="shortcut-desc">Zwycięzca</span>
-                            <span class="shortcut-key">← →</span><span class="shortcut-desc">Prev / Next</span>
+                            <span class="shortcut-key">→</span><span class="shortcut-desc">Następne</span>
                         </div>
                     </div>
 

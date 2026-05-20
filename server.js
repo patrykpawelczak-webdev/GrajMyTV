@@ -9,7 +9,12 @@ const qrcode     = require('qrcode-terminal');
 
 const app    = express();
 const server = http.createServer(app);
-const io     = new Server(server);
+const io     = new Server(server, {
+    pingTimeout:  5000,   // 5s – czas oczekiwania na pong zanim uzna klienta za rozłączonego
+    pingInterval: 3000,   // 3s – jak często serwer pinguje klientów
+    transports: ['websocket'],  // wymuś WebSocket, bez fallbacku na polling
+    upgradeTimeout: 3000,
+});
 
 const PORT = process.env.PORT || 3000;
 const IS_PROD = process.env.NODE_ENV === 'production';
@@ -56,7 +61,22 @@ app.get('/gra4', (req, res) => res.redirect('/?soon=gra4'));
 // ===== SOCKET.IO NAMESPACES =====
 const rodziniadaIO = io.of('/rodziniada');
 const rodziniadaSocket = require('./gry/rodziniada/socket');
-rodziniadaSocket(rodziniadaIO, logInfo, logSuccess, logWarn, logError, c);
+const rodziniadaAPI = rodziniadaSocket(rodziniadaIO, logInfo, logSuccess, logWarn, logError, c);
+
+// Endpoint dla Beacon API – wywoływany przy zamknięciu karty przez hosta
+app.post('/rodziniada/api/endgame', express.json(), (req, res) => {
+    const { gameId } = req.body || {};
+    if (!gameId) return res.status(400).end();
+    const ok = rodziniadaAPI.forceEndGame(gameId);
+    logInfo('RODZINIADA', `[HTTP] /api/endgame gameId=${gameId} ok=${ok}`);
+    res.status(ok ? 200 : 404).end();
+});
+
+// Endpoint do pollingu listy gier (fallback gdy WebSocket nie działa)
+app.get('/rodziniada/api/games', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(rodziniadaAPI.getGamesList());
+});
 
 // ===== IP =====
 function getBestLocalIP() {

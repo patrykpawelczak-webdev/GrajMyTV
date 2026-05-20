@@ -13,6 +13,10 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
+.tv-content-wrapper {
+    margin-top: 5vh;
+}
+
 .tv-header {
     display: flex;
     align-items: center;
@@ -639,3 +643,12 @@ body {
     .tv-question { height: 6vh; margin-bottom: 0.5vh; }
     .tv-answers { gap: 0.3vh; }
 }
+
+/* Ukrywanie przycisków maksymalizacji/pełnego ekranu na telefonach i ekranach mobilnych (poza aktywnym panelem gry) */
+@media (max-width: 768px) {
+    .host-fullscreen-button,
+    .tv-fullscreen-button,
+    button[onclick="enterFullscreen()"] {
+        display: none !important;
+    }
+}

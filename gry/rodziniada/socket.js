@@ -1,4 +1,5 @@
 module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
+    const exports = {};
 
     const games      = {};
     const codeToGame = {};
@@ -241,14 +242,27 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
                 logWarn('RODZINIADA', `Host wyszedl: hostow=${c.yellow}${game.hostCount}${c.reset}`);
 
                 if (game.hostCount === 0) {
-                    logWarn('RODZINIADA', `Rozpoczynam timer 30s na powrot hosta dla: ${c.magenta}${gameId}${c.reset}`);
-                    game.reconnectTimer = setTimeout(() => {
-                        if (games[gameId] && games[gameId].hostCount === 0) {
-                            logError('RODZINIADA', `Host nie wrocil, niszcze gre: ${c.magenta}${gameId}${c.reset}`);
-                            io.to(`game:${gameId}`).emit('gameEnded');
-                            cleanupGame(gameId);
-                        }
-                    }, 30000);
+                    const unassignedPlayers = (game.state.lobby && game.state.lobby.unassigned || []).filter(p => p.id !== 'creator');
+                    const team1Players = (game.state.lobby && game.state.lobby.team1) || [];
+                    const team2Players = (game.state.lobby && game.state.lobby.team2) || [];
+                    const hasOtherPlayers = unassignedPlayers.length > 0 || team1Players.length > 0 || team2Players.length > 0;
+
+                    if (!game.isOnline || (!game.state.displayStarted && !hasOtherPlayers)) {
+                        // Dla gry lokalnej LUB pustej poczekalni online (brak startu i innych graczy): usuń grę natychmiast!
+                        logWarn('RODZINIADA', `Gra lokalna lub pusta poczekalnia - host wyszedl, natychmiast niszcze gre: ${c.magenta}${gameId}${c.reset}`);
+                        io.to(`game:${gameId}`).emit('gameEnded');
+                        cleanupGame(gameId);
+                    } else {
+                        // Dla aktywnej gry online (wystartowana lub z graczami): daj 30 sekund na powrót
+                        logWarn('RODZINIADA', `Rozpoczynam timer 30s na powrot hosta dla: ${c.magenta}${gameId}${c.reset}`);
+                        game.reconnectTimer = setTimeout(() => {
+                            if (games[gameId] && games[gameId].hostCount === 0) {
+                                logError('RODZINIADA', `Host nie wrocil, niszcze gre: ${c.magenta}${gameId}${c.reset}`);
+                                io.to(`game:${gameId}`).emit('gameEnded');
+                                cleanupGame(gameId);
+                            }
+                        }, 30000);
+                    }
                 } else {
                     io.emit('gamesListUpdated', getGamesList());
                 }
@@ -270,4 +284,18 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
             }
         });
     });
+
+    // Wyeksportuj forceEndGame i getGamesList dla HTTP endpointów
+    exports.forceEndGame = (gameId) => {
+        const game = games[gameId];
+        if (!game) return false;
+        logWarn('RODZINIADA', `[BEACON] Force-end gry: ${c.magenta}${gameId}${c.reset}`);
+        io.to(`game:${gameId}`).emit('gameEnded');
+        cleanupGame(gameId);
+        return true;
+    };
+
+    exports.getGamesList = () => getGamesList();
+
+    return exports;
 };

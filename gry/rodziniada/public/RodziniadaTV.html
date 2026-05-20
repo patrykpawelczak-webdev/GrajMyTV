@@ -21,48 +21,51 @@
         </div>
     </div>
 
-    <!-- HEADER -->
-    <div class="tv-header">
-        <div class="tv-logo">RODZINIADA</div>
-    </div>
+    <!-- TV CONTENT WRAPPER -->
+    <div class="tv-content-wrapper">
+        <!-- HEADER -->
+        <div class="tv-header">
+            <div class="tv-logo">RODZINIADA</div>
+        </div>
 
-    <button class="tv-fullscreen-button" onclick="enterFullscreen()"
-            title="Pełny ekran">⛶</button>
+        <button class="tv-fullscreen-button" onclick="enterFullscreen()"
+                title="Pełny ekran">⛶</button>
 
-    <!-- SCOREBOARD -->
-    <div class="tv-scoreboard">
-        <div class="tv-team" id="tvTeam1">
-            <div class="tv-team-name"  id="tvTeam1Name">DRUŻYNA 1</div>
-            <div class="tv-team-score" id="tvTeam1Score">0</div>
-        </div>
-        <div class="tv-round-info">
-            <div class="tv-round-score" id="tvRoundScore">0</div>
-            <div class="tv-round-label">pkt</div>
-            <div class="tv-multiplier"  id="tvMultiplier">×1</div>
-        </div>
-        <div class="tv-team" id="tvTeam2">
-            <div class="tv-team-name"  id="tvTeam2Name">DRUŻYNA 2</div>
-            <div class="tv-team-score" id="tvTeam2Score">0</div>
-        </div>
-    </div>
-
-    <!-- TABLICA -->
-    <div class="tv-board">
-        <div class="tv-strikes-side tv-strikes-left">
-            <span class="tv-strike" id="tvTeam1Strike1">X</span>
-            <span class="tv-strike" id="tvTeam1Strike2">X</span>
-            <span class="tv-strike" id="tvTeam1Strike3">X</span>
-        </div>
-        <div class="tv-board-inner">
-            <div class="tv-question hidden" id="tvQuestion">
-                <div class="tv-question-text question-mark" id="tvQuestionText">?</div>
+        <!-- SCOREBOARD -->
+        <div class="tv-scoreboard">
+            <div class="tv-team" id="tvTeam1">
+                <div class="tv-team-name"  id="tvTeam1Name">DRUŻYNA 1</div>
+                <div class="tv-team-score" id="tvTeam1Score">0</div>
             </div>
-            <div class="tv-answers" id="tvAnswers"></div>
+            <div class="tv-round-info">
+                <div class="tv-round-score" id="tvRoundScore">0</div>
+                <div class="tv-round-label">pkt</div>
+                <div class="tv-multiplier"  id="tvMultiplier">×1</div>
+            </div>
+            <div class="tv-team" id="tvTeam2">
+                <div class="tv-team-name"  id="tvTeam2Name">DRUŻYNA 2</div>
+                <div class="tv-team-score" id="tvTeam2Score">0</div>
+            </div>
         </div>
-        <div class="tv-strikes-side tv-strikes-right">
-            <span class="tv-strike" id="tvTeam2Strike1">X</span>
-            <span class="tv-strike" id="tvTeam2Strike2">X</span>
-            <span class="tv-strike" id="tvTeam2Strike3">X</span>
+
+        <!-- TABLICA -->
+        <div class="tv-board">
+            <div class="tv-strikes-side tv-strikes-left">
+                <span class="tv-strike" id="tvTeam1Strike1">X</span>
+                <span class="tv-strike" id="tvTeam1Strike2">X</span>
+                <span class="tv-strike" id="tvTeam1Strike3">X</span>
+            </div>
+            <div class="tv-board-inner">
+                <div class="tv-question hidden" id="tvQuestion">
+                    <div class="tv-question-text question-mark" id="tvQuestionText">?</div>
+                </div>
+                <div class="tv-answers" id="tvAnswers"></div>
+            </div>
+            <div class="tv-strikes-side tv-strikes-right">
+                <span class="tv-strike" id="tvTeam2Strike1">X</span>
+                <span class="tv-strike" id="tvTeam2Strike2">X</span>
+                <span class="tv-strike" id="tvTeam2Strike3">X</span>
+            </div>
         </div>
     </div>
 

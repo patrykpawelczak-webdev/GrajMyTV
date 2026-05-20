@@ -1,4 +1,4 @@
-const socket = io('/rodziniada');
+const socket = io('/rodziniada', { transports: ['websocket'] });
 
 let questionCategories = [];
 let allGames = [];
@@ -651,12 +651,16 @@ function showWinner() {
 
     socket.emit('showWinner', {gameId: currentGameId, winnerName});
 
+    // W grze lokalnej nie wyłączamy ekranu TV automatycznie po 10 sekundach.
+    // Pozwalamy hostowi na ręczne zakończenie gry przyciskiem MENU.
+    /*
     setTimeout(() => {
         if (currentGameId) {
             socket.emit('endGame', {gameId: currentGameId});
         }
         backToMenuUIOnly();
     }, 10000);
+    */
 }
 
 function updateWinnerButton() {

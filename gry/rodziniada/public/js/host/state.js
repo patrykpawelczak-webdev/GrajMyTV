@@ -20,7 +20,7 @@ export function createEmptyState() {
     };
 }
 
-export function buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions) {
+export function buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions, selectedQuestionsOrder = []) {
     const state = createEmptyState();
     state.team1.name = $('setupTeam1Name').value.trim() || 'Drużyna 1';
     state.team2.name = $('setupTeam2Name').value.trim() || 'Drużyna 2';
@@ -28,15 +28,17 @@ export function buildInitialStateFromSetup(currentMode, questionCategories, draw
     const selected = [];
 
     if (currentMode === 'manual') {
-        questionCategories.forEach((cat, ci) => {
-            cat.questions.forEach((q, qi) => {
-                if ($(`q${ci}_${qi}`)?.checked) {
+        selectedQuestionsOrder.forEach(item => {
+            const cat = questionCategories[item.ci];
+            if (cat && cat.questions) {
+                const q = cat.questions[item.qi];
+                if (q) {
                     selected.push({
                         text: q.text,
                         answers: q.answers.map(a => ({ text: a.text, points: a.points }))
                     });
                 }
-            });
+            }
         });
     } else {
         drawnQuestions.forEach(q => {

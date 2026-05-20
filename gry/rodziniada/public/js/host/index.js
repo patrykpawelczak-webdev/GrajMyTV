@@ -1,9 +1,9 @@
-import { $, normalizeStr } from './utils.js';
+import { $, normalizeStr, escapeHtml } from './utils.js';
 import { createEmptyState, buildInitialStateFromSetup } from './state.js';
 import * as ui from './ui.js';
 import * as net from './network.js';
 
-const socket = io('/rodziniada');
+const socket = io('/rodziniada', { transports: ['websocket'] });
 
 // ===== STAN GLOBALNY (MODUŁOWY) =====
 let questionCategories = [];
@@ -12,6 +12,7 @@ let categoriesRendered = false;
 let currentMode = 'manual';
 let selectedRounds = 3;
 let drawnQuestions = [];
+let selectedQuestionsOrder = [];
 let gameState = createEmptyState();
 let currentGameId = null;
 let currentHostCode = null;
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ui.showSetupScreenLocal();
         currentMode = 'manual';
         drawnQuestions = [];
+        selectedQuestionsOrder = [];
         const manualTab = $('modeTabManual');
         if (manualTab) manualTab.classList.add('active');
         const randomTab = $('modeTabRandom');
@@ -53,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             grid.innerHTML = '';
         }
         updateSelectedQuestions();
+        renderSelectedQuestionsOrder();
     } else if (isOnlinePage) {
         isOnlineMode = true;
         
@@ -94,10 +97,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             ui.showSetupScreenOnline();
         }
     } else {
-        // Główna strona lobby
+        // Główna strona lobby – uruchom polling co 3 sekundy
         ui.showLobbyScreen();
+        startGamesPolling();
     }
 });
+
+// ===== POLLING LISTY GIER =====
+let pollingInterval = null;
+let lastGamesHash = '';
+
+async function fetchGamesList() {
+    try {
+        const res = await fetch('/rodziniada/api/games', { cache: 'no-store' });
+        if (!res.ok) return;
+        const games = await res.json();
+        // Porównaj hash żeby nie rerenderować bez potrzeby
+        const hash = JSON.stringify(games.map(g => g.gameId + g.hasHost));
+        if (hash === lastGamesHash) return;
+        lastGamesHash = hash;
+        allGames = games;
+        filterGames();
+    } catch (e) { /* serwer niedostępny */ }
+}
+
+function startGamesPolling() {
+    fetchGamesList(); // od razu przy załadowaniu
+    pollingInterval = setInterval(fetchGamesList, 3000);
+}
+
+function stopGamesPolling() {
+    if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+}
 
 async function loadQuestionsFromServer() {
     try {
@@ -372,6 +403,10 @@ window.joinGameAsTv = (tvCode) => {
     }, 10);
 };
 
+window.openTvDirectly = () => {
+    window.location.href = '/rodziniada/tv';
+};
+
 window.showCategories = () => {
     const btn = $('btnShowCategories');
     const grid = $('categoriesGrid');
@@ -383,27 +418,183 @@ window.showCategories = () => {
     }
 };
 
+window.onQuestionCheckChange = (ci, qi, checked) => {
+    updateQuestionOrderState(ci, qi, checked);
+    updateSelectedQuestions();
+    renderSelectedQuestionsOrder();
+};
+
+function updateQuestionOrderState(ci, qi, checked) {
+    const idx = selectedQuestionsOrder.findIndex(item => item.ci === ci && item.qi === qi);
+    if (checked) {
+        if (idx === -1) {
+            selectedQuestionsOrder.push({ ci, qi });
+        }
+    } else {
+        if (idx !== -1) {
+            selectedQuestionsOrder.splice(idx, 1);
+        }
+    }
+}
+
 window.toggleCategory = (ci) => {
     const cat = questionCategories[ci];
     const any = cat.questions.some((_, qi) => $(`q${ci}_${qi}`)?.checked);
     cat.questions.forEach((_, qi) => {
         const cb = $(`q${ci}_${qi}`);
-        if (cb) cb.checked = !any;
+        if (cb) {
+            cb.checked = !any;
+            updateQuestionOrderState(ci, qi, !any);
+        }
     });
     updateSelectedQuestions();
+    renderSelectedQuestionsOrder();
 };
 
 window.updateSelectedQuestions = () => {
     let count = 0;
     if (currentMode === 'manual') {
-        questionCategories.forEach((cat, ci) => {
-            cat.questions.forEach((_, qi) => { if ($(`q${ci}_${qi}`)?.checked) count++; });
-        });
+        count = selectedQuestionsOrder.length;
     } else {
         count = drawnQuestions.length;
     }
     $('selectedCount').textContent = `Wybrano: ${count} z ${selectedRounds}`;
     $('btnStartGame').disabled = count !== selectedRounds;
+};
+
+let draggedIndex = null;
+
+window.handleDragStart = (e, index) => {
+    draggedIndex = index;
+    e.currentTarget.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+};
+
+window.handleDragEnd = (e) => {
+    e.currentTarget.classList.remove('dragging');
+    draggedIndex = null;
+    document.querySelectorAll('.selected-question-item').forEach(el => {
+        el.classList.remove('drag-over-above', 'drag-over-below');
+    });
+};
+
+window.handleDragOver = (e, index) => {
+    if (draggedIndex === null || draggedIndex === index) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    const isAbove = e.clientY < midY;
+    
+    if (isAbove) {
+        e.currentTarget.classList.add('drag-over-above');
+        e.currentTarget.classList.remove('drag-over-below');
+    } else {
+        e.currentTarget.classList.add('drag-over-below');
+        e.currentTarget.classList.remove('drag-over-above');
+    }
+};
+
+window.handleDragLeave = (e) => {
+    e.currentTarget.classList.remove('drag-over-above', 'drag-over-below');
+};
+
+window.handleDrop = (e, targetIndex) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+    
+    const draggedItem = selectedQuestionsOrder[draggedIndex];
+    selectedQuestionsOrder.splice(draggedIndex, 1);
+    selectedQuestionsOrder.splice(targetIndex, 0, draggedItem);
+    
+    renderSelectedQuestionsOrder();
+    updateSelectedQuestions();
+};
+
+window.removeSelectedQuestion = (index) => {
+    if (index < 0 || index >= selectedQuestionsOrder.length) return;
+    const { ci, qi } = selectedQuestionsOrder[index];
+    selectedQuestionsOrder.splice(index, 1);
+    
+    // Also uncheck the checkbox in the UI
+    const cb = $(`q${ci}_${qi}`);
+    if (cb) cb.checked = false;
+    
+    renderSelectedQuestionsOrder();
+    updateSelectedQuestions();
+};
+
+function renderSelectedQuestionsOrder() {
+    const section = $('selectedQuestionsOrderSection');
+    const listContainer = $('selectedQuestionsList');
+    if (!section || !listContainer) return;
+
+    if (currentMode !== 'manual' || selectedQuestionsOrder.length === 0) {
+        section.classList.add('hidden');
+        return;
+    }
+
+    section.classList.remove('hidden');
+    
+    listContainer.innerHTML = selectedQuestionsOrder.map((item, index) => {
+        const cat = questionCategories[item.ci];
+        const q = cat.questions[item.qi];
+        
+        return `
+            <div class="selected-question-item" draggable="true"
+                 ondragstart="handleDragStart(event, ${index})"
+                 ondragend="handleDragEnd(event)"
+                 ondragover="handleDragOver(event, ${index})"
+                 ondragleave="handleDragLeave(event)"
+                 ondrop="handleDrop(event, ${index})">
+                <div class="drag-handle" title="Przeciągnij, aby zmienić kolejność">⠿</div>
+                <div class="selected-question-index">${index + 1}</div>
+                <div class="selected-question-content">
+                    <div class="selected-question-text">${escapeHtml(q.text)}</div>
+                    <div class="selected-question-cat">${cat.icon} ${cat.name} &bull; ${q.answers.length} odp.</div>
+                </div>
+                <div class="selected-question-actions">
+                    <button class="selected-question-btn remove-btn" onclick="removeSelectedQuestion(${index})" title="Usuń z wybranych">❌</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Calculates available pool and updates button state + warning pill
+const updateDrawButtonState = () => {
+    const selectedIndexes = questionCategories.map((_, i) => i).filter(i => $(`randomCat_${i}`)?.classList.contains('selected'));
+    const available = [];
+    selectedIndexes.forEach(ci => {
+        const cat = questionCategories[ci];
+        cat.questions.forEach((q, qi) => {
+            const cb = $(`excl_${ci}_${qi}`);
+            // If checkbox exists use its state, else default checked (not yet rendered = all included)
+            if (!cb || cb.checked) available.push(true);
+        });
+    });
+    const count = available.length;
+    const isEnough = count >= selectedRounds;
+    const btn = $('btnDraw');
+    if (btn) btn.disabled = !isEnough || selectedIndexes.length === 0;
+    const warn = $('randomDrawWarning');
+    if (warn) {
+        if (selectedIndexes.length === 0) {
+            warn.textContent = '';
+            warn.className = 'random-draw-warning';
+        } else if (isEnough) {
+            warn.textContent = `✨ Gotowe! Dostępnych pytań: ${count} (wymagane min. ${selectedRounds})`;
+            warn.className = 'random-draw-warning visible success';
+        } else {
+            warn.textContent = `⚠️ Za mało pytań! Masz ${count} z wymaganych min. ${selectedRounds}`;
+            warn.className = 'random-draw-warning visible warning';
+        }
+    }
+};
+
+window.onExcludeCheckChange = () => {
+    updateDrawButtonState();
 };
 
 window.switchMode = (mode) => {
@@ -416,10 +607,10 @@ window.switchMode = (mode) => {
     $('randomPreview')?.classList.add('hidden');
     if (mode === 'random') {
         ui.renderRandomCats(questionCategories, window.toggleRandomCat);
-        const btn = $('btnDraw');
-        if (btn) btn.disabled = questionCategories.length === 0;
+        updateDrawButtonState();
     }
     updateSelectedQuestions();
+    renderSelectedQuestionsOrder();
 };
 
 window.toggleRandomCat = (ci) => {
@@ -432,8 +623,7 @@ window.toggleRandomCat = (ci) => {
     ui.updateExcludeList(questionCategories, selectedIndexes);
     drawnQuestions = [];
     $('randomPreview')?.classList.add('hidden');
-    const btn = $('btnDraw');
-    if (btn) btn.disabled = selectedIndexes.length === 0;
+    updateDrawButtonState();
     updateSelectedQuestions();
 };
 
@@ -444,6 +634,7 @@ window.selectRounds = (n) => {
     if (label) label.textContent = n === 3 ? '3 rundy' : n === 5 ? '5 rund' : '7 rund';
     drawnQuestions = [];
     $('randomPreview')?.classList.add('hidden');
+    updateDrawButtonState();
     updateSelectedQuestions();
 };
 
@@ -469,7 +660,7 @@ window.drawQuestions = () => {
 window.startGame = () => {
     if (isOnlineMode) {
         // Gry online: aktualizujemy stan istniejącej gry i przechodzimy do planszy!
-        const setupState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions);
+        const setupState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions, selectedQuestionsOrder);
         
         // Przenosimy wybrane pytania do aktywnego stanu gry
         gameState.selectedQuestions = setupState.selectedQuestions;
@@ -482,8 +673,13 @@ window.startGame = () => {
         ui.showGameScreen();
     } else {
         // Gra lokalna: tworzymy nową grę
-        const gameName = $('setupGameName').value.trim() || 'Rozgrywka';
-        const initialState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions);
+        const gameName = $('setupGameName').value.trim();
+        if (!gameName) {
+            ui.showToast('Wpisz nazwę rozgrywki!', 'error');
+            $('setupGameName').focus();
+            return;
+        }
+        const initialState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions, selectedQuestionsOrder);
         initialState.isOnline = isOnlineMode;
         net.createGame(socket, initialState, gameName, false);
     }
@@ -503,8 +699,12 @@ window.addStrike = (n) => {
         gameState.stealUsed = true; team.strikes = 1;
         net.showBigX(socket, currentGameId, 1);
         setTimeout(() => {
-            gameState.pointsAwarded = true;
-            gameState.roundPoints = 0;
+            if (gameState.failedTeam) {
+                window.awardPoints(gameState.failedTeam, gameState.currentQuestionIndex);
+            } else {
+                gameState.pointsAwarded = true;
+                gameState.roundPoints = 0;
+            }
             endStealMode();
         }, 1500);
     } else {
@@ -578,13 +778,17 @@ window.revealAll = () => {
 };
 
 window.nextQuestion = () => {
+    // Blokada: przejście do kolejnego pytania dopiero po przyznaniu punktów
+    if (gameState.currentQuestionIndex !== -1 && !gameState.pointsAwarded) {
+        ui.showToast('Najpierw przyznaj punkty za tę rundę!', 'warning');
+        return;
+    }
     if (gameState.currentQuestionIndex === -1 && gameState.selectedQuestions.length > 0) loadQuestion(0);
     else if (gameState.currentQuestionIndex < gameState.selectedQuestions.length - 1) loadQuestion(gameState.currentQuestionIndex + 1);
 };
 
 window.previousQuestion = () => {
-    // Funkcja cofania pytań została zablokowana na prośbę użytkownika
-    ui.showToast('Cofanie pytań jest zablokowane', 'info');
+    // Funkcja cofania pytań została całkowicie usunięta
 };
 
 function loadQuestion(i) {
@@ -666,7 +870,12 @@ window.showWinner = () => {
     if (s1 === s2) { ui.showToast('Remis! Nie można ogłosić zwycięzcy.', 'error'); return; }
     const winnerName = s1 > s2 ? gameState.team1.name : gameState.team2.name;
     net.showWinner(socket, currentGameId, winnerName);
-    setTimeout(() => { if (currentGameId) net.endGame(socket, currentGameId); }, 10000);
+    
+    // W grze lokalnej nie wyłączamy ekranu TV automatycznie po 10 sekundach.
+    // Pozwalamy hostowi na ręczne zakończenie gry przyciskiem MENU.
+    if (isOnlineMode) {
+        setTimeout(() => { if (currentGameId) net.endGame(socket, currentGameId); }, 10000);
+    }
 };
 
 window.closeModal = ui.closeModal;
@@ -685,8 +894,20 @@ document.addEventListener('keydown', (e) => {
             window.revealAnswer(parseInt(e.key) - 1); break;
         case 'r': case 'R': window.revealAll(); break;
         case 'z': case 'Z': window.showWinner(); break;
-        case 'ArrowLeft': window.previousQuestion(); break;
         case 'ArrowRight': window.nextQuestion(); break;
         case 'Escape': ui.closeModal(); break;
     }
 });
+
+// ===== OBSŁUGA WYJŚCIA HOSTA =====
+const handleUnload = () => {
+    if (currentGameId && currentRole === 'host') {
+        // Beacon API – gwarantowane dostarczenie nawet przy zamknięciu karty/przeglądarki
+        const data = JSON.stringify({ gameId: currentGameId });
+        navigator.sendBeacon('/rodziniada/api/endgame', new Blob([data], { type: 'application/json' }));
+        // Backup: rozłącz socket (może nie zdążyć, ale spróbujmy)
+        socket.disconnect();
+    }
+};
+window.addEventListener('beforeunload', handleUnload);
+window.addEventListener('pagehide', handleUnload);
