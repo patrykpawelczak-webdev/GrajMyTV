@@ -225,8 +225,15 @@ export function updateUI(gameState, revealAnswerCallback) {
     
     const hostBlockOverlay = $('hostBlockOverlay');
     if (hostBlockOverlay) {
-        if (gameState.displayStarted) hostBlockOverlay.classList.add('hidden');
-        else hostBlockOverlay.classList.remove('hidden');
+        if (gameState.displayStarted) {
+            hostBlockOverlay.classList.add('hidden');
+        } else {
+            hostBlockOverlay.classList.remove('hidden');
+            const jokeText = $('hostJokeText');
+            if (jokeText) {
+                jokeText.textContent = gameState.joke ? gameState.joke.text : 'Ładowanie żartu...';
+            }
+        }
     }
 
     const bm = $('btnMute');

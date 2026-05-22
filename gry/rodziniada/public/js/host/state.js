@@ -11,6 +11,7 @@ export function createEmptyState() {
         pointsAwarded: false, failedTeam: null,
         selectedQuestions: [], soundEnabled: true,
         displayStarted: false,
+        joke: null,
         lobby: {
             unassigned: [],
             presenter: null,

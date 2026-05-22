@@ -250,3 +250,51 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('beforeunload', (e) => {
     if (state.unsaved) { e.preventDefault(); e.returnValue = ''; }
 });
+
+// ===== SUCHAR / JOKES ACTIONS =====
+function selectJoke(jokeId) {
+    state.activeJokeId = jokeId;
+    ui.renderJokes(selectJoke);
+}
+
+window.deleteActiveJoke = () => {
+    if (!state.activeJokeId) return;
+    ui.confirmDeleteJoke(state.activeJokeId, (jokeId) => {
+        if (state.jokesData && Array.isArray(state.jokesData.jokes)) {
+            state.jokesData.jokes = state.jokesData.jokes.filter(j => j.id !== jokeId);
+        }
+        state.activeJokeId = null;
+        ui.renderJokes(selectJoke);
+        markUnsaved();
+    });
+};
+
+window.switchEditorTab = (tab) => {
+    state.activeTab = tab;
+    document.getElementById('tabQuestions').classList.toggle('active', tab === 'questions');
+    document.getElementById('tabJokes').classList.toggle('active', tab === 'jokes');
+    document.getElementById('questionsLayout').classList.toggle('hidden', tab !== 'questions');
+    document.getElementById('jokesLayout').classList.toggle('hidden', tab !== 'jokes');
+
+    if (tab === 'jokes') {
+        ui.renderJokes(selectJoke);
+    }
+};
+
+window.addJoke = () => {
+    if (!state.jokesData) state.jokesData = { jokes: [] };
+    if (!Array.isArray(state.jokesData.jokes)) state.jokesData.jokes = [];
+    
+    const newJoke = {
+        id: generateId(),
+        text: ''
+    };
+    state.jokesData.jokes.push(newJoke);
+    state.activeJokeId = newJoke.id;
+    ui.renderJokes(selectJoke);
+    markUnsaved();
+    
+    setTimeout(() => {
+        document.getElementById('activeJokeTextarea')?.focus();
+    }, 100);
+};

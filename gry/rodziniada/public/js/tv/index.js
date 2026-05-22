@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const code = urlParams.get('code');
     if (code) {
         socket.emit('joinAsTv', { code });
+    } else {
+        // Spróbuj automatycznie dołączyć do aktywnej gry lokalnej
+        socket.emit('joinAsTv', { code: null });
     }
 });
 
@@ -31,7 +34,7 @@ socket.on('gameStateUpdated', ({ state }) => {
 
 
 
-socket.on('showBigX', ({ count }) => {
+socket.on('showBigX', (count) => {
     render.showBigX(count);
     audio.play('strike');
 });
@@ -115,5 +118,15 @@ socket.on('joinError', ({ message }) => {
     const screen = tv('joinScreen');
     if (screen) screen.classList.remove('hidden');
     const err = tv('joinErrorTv');
-    if (err) err.textContent = message;
+    if (err) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const input = tv('joinCodeInput');
+        const hasUrlCode = urlParams.get('code');
+        const hasInputCode = input && input.value.trim().length > 0;
+        if (hasUrlCode || hasInputCode) {
+            err.textContent = message;
+        } else {
+            err.textContent = '';
+        }
+    }
 });

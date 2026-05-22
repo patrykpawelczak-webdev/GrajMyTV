@@ -855,6 +855,141 @@
 ::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.4); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
+/* ===== TABS ===== */
+.editor-tabs {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    margin-left: 10px;
+}
+
+.editor-tab {
+    padding: 6px 14px;
+    border: none;
+    background: none;
+    color: var(--gray);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.editor-tab:hover {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.editor-tab.active {
+    color: var(--dark-blue);
+    background: var(--gold);
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+/* ===== JOKES PANEL ===== */
+.jokes-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.btn-add-joke {
+    padding: 8px 16px;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-add-joke:hover {
+    background: #22c55e;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+}
+
+.jokes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(520px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.joke-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.joke-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+}
+
+.joke-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.joke-card-num {
+    font-size: 0.8rem;
+    color: var(--gray);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.btn-delete-joke {
+    background: none;
+    border: none;
+    color: var(--gray);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s;
+}
+
+.btn-delete-joke:hover {
+    color: var(--red);
+    background: rgba(220, 38, 38, 0.15);
+}
+
+.joke-textarea {
+    width: 100%;
+    min-height: 160px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    color: var(--white);
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.joke-textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
 /* RESPONSYWNOŚĆ */
 @media (max-width: 768px) {
     .editor-layout {
@@ -868,4 +1003,5 @@
     }
     .editor-stats { display: none; }
     .editor-header { gap: 8px; }
+    .editor-tabs { margin-left: 0; margin-top: 4px; width: 100%; justify-content: center; }
 }

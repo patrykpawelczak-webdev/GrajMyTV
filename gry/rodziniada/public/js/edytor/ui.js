@@ -287,3 +287,112 @@ export function sortAnswersByPointsUI() {
     initAnswerSortable(list);
     showToast('Posortowano po punktach', 'info');
 }
+
+// ===== RENDEROWANIE SUCHarów / ŻARTÓW =====
+export function renderJokes(selectJokeCallback) {
+    const list = document.getElementById('jokesSidebarList');
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!state.jokesData || !Array.isArray(state.jokesData.jokes)) {
+        state.jokesData = { jokes: [] };
+    }
+
+    state.jokesData.jokes.forEach((joke, index) => {
+        const item = document.createElement('div');
+        item.className = 'category-item' + (joke.id === state.activeJokeId ? ' active' : '');
+        item.dataset.id = joke.id;
+
+        const textSnippet = joke.text ? (joke.text.length > 35 ? joke.text.slice(0, 35) + '...' : joke.text) : 'Pusty suchar...';
+
+        item.innerHTML = `
+            <span class="joke-drag-handle" style="cursor: grab; padding: 0 6px 0 2px; color: var(--gray); font-size: 1.1rem; display: inline-block;">&#8942;</span>
+            <span class="cat-icon-display">💬</span>
+            <div class="cat-info" style="flex: 1; min-width: 0;">
+                <div class="cat-name-display" style="font-weight: 700; color: var(--white); font-size: 0.85rem;">Suchar #${index + 1}</div>
+                <div class="cat-count-display" style="font-size: 0.75rem; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">${escapeHtml(textSnippet)}</div>
+            </div>
+        `;
+
+        item.addEventListener('click', (e) => {
+            if (e.target.classList.contains('joke-drag-handle')) return;
+            selectJokeCallback(joke.id);
+        });
+
+        list.appendChild(item);
+    });
+
+    // Inicjalizacja sortowania przeciąganiem
+    if (state.jokeSortable) state.jokeSortable.destroy();
+    state.jokeSortable = Sortable.create(list, {
+        handle: '.joke-drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: (evt) => {
+            const moved = state.jokesData.jokes.splice(evt.oldIndex, 1)[0];
+            state.jokesData.jokes.splice(evt.newIndex, 0, moved);
+            markUnsaved();
+            renderJokes(selectJokeCallback);
+        }
+    });
+
+    // Aktualizacja widoku edytora po prawej
+    updateJokeEditorUI();
+}
+
+export function updateJokeEditorUI() {
+    const emptyState = document.getElementById('jokeContentEmpty');
+    const editorPanel = document.getElementById('jokeEditor');
+    if (!emptyState || !editorPanel) return;
+
+    if (!state.activeJokeId) {
+        emptyState.style.display = 'flex';
+        editorPanel.classList.add('hidden');
+        return;
+    }
+
+    const jokeIndex = state.jokesData.jokes.findIndex(j => j.id === state.activeJokeId);
+    const joke = state.jokesData.jokes[jokeIndex];
+
+    if (!joke) {
+        state.activeJokeId = null;
+        emptyState.style.display = 'flex';
+        editorPanel.classList.add('hidden');
+        return;
+    }
+
+    emptyState.style.display = 'none';
+    editorPanel.classList.remove('hidden');
+
+    const titleEl = document.getElementById('jokeEditorTitle');
+    if (titleEl) titleEl.textContent = `Suchar #${jokeIndex + 1}`;
+
+    const textarea = document.getElementById('activeJokeTextarea');
+    if (textarea) {
+        textarea.value = joke.text || '';
+        
+        textarea.oninput = () => {
+            joke.text = textarea.value;
+            markUnsaved();
+            
+            // Zaktualizuj tylko snippet w pasującym elemencie paska bocznego w locie bez pełnego re-renderu!
+            const sidebarItem = document.querySelector(`#jokesSidebarList .category-item[data-id="${joke.id}"] .cat-count-display`);
+            if (sidebarItem) {
+                const textSnippet = joke.text ? (joke.text.length > 35 ? joke.text.slice(0, 35) + '...' : joke.text) : 'Pusty suchar...';
+                sidebarItem.textContent = textSnippet;
+            }
+        };
+    }
+}
+
+export function confirmDeleteJoke(jokeId, deleteJokeCallback) {
+    state.confirmCallback = () => {
+        deleteJokeCallback(jokeId);
+        showToast('Suchar usunięty', 'info');
+    };
+
+    document.getElementById('confirmMessage').textContent =
+        'Czy na pewno chcesz usunąć ten suchar?';
+
+    document.getElementById('confirmModal').classList.remove('hidden');
+}

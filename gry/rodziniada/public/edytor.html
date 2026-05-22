@@ -37,7 +37,10 @@
         <header class="editor-header">
             <div class="editor-header-left">
                 <div class="editor-logo">RODZINIADA</div>
-                <div class="editor-title">Edytor pytań</div>
+                <div class="editor-tabs">
+                    <button class="editor-tab active" id="tabQuestions" onclick="switchEditorTab('questions')">Pytania</button>
+                    <button class="editor-tab" id="tabJokes" onclick="switchEditorTab('jokes')">Żarty</button>
+                </div>
             </div>
             <div class="editor-stats">
                 <div class="stat-item">
@@ -63,8 +66,8 @@
 
         <div class="toast" id="toast"></div>
 
-        <div class="editor-layout">
-
+        <div class="editor-layout" id="questionsLayout">
+            
             <!-- LEWA: KATEGORIE -->
             <div class="categories-panel">
                 <div class="panel-header">
@@ -112,6 +115,41 @@
                     </div>
 
                     <div class="questions-list" id="questionsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-layout hidden" id="jokesLayout">
+            <!-- LEWA: LISTA ŻARTÓW -->
+            <div class="categories-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Żarty / Suchary</div>
+                    <button class="btn-add-cat" onclick="addJoke()">+ Dodaj</button>
+                </div>
+                <div class="categories-list" id="jokesSidebarList"></div>
+            </div>
+
+            <!-- PRAWA: ZAWARTOŚĆ (Główny Kontener) -->
+            <div class="content-panel">
+                <div class="content-empty" id="jokeContentEmpty">
+                    <div class="content-empty-icon">&#128516;</div>
+                    <div class="content-empty-text">Wybierz suchar z listy po lewej stronie, aby go edytować</div>
+                </div>
+
+                <div class="category-editor hidden" id="jokeEditor">
+                    <div class="questions-header">
+                        <div class="questions-title" id="jokeEditorTitle">
+                            Edytuj Suchar #1
+                        </div>
+                        <button class="btn-add-q" style="background: linear-gradient(135deg, var(--red) 0%, #b91c1c 100%); color: white;" onclick="deleteActiveJoke()">
+                            Usuń żart
+                        </button>
+                    </div>
+
+                    <div style="padding: 24px; display: flex; flex-direction: column; gap: 15px; height: calc(100% - 70px); box-sizing: border-box;">
+                        <label class="field-label" style="font-size: 0.95rem; font-weight: bold; color: var(--gold);">Treść żartu (suchara)</label>
+                        <textarea id="activeJokeTextarea" class="joke-textarea" style="flex: 1; min-height: 300px; font-size: 1.15rem; padding: 20px; box-sizing: border-box; resize: none;" placeholder="Wpisz treść suchara..."></textarea>
+                    </div>
                 </div>
             </div>
         </div>

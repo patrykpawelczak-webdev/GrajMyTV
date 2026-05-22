@@ -889,6 +889,36 @@
 .host-block-overlay.hidden { display: none; }
 .host-fullscreen-button:hover { transform: scale(1.08); }
 
+/* JOKE OVERLAY BOX */
+.joke-container {
+    margin-top: 24px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 12px;
+    padding: 16px 24px;
+    max-width: 500px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+.joke-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.joke-content {
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--white);
+    line-height: 1.5;
+}
+
 
 /* SCROLLBAR */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -910,6 +940,122 @@
             "answers  answers";
     }
     #sectionRight { display: none !important; }
+
+    /* --- Tablet/Touch Optimizations --- */
+    /* Spacing and margins */
+    .teams-container {
+        gap: 16px !important;
+    }
+    .team-box {
+        padding: 18px !important;
+    }
+    .team-controls {
+        gap: 8px !important;
+        margin-top: 12px !important;
+    }
+    
+    /* Buttons in team controls (Award / Mistake) */
+    .team-controls .btn {
+        padding: 16px 20px !important;
+        font-size: 1.05rem !important;
+        border-radius: 12px !important;
+        margin-bottom: 2px !important;
+    }
+
+    /* Round multiplier and Navigation buttons */
+    .round-controls {
+        gap: 10px !important;
+    }
+    .round-btn {
+        padding: 14px 10px !important;
+        font-size: 1.05rem !important;
+        border-radius: 8px !important;
+    }
+    .nav-controls {
+        gap: 8px !important;
+        margin-top: 8px !important;
+    }
+    .btn-nav {
+        padding: 14px 18px !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+    }
+    .btn-reveal {
+        padding: 14px 18px !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+    }
+
+    /* Answers section styling */
+    .answers-container {
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+    }
+    .answer-btn {
+        padding: 18px 24px !important;
+        border-radius: 14px !important;
+        gap: 16px !important;
+    }
+    .answer-number {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 1.05rem !important;
+    }
+    .answer-text {
+        font-size: 1.1rem !important;
+    }
+    .answer-points {
+        font-size: 1.1rem !important;
+    }
+    .btn-reveal-all {
+        padding: 16px 20px !important;
+        font-size: 1.05rem !important;
+        border-radius: 10px !important;
+    }
+
+    /* Spacing around the main layout */
+    .container {
+        padding: 16px !important;
+    }
+    .header {
+        margin-bottom: 16px !important;
+        padding: 18px 24px !important;
+        gap: 16px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+    .header .logo {
+        font-size: 1.8rem !important;
+    }
+    .header-codes {
+        font-size: 1.1rem !important;
+        margin-right: auto !important;
+    }
+    .header-buttons {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+        width: 100% !important;
+        gap: 12px !important;
+        margin-top: 10px !important;
+    }
+    .tv-button, .reset-button, .menu-button, .icon-button, .winner-button, .start-display-button {
+        padding: 16px 20px !important;
+        font-size: 1.1rem !important;
+        border-radius: 12px !important;
+        min-height: 56px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+    .icon-button {
+        width: auto !important;
+        height: auto !important;
+        min-width: 56px !important;
+        min-height: 56px !important;
+    }
 }
 
 @media (max-width: 900px) {
@@ -932,9 +1078,9 @@
     #sectionRight   { display: none !important; }
     .teams-container { flex-direction: row; }
     .team-box        { flex: 1; }
-    .header          { flex-direction: column; align-items: flex-start; }
-    .header-codes    { margin-right: 0; }
-    .header-buttons  { width: 100%; flex-wrap: wrap; }
+    .header          { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 10px !important; }
+    .header-codes    { margin-right: 0 !important; margin-top: 4px !important; font-size: 1rem !important; }
+    .header-buttons  { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important; width: 100% !important; gap: 8px !important; margin-top: 8px !important; }
     .lobby-toolbar   { flex-direction: column; }
     .lobby-row       { grid-template-columns: 1fr; gap: 10px; }
     .lobby-col-actions { flex-direction: column; }

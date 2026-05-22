@@ -429,7 +429,7 @@
             },
             {
               "id": "a_70",
-              "text": "KROWKI",
+              "text": "KRÓWKI",
               "points": 14
             },
             {
@@ -457,7 +457,7 @@
           "answers": [
             {
               "id": "a_73",
-              "text": "MIŚŚ",
+              "text": "MIŚ",
               "points": 28
             },
             {
@@ -717,7 +717,7 @@
             {
               "id": "a_115",
               "text": "ZABAWKI",
-              "points": 32
+              "points": 34
             },
             {
               "id": "a_116",
@@ -742,7 +742,7 @@
             {
               "id": "a_120",
               "text": "PIENIĄDZE",
-              "points": 8
+              "points": 6
             }
           ]
         },
@@ -1163,7 +1163,7 @@
             {
               "id": "a_187",
               "text": "NA WAKACJE",
-              "points": 30
+              "points": 32
             },
             {
               "id": "a_188",
@@ -1188,7 +1188,7 @@
             {
               "id": "a_192",
               "text": "NA UBRANIA",
-              "points": 8
+              "points": 6
             }
           ]
         },
@@ -1235,7 +1235,7 @@
             {
               "id": "a_199",
               "text": "BIEDRONKA",
-              "points": 35
+              "points": 37
             },
             {
               "id": "a_200",
@@ -1260,7 +1260,7 @@
             {
               "id": "a_204",
               "text": "PEPCO",
-              "points": 7
+              "points": 5
             }
           ]
         },
@@ -1458,7 +1458,7 @@
             {
               "id": "a_235",
               "text": "WÓDKA",
-              "points": 28
+              "points": 30
             },
             {
               "id": "a_236",
@@ -1483,7 +1483,7 @@
             {
               "id": "a_240",
               "text": "JAN PAWEŁ II",
-              "points": 10
+              "points": 8
             }
           ]
         },
@@ -1837,7 +1837,7 @@
             {
               "id": "a_296",
               "text": "ROZŁADOWANY TELEFON",
-              "points": 24
+              "points": 26
             },
             {
               "id": "a_297",
@@ -1857,7 +1857,7 @@
             {
               "id": "a_300",
               "text": "SPAM",
-              "points": 8
+              "points": 6
             }
           ]
         },
@@ -1903,7 +1903,7 @@
           "answers": [
             {
               "id": "a_307",
-              "text": "APPLE / IPHONE",
+              "text": "IPHONE",
               "points": 32
             },
             {

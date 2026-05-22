@@ -90,9 +90,18 @@ export function showBigX(count) {
     // Używamy znaku Heavy Multiplication X (✖) zgodnie z designem
     xContainer.innerHTML = '✖'.repeat(count);
     
-    // Usunięto automatyczne wyświetlanie nakładki na środku ekranu na prośbę użytkownika
-    // overlay.classList.add('show');
-    // setTimeout(() => overlay.classList.remove('show'), 1200);
+    // Zresetuj animację poprzez wyzwolenie reflow, aby re-triggerować shake
+    overlay.classList.remove('show');
+    xContainer.style.animation = 'none';
+    void xContainer.offsetHeight; // reflow
+    xContainer.style.animation = '';
+    
+    overlay.classList.add('show');
+    
+    if (window.bigXTimeout) clearTimeout(window.bigXTimeout);
+    window.bigXTimeout = setTimeout(() => {
+        overlay.classList.remove('show');
+    }, 1500);
 }
 
 export function showWinner(name) {

@@ -17,6 +17,23 @@ export async function loadData(showToast) {
         });
 
         state.data = data;
+
+        // Load jokes
+        try {
+            const jres = await fetch('/rodziniada/api/jokes');
+            const jdata = await jres.json();
+            if (jdata && Array.isArray(jdata.jokes)) {
+                jdata.jokes.forEach(joke => {
+                    if (!joke.id) joke.id = generateId();
+                });
+                state.jokesData = jdata;
+            } else {
+                state.jokesData = { jokes: [] };
+            }
+        } catch(je) {
+            state.jokesData = { jokes: [] };
+        }
+
         showToast('Dane załadowane', 'success');
         return true;
     } catch (e) {
@@ -37,12 +54,27 @@ export async function saveAll(showToast) {
         });
         const json = await res.json();
 
-        if (json.ok) {
+        if (!json.ok) {
+            showToast('Błąd zapisu pytań: ' + (json.error || ''), 'error');
+            return false;
+        }
+
+        const resJ = await fetch('/rodziniada/api/jokes', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-PIN': state.currentPin
+            },
+            body: JSON.stringify(state.jokesData)
+        });
+        const jsonJ = await resJ.json();
+
+        if (jsonJ.ok) {
             markSaved();
             showToast('Zapisano pomyślnie!', 'success');
             return true;
         } else {
-            showToast('Błąd zapisu: ' + (json.error || ''), 'error');
+            showToast('Błąd zapisu żartów: ' + (jsonJ.error || ''), 'error');
             return false;
         }
     } catch (e) {

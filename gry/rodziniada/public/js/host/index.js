@@ -13,6 +13,7 @@ let currentMode = 'manual';
 let selectedRounds = 3;
 let drawnQuestions = [];
 let selectedQuestionsOrder = [];
+let jokesList = [];
 let gameState = createEmptyState();
 let currentGameId = null;
 let currentHostCode = null;
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (randomTab) randomTab.classList.remove('active');
         
         await loadQuestionsFromServer();
+        await loadJokesFromServer();
         categoriesRendered = false;
         const btn = $('btnShowCategories');
         const grid = $('categoriesGrid');
@@ -136,6 +138,14 @@ async function loadQuestionsFromServer() {
         const data = await res.json();
         questionCategories = data.categories || [];
     } catch (e) { questionCategories = []; }
+}
+
+async function loadJokesFromServer() {
+    try {
+        const res = await fetch('/rodziniada/api/jokes');
+        const data = await res.json();
+        jokesList = data.jokes || [];
+    } catch (e) { jokesList = []; }
 }
 
 // ===== HANDLERY SIECIOWE =====
@@ -631,7 +641,7 @@ window.selectRounds = (n) => {
     selectedRounds = n;
     document.querySelectorAll('.rounds-opt').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.rounds) === n));
     const label = $('roundsLabel');
-    if (label) label.textContent = n === 3 ? '3 rundy' : n === 5 ? '5 rund' : '7 rund';
+    if (label) label.textContent = (n === 3 || n === 4) ? `${n} rundy` : `${n} rund`;
     drawnQuestions = [];
     $('randomPreview')?.classList.add('hidden');
     updateDrawButtonState();
@@ -681,6 +691,15 @@ window.startGame = () => {
         }
         const initialState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions, selectedQuestionsOrder);
         initialState.isOnline = isOnlineMode;
+        
+        // Losowanie żartu
+        if (jokesList && jokesList.length > 0) {
+            const rndIndex = Math.floor(Math.random() * jokesList.length);
+            initialState.joke = jokesList[rndIndex];
+        } else {
+            initialState.joke = { text: "Dlaczego programiści nie lubią natury? Bo ma za dużo robaków! 🐛" };
+        }
+        
         net.createGame(socket, initialState, gameName, false);
     }
 };
@@ -693,7 +712,32 @@ window.selectTeam = (n) => {
 };
 
 window.addStrike = (n) => {
-    if (!gameState.questionRevealed || gameState.currentTeam !== n || gameState.pointsAwarded) return;
+    // 1. Walidacja wstępnych założeń rundy
+    if (!gameState.questionRevealed) {
+        ui.showToast("Najpierw musisz odsłonić pytanie!", "warning");
+        return;
+    }
+    if (gameState.pointsAwarded) {
+        ui.showToast("Punkty w tej rundzie zostały już przyznane!", "warning");
+        return;
+    }
+    
+    // 2. Walidacja wyboru drużyny
+    if (gameState.currentTeam === null) {
+        ui.showToast("Musisz najpierw wybrać aktywną drużynę!", "warning");
+        return;
+    }
+    if (gameState.currentTeam !== n) {
+        ui.showToast("Błąd X można przyznać tylko aktywnej drużynie!", "warning");
+        return;
+    }
+    
+    // 3. Walidacja odsłonięcia przynajmniej jednej odpowiedzi
+    if (gameState.revealedAnswers.length === 0) {
+        ui.showToast("Błąd X można przyznać dopiero po odsłonięciu co najmniej jednej odpowiedzi!", "warning");
+        return;
+    }
+
     const team = n === 1 ? gameState.team1 : gameState.team2;
     if (gameState.isStealMode) {
         gameState.stealUsed = true; team.strikes = 1;
@@ -781,6 +825,11 @@ window.nextQuestion = () => {
     // Blokada: przejście do kolejnego pytania dopiero po przyznaniu punktów
     if (gameState.currentQuestionIndex !== -1 && !gameState.pointsAwarded) {
         ui.showToast('Najpierw przyznaj punkty za tę rundę!', 'warning');
+        return;
+    }
+    // Nowa blokada: przejście do kolejnego pytania dopiero po odkryciu wszystkich odpowiedzi
+    if (gameState.currentQuestionIndex !== -1 && gameState.currentQuestion && gameState.revealedAnswers.length < gameState.currentQuestion.answers.length) {
+        ui.showToast('Musisz najpierw odkryć wszystkie odpowiedzi na tablicy!', 'warning');
         return;
     }
     if (gameState.currentQuestionIndex === -1 && gameState.selectedQuestions.length > 0) loadQuestion(0);
@@ -889,7 +938,7 @@ document.addEventListener('keydown', (e) => {
         case ' ': e.preventDefault(); window.revealQuestion(); break;
         case 'q': case 'Q': window.selectTeam(1); break;
         case 'w': case 'W': window.selectTeam(2); break;
-        case 'x': case 'X': if (gameState.currentTeam) window.addStrike(gameState.currentTeam); break;
+        case 'x': case 'X': window.addStrike(gameState.currentTeam); break;
         case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8':
             window.revealAnswer(parseInt(e.key) - 1); break;
         case 'r': case 'R': window.revealAll(); break;

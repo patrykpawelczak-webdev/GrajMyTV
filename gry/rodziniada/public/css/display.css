@@ -353,20 +353,20 @@ body {
 }
 
 .tv-big-x {
-    font-size: clamp(15vh, 28vh, 35vh);
+    font-size: clamp(15vh, 25vh, 32vh);
     font-weight: 900;
     color: var(--red);
-    text-shadow: 0 0 80px rgba(239, 68, 68, 0.9), 0 0 150px rgba(239, 68, 68, 0.6), 0 0 20px #fff;
-    animation: bigx-shake 0.5s ease;
+    text-shadow: 0 0 50px rgba(239, 68, 68, 0.8), 0 0 100px rgba(239, 68, 68, 0.4), 0 0 10px rgba(255, 255, 255, 0.8);
+    animation: bigx-gentle-pop 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     line-height: 1;
 }
-@keyframes bigx-shake {
-    0%,100% { transform: scale(1) rotate(0deg); }
-    20%     { transform: scale(1.2) rotate(-5deg); }
-    40%     { transform: scale(1.1) rotate(5deg); }
-    60%     { transform: scale(1.15) rotate(-3deg); }
-    80%     { transform: scale(1.05) rotate(2deg); }
+@keyframes bigx-gentle-pop {
+    0%      { transform: scale(0.6); opacity: 0; }
+    50%     { transform: scale(1.08) rotate(-1.5deg); }
+    75%     { transform: scale(0.97) rotate(1.5deg); }
+    100%    { transform: scale(1) rotate(0deg); opacity: 1; }
 }
+
 
 .tv-points-display { text-align: center; animation: points-pop 0.5s ease; }
 @keyframes points-pop {

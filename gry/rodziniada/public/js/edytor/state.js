@@ -1,6 +1,9 @@
 export const state = {
     data: { categories: [] },
+    jokesData: { jokes: [] },
+    activeTab: 'questions',
     activeCatId: null,
+    activeJokeId: null,
     editingQIndex: null,
     unsaved: false,
     currentPin: '',
@@ -30,4 +33,9 @@ export function markSaved() {
 
 export function getActiveCategory() {
     return state.data.categories.find(c => c.id === state.activeCatId) || null;
+}
+
+export function getActiveJoke() {
+    if (!state.jokesData || !Array.isArray(state.jokesData.jokes)) return null;
+    return state.jokesData.jokes.find(j => j.id === state.activeJokeId) || null;
 }

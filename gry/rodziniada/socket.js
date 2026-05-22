@@ -125,16 +125,25 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
         });
 
         socket.on('joinAsTv', ({ code }) => {
+            let game;
             const entry = codeToGame[code];
-            if (!entry || entry.role !== 'tv') {
-                socket.emit('joinError', { message: 'Nieprawidłowy kod TV' });
-                return;
+            if (entry && entry.role === 'tv') {
+                game = games[entry.gameId];
             }
-            const game = games[entry.gameId];
+
+            // Jeśli nie znaleziono gry po kodzie, spróbuj znaleźć aktywną grę lokalną (isOnline === false)
             if (!game) {
-                socket.emit('joinError', { message: 'Gra nie istnieje' });
+                const localGame = Object.values(games).find(g => !g.isOnline);
+                if (localGame) {
+                    game = localGame;
+                }
+            }
+
+            if (!game) {
+                socket.emit('joinError', { message: 'Nieprawidłowy kod TV lub brak aktywnej gry lokalnej' });
                 return;
             }
+
             socket.join(`game:${game.id}`);
             socket.data.gameId = game.id;
             socket.data.role   = 'tv';
