@@ -46,6 +46,22 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/w-przygotowaniu', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'w-przygotowaniu.html'));
+});
+
+app.get('/regulamin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'regulamin.html'));
+});
+
+app.get('/polityka-prywatnosci', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'polityka-prywatnosci.html'));
+});
+
+app.get('/polityka-cookies', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'polityka-cookies.html'));
+});
+
 // ===== MONTOWANIE GIER =====
 // Rodziniada
 const rodziniadaRouter = require('./gry/rodziniada/router');
@@ -54,9 +70,12 @@ app.get('/rodziniadaLocal', (req, res) => res.redirect('/rodziniada/local'));
 app.get('/rodziniadaOnline', (req, res) => res.redirect('/rodziniada/online'));
 
 // Przyszłe gry (placeholder)
-app.get('/gra2', (req, res) => res.redirect('/?soon=gra2'));
-app.get('/gra3', (req, res) => res.redirect('/?soon=gra3'));
-app.get('/gra4', (req, res) => res.redirect('/?soon=gra4'));
+app.get('/droga-do-miliona/:mode', (req, res) => res.redirect(`/w-przygotowaniu?game=droga-do-miliona&mode=${req.params.mode}`));
+app.get('/szczesliwe-kolo/:mode', (req, res) => res.redirect(`/w-przygotowaniu?game=szczesliwe-kolo&mode=${req.params.mode}`));
+app.get('/jeden-na-dziesieciu/:mode', (req, res) => res.redirect(`/w-przygotowaniu?game=jeden-na-dziesieciu&mode=${req.params.mode}`));
+app.get('/gra2', (req, res) => res.redirect('/w-przygotowaniu?game=gra2'));
+app.get('/gra3', (req, res) => res.redirect('/w-przygotowaniu?game=gra3'));
+app.get('/gra4', (req, res) => res.redirect('/w-przygotowaniu?game=gra4'));
 
 // ===== SOCKET.IO NAMESPACES =====
 const rodziniadaIO = io.of('/rodziniada');

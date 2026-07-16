@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodziniada - Codzienne wyzwanie</title>
+    <link rel="stylesheet" href="/rodziniada/css/solo.css">
+    <link rel="icon" href="/img/logo-favicon.png" type="image/png">
+</head>
+<body>
+    <main class="solo-app">
+        <header class="game-topbar">
+            <a href="/#gry" class="back-button" aria-label="Powrót">Powrót</a>
+
+            <div class="title-lockup">
+                <h1>Rodziniada</h1>
+                <div class="challenge-nav" aria-label="Nawigacja po wyzwaniach">
+                    <button type="button" class="nav-day" id="prevChallenge" aria-label="Poprzednie wyzwanie">‹</button>
+                    <strong id="challengeNumber">#1</strong>
+                    <button type="button" class="nav-day" id="nextChallenge" aria-label="Następne wyzwanie">›</button>
+                </div>
+            </div>
+
+            <button type="button" class="calendar-button" id="calendarButton" aria-label="Kalendarz wyzwań">
+                <span class="calendar-glyph" aria-hidden="true"></span>
+                <span class="calendar-label">Kalendarz</span>
+            </button>
+        </header>
+
+        <p class="archive-note" id="archiveNote">
+            Archiwum odblokuje się po ukończeniu dzisiejszego wyzwania.
+        </p>
+
+        <section class="game-shell" aria-label="Plansza gry">
+            <div class="play-area">
+                <aside class="strike-board" aria-label="Błędne odpowiedzi">
+                    <span class="strike" id="strike1">X</span>
+                    <span class="strike" id="strike2">X</span>
+                    <span class="strike" id="strike3">X</span>
+                </aside>
+
+                <div class="answer-board" aria-label="Tablica odpowiedzi">
+                    <div class="board-question">
+                        <h2 id="questionText">Ładowanie pytania...</h2>
+                    </div>
+                    <div class="answer-rows" id="answersBoard"></div>
+                </div>
+            </div>
+
+            <form class="answer-form" id="answerForm">
+                <input id="answerInput" type="text" autocomplete="off" maxlength="80" placeholder="Wpisz odpowiedź..." disabled>
+                <button class="submit-button" type="submit" id="submitButton" disabled>Sprawdź</button>
+            </form>
+
+            <aside class="ranking-board is-disabled" aria-label="Ranking graczy" aria-disabled="true">
+                <div class="ranking-head">
+                    <h2>Ranking</h2>
+                    <span>Wkrótce</span>
+                </div>
+                <p>Ranking pojawi się po uruchomieniu profili graczy.</p>
+                <ol aria-hidden="true">
+                    <li><span>1. miejsce</span><strong>---</strong></li>
+                    <li><span>2. miejsce</span><strong>---</strong></li>
+                    <li><span>3. miejsce</span><strong>---</strong></li>
+                </ol>
+            </aside>
+        </section>
+
+        <p class="sr-only" id="roundMessage" aria-live="polite">Jedno pytanie dziennie. Trzy błędy kończą grę.</p>
+        <button class="sr-only" id="shareButton" type="button" disabled>Udostępnij</button>
+
+        <footer class="solo-footer">
+            <p>&copy; 2026 GrajMyTV. Wszystkie prawa zastrzeżone.</p>
+        </footer>
+
+        <dialog class="calendar-dialog" id="calendarDialog">
+            <div class="calendar-card">
+                <div class="dialog-head">
+                    <div>
+                        <span>Kalendarz wyzwań</span>
+                        <h2 id="calendarTitle">Lipiec 2026</h2>
+                    </div>
+                    <button type="button" class="dialog-close" id="calendarCloseButton" aria-label="Zamknij">×</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <div class="calendar-legend" aria-label="Legenda kalendarza">
+                    <span><i class="legend-dot current"></i> Dzisiaj</span>
+                    <span><i class="legend-dot progress"></i> W trakcie</span>
+                    <span><i class="legend-dot done"></i> Ukończone</span>
+                    <span><i class="legend-dot locked"></i> Zablokowane</span>
+                </div>
+                <p class="calendar-hint" id="calendarHint">Poprzednie dni będą dostępne po ukończeniu dzisiejszego wyzwania.</p>
+            </div>
+        </dialog>
+
+        <dialog class="result-dialog" id="resultDialog">
+            <div class="result-card">
+                <span class="result-kicker">Koniec gry</span>
+                <div class="result-score" id="resultScore">0</div>
+                <div class="result-stats" aria-label="Podsumowanie gry">
+                    <div>
+                        <span>Punkty</span>
+                        <strong id="resultPoints">0/0</strong>
+                    </div>
+                    <div>
+                        <span>Odpowiedzi</span>
+                        <strong id="resultAnswers">0/6</strong>
+                    </div>
+                    <div>
+                        <span>Błędy</span>
+                        <strong id="resultMisses">0/3</strong>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="submit-button" id="resultShareButton" type="button">Udostępnij</button>
+                    <button class="share-button" id="resultCloseButton" type="button">Zamknij</button>
+                </div>
+            </div>
+        </dialog>
+    </main>
+
+    <script src="/rodziniada/js/solo.js"></script>
+</body>
+</html>

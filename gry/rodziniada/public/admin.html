@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodziniada - Panel admina</title>
+    <link rel="stylesheet" href="/rodziniada/css/admin.css">
+    <link rel="icon" href="/img/logo-favicon.png" type="image/png">
+</head>
+<body>
+    <main class="admin-app">
+        <section class="pin-screen" id="pinScreen">
+            <div class="pin-card">
+                <div class="pin-brand">
+                    <img src="/img/logo-ikona-biale.png" alt="" class="pin-logo">
+                    <h1>Rodziniada Solo</h1>
+                    <p>Dostęp do kalendarza i pytań dziennego wyzwania.</p>
+                </div>
+                <form id="pinForm" class="pin-form">
+                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Pierwsza cyfra PIN">
+                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Druga cyfra PIN">
+                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Trzecia cyfra PIN">
+                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Czwarta cyfra PIN">
+                    <input id="pinInput" type="hidden">
+                    <button type="submit" aria-label="Zatwierdź PIN"></button>
+                </form>
+                <div class="pin-error" id="pinError" role="alert"></div>
+            </div>
+        </section>
+
+        <section class="admin-panel is-hidden" id="adminPanel">
+            <header class="admin-header">
+                <div>
+                    <span>Rodziniada Solo</span>
+                    <h1>Panel admina</h1>
+                </div>
+                <nav class="admin-tabs" aria-label="Sekcje panelu">
+                    <button class="admin-tab is-active" type="button" data-tab="calendar">Kalendarz</button>
+                    <button class="admin-tab" type="button" data-tab="questions">Pytania</button>
+                </nav>
+                <div class="admin-actions">
+                <a href="/rodziniada/solo" target="_blank" rel="noreferrer">Podgląd gry</a>
+                    <button type="button" id="saveAllButton">Zapisz wszystko</button>
+                </div>
+            </header>
+
+            <div class="status-bar">
+                <p id="statusText">Gotowe.</p>
+                <div class="quick-stats">
+                    <span><strong id="questionsTotal">0</strong> pytań</span>
+                    <span><strong id="calendarTotal">0</strong> dni</span>
+                    <span id="saveState">Zapisane</span>
+                </div>
+            </div>
+
+            <section class="tab-view" id="calendarView">
+                <aside class="calendar-sidebar">
+                    <div class="section-head">
+                        <div>
+                            <span>Kalendarz</span>
+                            <h2>Lipiec 2026</h2>
+                        </div>
+                        <button type="button" id="fillCalendarButton">Uzupełnij puste dni</button>
+                    </div>
+                    <div class="day-list" id="dayList"></div>
+                </aside>
+
+                <section class="calendar-editor">
+                    <div class="section-head">
+                        <div>
+                            <span id="selectedDayLabel">Dzień #1</span>
+                            <h2 id="selectedDayTitle">Wybierz pytanie</h2>
+                        </div>
+                    </div>
+                    <label class="field">
+                        <span>Pytanie przypisane do dnia</span>
+                        <select id="calendarQuestionSelect"></select>
+                    </label>
+                    <div class="question-preview" id="calendarPreview"></div>
+                </section>
+            </section>
+
+            <section class="tab-view is-hidden" id="questionsView">
+                <aside class="questions-sidebar">
+                    <div class="section-head">
+                        <div>
+                            <span>Baza pytań</span>
+                            <h2>Kategorie</h2>
+                        </div>
+                        <button type="button" id="addCategoryButton">Dodaj</button>
+                    </div>
+                    <div class="category-list" id="categoryList"></div>
+                </aside>
+
+                <section class="questions-editor">
+                    <div class="question-list-panel">
+                        <div class="section-head">
+                            <div>
+                                <span id="activeCategoryLabel">Kategoria</span>
+                                <h2>Pytania</h2>
+                            </div>
+                            <button type="button" id="addQuestionButton">Dodaj pytanie</button>
+                        </div>
+                        <div class="question-list" id="questionList"></div>
+                    </div>
+
+                    <form class="question-form" id="questionForm">
+                        <div class="empty-state" id="questionEmpty">Wybierz pytanie z listy albo dodaj nowe.</div>
+                        <div class="question-fields is-hidden" id="questionFields">
+                            <label class="field">
+                                <span>Treść pytania</span>
+                                <input id="questionTextInput" type="text" placeholder="Np. Co ludzie robią zaraz po przebudzeniu?">
+                            </label>
+                            <div class="answers-head">
+                                <span>Odpowiedzi na tablicy</span>
+                                <button type="button" id="sortAnswersButton">Sortuj po punktach</button>
+                            </div>
+                            <div class="answers-form" id="answersForm"></div>
+                            <div class="form-actions">
+                                <button type="button" class="danger" id="deleteQuestionButton">Usuń pytanie</button>
+                                <button type="submit">Zastosuj zmiany</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </section>
+    </main>
+
+    <script src="/rodziniada/js/admin.js"></script>
+</body>
+</html>

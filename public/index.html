@@ -3,224 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrajMyTV - Platforma gier telewizyjnych</title>
-    <link rel="stylesheet" href="css/main.css">
+    <title>GrajMyTV - Domowe Teleturnieje Online i Lokalnie</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/logo-favicon.png">
+    
+    <!-- Google Fonts: Manrope -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- CSS Stylizacyjny -->
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- DEKORACYJNE ŚWIATŁA W TLE -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <!-- NAGŁÓWEK (STICKY HEADER) -->
     <header class="site-header">
-        <div class="header-inner">
-            <div class="site-logo">
-                <span class="logo-play">▶</span>
-                <span class="logo-text">GrajMyTV</span>
-            </div>
-            <nav class="site-nav">
-                <a href="#gry" class="nav-link">Gry</a>
-                <a href="#onas" class="nav-link">O nas</a>
+        <div class="header-container">
+            <a href="/" class="header-logo" aria-label="GrajMyTV - Strona Główna">
+                <img src="img/logo-napis.png" alt="GrajMyTV Logo" class="logo-image">
+            </a>
+            
+            <!-- Menu Nawigacyjne -->
+            <nav class="nav-menu" id="navMenu" aria-label="Nawigacja główna">
+                <a href="#home" class="nav-link active">Strona główna</a>
+                <a href="#gry" class="nav-link">Teleturnieje</a>
+                <a href="#jak-dziala" class="nav-link">Jak to działa</a>
+                <a href="#korzysci" class="nav-link">O platformie</a>
             </nav>
+            
+            <!-- Przycisk Hamburgera (Mobile) -->
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Otwórz menu nawigacyjne" aria-expanded="false">
+                <i data-lucide="menu" class="hamburger-icon"></i>
+                <i data-lucide="x" class="close-icon hidden"></i>
+            </button>
         </div>
     </header>
 
-    <!-- HERO -->
-    <section class="hero">
-        <div class="hero-bg">
-            <div class="orb orb-1"></div>
-            <div class="orb orb-2"></div>
-            <div class="orb orb-3"></div>
-            <div class="hero-noise"></div>
-        </div>
-        <div class="hero-content">
-            <div class="hero-badge">🎮 Platforma gier telewizyjnych</div>
-            <h1 class="hero-title">
-                Zagraj w swój<br>
-                <span class="hero-title-gold">ulubiony teleturniej</span>
-            </h1>
-            <p class="hero-subtitle">
-                Klasyczne teleturnieje w nowej odsłonie.<br>
-                Graj z przyjaciółmi online lub lokalnie.
-            </p>
-            <a href="#gry" class="hero-btn">
-                Przeglądaj gry
-                <span class="hero-btn-arrow">↓</span>
-            </a>
-        </div>
-        <div class="hero-scroll-hint">Przewiń w dół</div>
-    </section>
+    <!-- Nakładka mobilna (backdrop) -->
+    <div class="mobile-backdrop" id="mobileBackdrop"></div>
 
-    <!-- SEKCJA GIER -->
-    <section class="games-section" id="gry">
-        <div class="games-inner">
-            <div class="section-header">
-                <h2 class="section-title">Wybierz grę</h2>
-                <p class="section-sub">Użyj strzałek aby wybrać grę</p>
-            </div>
-
-            <!-- KARUZELA -->
-            <div class="carousel-wrap">
-                <button class="carousel-arrow carousel-prev" id="carouselPrev">‹</button>
-                <div class="carousel-container">
-                    <div class="carousel" id="carousel">
-
-                        <!-- GRA 1 (Wkrótce) -->
-                        <div class="game-card coming-soon" data-game="gra2">
-                            <div class="card-bg soon-bg mystery-filter" style="background-image: url('img/coming_soon_cover.png');"></div>
-                            <div class="card-glass-layer"></div>
-                            <div class="card-content">
-                                <div class="card-header">
-                                    <span class="card-badge soon">Wkrótce</span>
-                                </div>
-                                <div class="card-bottom">
-                                    <div class="card-name">Tajemnica</div>
-                                    <div class="card-tagline">Gra w produkcji</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- RODZINIADA (Środek) -->
-                        <div class="game-card active rodziniada-theme" data-game="rodziniada">
-                            <div class="card-bg" style="background-image: url('img/rodziniada_cover.png');"></div>
-                            <div class="card-glass-layer"></div>
-                            <div class="card-content">
-                                <div class="card-header">
-                                    <div class="card-badge available">Dostępna</div>
-                                </div>
-                                <div class="card-bottom">
-                                    <div class="card-name">Rodziniada</div>
-                                    <div class="card-tagline">Parodia kultowego teleturnieju</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- GRA 3 (Wkrótce) -->
-                        <div class="game-card coming-soon" data-game="gra3">
-                            <div class="card-bg soon-bg mystery-filter" style="background-image: url('img/coming_soon_cover.png');"></div>
-                            <div class="card-glass-layer"></div>
-                            <div class="card-content">
-                                <div class="card-header">
-                                    <span class="card-badge soon">Wkrótce</span>
-                                </div>
-                                <div class="card-bottom">
-                                    <div class="card-name">Tajemnica</div>
-                                    <div class="card-tagline">Gra w produkcji</div>
-                                </div>
-                            </div>
-                        </div>
-
+    <main>
+        <!-- SEKCJA HERO -->
+        <section class="hero-section" id="home">
+            <div class="hero-container">
+                <!-- Lewa strona: Nagłówek i Opis -->
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i data-lucide="sparkles" class="icon-sm"></i> Nowa definicja domowej rozrywki
                     </div>
-                    <div class="carousel-frame"></div>
-                </div>
-                <button class="carousel-arrow carousel-next" id="carouselNext">›</button>
-            </div>
-
-            <!-- OPIS AKTYWNEJ GRY -->
-            <div class="game-detail" id="gameDetail">
-
-                <!-- RODZINIADA DETAIL -->
-                <div class="detail-panel active" id="detail-rodziniada">
-                    <div class="detail-layout">
-                        <div class="detail-left">
-                            <div class="detail-title">Rodziniada</div>
-                            <div class="detail-desc">
-                                Klasyczna rozrywka powraca w nowej formie. Zmierzcie się w zgadywaniu najpopularniejszych odpowiedzi ankietowanych na nietypowe pytania w naszej autorskiej parodii legendarnego teleturnieju. Emocje i śmiech gwarantowane.
-                            </div>
-                        </div>
-
-                        <div class="detail-right">
-                            <div class="detail-meta">
-                                <div class="meta-pill">
-                                    <span class="meta-icon">👥</span>
-                                    <div class="meta-info">
-                                        <span class="meta-label">Liczba graczy</span>
-                                        <span class="meta-text">3+ graczy</span>
-                                    </div>
-                                </div>
-                                <div class="meta-pill">
-                                    <span class="meta-icon">🎮</span>
-                                    <div class="meta-info">
-                                        <span class="meta-label">Rozgrywka</span>
-                                        <span class="meta-text">Lokalnie & Online</span>
-                                    </div>
-                                </div>
-                                <div class="meta-pill">
-                                    <span class="meta-icon">⏱️</span>
-                                    <div class="meta-info">
-                                        <span class="meta-label">Czas trwania</span>
-                                        <span class="meta-text">Zmienny</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="detail-actions">
-                                <a href="/rodziniada" class="btn-play-massive">
-                                    <span class="btn-play-icon">▶</span> Zagraj teraz
-                                </a>
-                            </div>
-                        </div>
+                    <h1 class="hero-title">
+                        Teleturnieje, <span class="gradient-text">kiedy chcesz</span> i gdzie chcesz.
+                    </h1>
+                    <p class="hero-description">
+                        Zagraj w emocjonujące teleturnieje samodzielnie, ze znajomymi lokalnie lub online. Poczuj atmosferę prawdziwego programu telewizyjnego bez wychodzenia z domu.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#gry" class="btn btn-primary btn-lg">Zagraj teraz</a>
+                        <a href="#jak-dziala" class="btn btn-secondary btn-lg">Jak to działa?</a>
                     </div>
                 </div>
 
-                <!-- COMING SOON PANEL -->
-                <div class="detail-panel" id="detail-soon">
-                    <div class="detail-soon-content">
-                        <div class="soon-icon">🔒</div>
-                        <div class="soon-title">Wkrótce dostępne</div>
-                        <div class="soon-desc">
-                            Ta gra jest w trakcie produkcji.<br>
-                            Obserwuj nas żeby nie przegapić premiery!
-                        </div>
+
+            </div>
+        </section>
+
+        <!-- PASEK NAJWAŻNIEJSZYCH FUNKCJI -->
+        <section class="feature-bar-section">
+            <div class="feature-bar-container">
+                <div class="feature-bar-card">
+                    <div class="feature-icon-wrapper">
+                        <i data-lucide="tv"></i>
+                    </div>
+                    <div class="feature-bar-text">
+                        <h3>Kultowe emocje</h3>
+                        <p>Poczuj atmosferę prawdziwego teleturnieju.</p>
+                    </div>
+                </div>
+                <div class="feature-bar-card">
+                    <div class="feature-icon-wrapper">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="feature-bar-text">
+                        <h3>Gra solo lub ze znajomymi</h3>
+                        <p>Graj samodzielnie, lokalnie albo przez internet.</p>
+                    </div>
+                </div>
+                <div class="feature-bar-card">
+                    <div class="feature-icon-wrapper">
+                        <i data-lucide="globe"></i>
+                    </div>
+                    <div class="feature-bar-text">
+                        <h3>Online i offline</h3>
+                        <p>Rozpocznij rozgrywkę w dowolnym miejscu.</p>
                     </div>
                 </div>
 
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- O NAS -->
-    <section class="about-section" id="onas">
-        <div class="about-inner">
-            <h2 class="section-title">O GrajMyTV</h2>
-            <div class="about-grid">
-                <div class="about-card">
-                    <div class="about-icon">🎯</div>
-                    <div class="about-title">Dla każdego</div>
-                    <div class="about-desc">Gry dla całej rodziny i przyjaciół. Żadnej rejestracji, żadnych opłat.</div>
+        <!-- SEKCJA TELETURNIEJÓW -->
+        <section class="games-section" id="gry">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Wybierz swoją grę</h2>
+                    <p class="section-subtitle">Każdy teleturniej oferuje inne zasady, tempo i rodzaj rywalizacji.</p>
                 </div>
-                <div class="about-card">
-                    <div class="about-icon">🌐</div>
-                    <div class="about-title">Online i lokalnie</div>
-                    <div class="about-desc">Graj przez internet z przyjaciółmi lub w tym samym pokoju.</div>
+                
+                <div class="game-mode-switcher" aria-label="Sekcje gier">
+                    <button class="game-mode-tab active" type="button" data-mode-filter="solo">
+                        <i data-lucide="user-round"></i>
+                        <span>Gra solo</span>
+                    </button>
+                    <button class="game-mode-tab" type="button" data-mode-filter="local">
+                        <i data-lucide="home"></i>
+                        <span>Gry lokalne</span>
+                    </button>
+                    <button class="game-mode-tab" type="button" data-mode-filter="online">
+                        <i data-lucide="wifi"></i>
+                        <span>Gry online</span>
+                    </button>
                 </div>
-                <div class="about-card">
-                    <div class="about-icon">📱</div>
-                    <div class="about-title">Na każdym urządzeniu</div>
-                    <div class="about-desc">Działa na komputerze, tablecie i telefonie. Bez instalacji.</div>
-                </div>
-                <div class="about-card">
-                    <div class="about-icon">🚀</div>
-                    <div class="about-title">Więcej gier wkrótce</div>
-                    <div class="about-desc">Regularnie dodajemy nowe gry inspirowane popularnymi teleturniejszami.</div>
+
+                <div class="games-grid">
+                    <div class="game-card is-clickable" data-game-variant="true" data-game-key="rodziniada-solo" data-game-modes="solo" data-card-href="/rodziniada/solo" tabindex="0" role="link" aria-label="Uruchom Rodziniadę Solo">
+                        <div class="game-card-banner game-card-image-banner rodziniada-banner">
+                            <span class="game-badge badge-beta">Beta</span>
+                            <div class="game-banner-icon"><i data-lucide="heart"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Rodziniada</h3>
+                            <p class="game-desc">Jednoosobowy trening najpopularniejszych odpowiedzi. Szybkie rundy, automatyczne punktowanie i zabawa bez prowadzącego.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="user-check"></i> Gra solo</span>
+                                <span><i data-lucide="users-2"></i> 1 gracz</span>
+                            </div>
+                            <a href="/rodziniada/solo" class="btn btn-primary btn-full">Uruchom solo</a>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="droga-solo" data-game-modes="solo">
+                        <div class="game-card-banner game-card-image-banner droga-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="landmark"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Droga do Miliona</h3>
+                            <p class="game-desc">Klasyczna ścieżka pytań dla jednej osoby. Odpowiadasz po kolei, korzystasz z kół ratunkowych i walczysz o najwyższy wynik.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="user-check"></i> Gra solo</span>
+                                <span><i data-lucide="users-2"></i> 1 gracz</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="kolo-solo" data-game-modes="solo">
+                        <div class="game-card-banner game-card-image-banner kolo-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="disc"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Szczęśliwe Koło</h3>
+                            <p class="game-desc">Samodzielne odgadywanie haseł z limitem tur. Kręcisz kołem, odkrywasz litery i próbujesz pobić własny rekord.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="user-check"></i> Gra solo</span>
+                                <span><i data-lucide="users-2"></i> 1 gracz</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="rodziniada-local" data-game-modes="local">
+                        <div class="game-card-banner game-card-image-banner rodziniada-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="heart"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Rodziniada</h3>
+                            <p class="game-desc">Domowa wersja drużynowa przy jednym ekranie. Prowadzący steruje planszą, a dwie drużyny walczą o odpowiedzi z ankiety.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="users-2"></i> 3+ graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Obecnie tworzone, 10%">
+                                <div class="game-progress-header">
+                                    <span>Obecnie tworzone</span>
+                                    <strong>10%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 10%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="droga-local" data-game-modes="local">
+                        <div class="game-card-banner game-card-image-banner droga-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="landmark"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Droga do Miliona</h3>
+                            <p class="game-desc">Wspólna gra na jednym ekranie z prowadzącym. Uczestnicy odpowiadają przy stole, a ekran pokazuje pytania, progi i koła ratunkowe.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="users-2"></i> 2-8 graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="kolo-local" data-game-modes="local">
+                        <div class="game-card-banner game-card-image-banner kolo-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="disc"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Szczęśliwe Koło</h3>
+                            <p class="game-desc">Imprezowa rozgrywka przy telewizorze. Gracze kolejno kręcą kołem, zgadują litery i ścigają się o największą pulę punktów.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="users-2"></i> 2-4 graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="jeden-local" data-game-modes="local">
+                        <div class="game-card-banner game-card-image-banner jeden-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="list-ordered"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Jeden na Dziesięciu</h3>
+                            <p class="game-desc">Lokalny quiz eliminacyjny dla grupy. Jeden prowadzący, wielu zawodników i klasyczna walka o przetrwanie do finału.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="users-2"></i> 3-10 graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="rodziniada-online" data-game-modes="online">
+                        <div class="game-card-banner game-card-image-banner rodziniada-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="heart"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Rodziniada</h3>
+                            <p class="game-desc">Wariant z pokojem online i kodem dołączania. Gracze wchodzą ze swoich urządzeń, a gospodarz układa drużyny i startuje grę.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="users-2"></i> 3+ graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Obecnie tworzone, 10%">
+                                <div class="game-progress-header">
+                                    <span>Obecnie tworzone</span>
+                                    <strong>10%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 10%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="droga-online" data-game-modes="online">
+                        <div class="game-card-banner game-card-image-banner droga-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="landmark"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Droga do Miliona</h3>
+                            <p class="game-desc">Pokoje online dla quizu wiedzy. Uczestnicy dołączają kodem, odpowiadają zdalnie i rywalizują o najlepszy wynik.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="users-2"></i> 1-100 graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="kolo-online" data-game-modes="online">
+                        <div class="game-card-banner game-card-image-banner kolo-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="disc"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Szczęśliwe Koło</h3>
+                            <p class="game-desc">Zdalna rozgrywka w odgadywanie haseł. Każdy gracz ma własne urządzenie, a wspólna plansza prowadzi rundy i punktację.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="users-2"></i> 2-4 graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-card" data-game-variant="true" data-game-key="jeden-online" data-game-modes="online">
+                        <div class="game-card-banner game-card-image-banner jeden-banner">
+                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <div class="game-banner-icon"><i data-lucide="list-ordered"></i></div>
+                        </div>
+                        <div class="game-card-content">
+                            <h3 class="game-name">Jeden na Dziesięciu</h3>
+                            <p class="game-desc">Online eliminacje dla większej grupy. Zawodnicy odpowiadają zdalnie, a system pilnuje kolejności, szans i finału.</p>
+                            <div class="game-meta">
+                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="users-2"></i> 3-10 graczy</span>
+                            </div>
+                            <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
+                                <div class="game-progress-header">
+                                    <span>Pomysł</span>
+                                    <strong>1%</strong>
+                                </div>
+                                <div class="game-progress-track"><span style="width: 1%"></span></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- FOOTER -->
+        <!-- SEKCJA „JAK TO DZIAŁA” -->
+        <section class="how-it-works-section" id="jak-dziala">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Jak to działa?</h2>
+                    <p class="section-subtitle">Rozgrywka w kilku prostych krokach. Bez zbędnych komplikacji.</p>
+                </div>
+                
+                <div class="steps-grid">
+                    <div class="step-card reveal-on-scroll">
+                        <div class="step-number">01</div>
+                        <div class="step-icon">
+                            <i data-lucide="gamepad-2"></i>
+                        </div>
+                        <h3>Wybierz teleturniej</h3>
+                        <p>Znajdź grę dopasowaną do liczby uczestników i rodzaju rozgrywki.</p>
+                    </div>
+                    <div class="step-card reveal-on-scroll" style="transition-delay: 0.1s;">
+                        <div class="step-number">02</div>
+                        <div class="step-icon">
+                            <i data-lucide="key-round"></i>
+                        </div>
+                        <h3>Utwórz pokój</h3>
+                        <p>Rozpocznij grę lokalną albo wygeneruj kod dla znajomych.</p>
+                    </div>
+                    <div class="step-card reveal-on-scroll" style="transition-delay: 0.2s;">
+                        <div class="step-number">03</div>
+                        <div class="step-icon">
+                            <i data-lucide="award"></i>
+                        </div>
+                        <h3>Graj i zdobywaj punkty</h3>
+                        <p>Odpowiadaj na pytania, rywalizuj i walcz o pierwsze miejsce.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEKCJA KORZYŚCI -->
+        <section class="benefits-section" id="korzysci">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Dlaczego GrajMyTV?</h2>
+                    <p class="section-subtitle">Stworzyliśmy platformę z myślą o maksymalnej wygodzie i zabawie.</p>
+                </div>
+                
+                <div class="benefits-grid">
+                    <div class="benefit-card reveal-on-scroll">
+                        <div class="benefit-icon">
+                            <i data-lucide="download-cloud"></i>
+                        </div>
+                        <h3>Brak instalacji</h3>
+                        <p>Brak instalowania dodatkowych programów. Otwierasz przeglądarkę i grasz.</p>
+                    </div>
+                    <div class="benefit-card reveal-on-scroll">
+                        <div class="benefit-icon">
+                            <i data-lucide="monitor"></i>
+                        </div>
+                        <h3>Wieloplatformowość</h3>
+                        <p>Działanie na komputerze, telefonie i telewizorze. Wszystko zsynchronizowane.</p>
+                    </div>
+                    <div class="benefit-card reveal-on-scroll">
+                        <div class="benefit-icon">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <h3>Szybki start</h3>
+                        <p>Szybkie tworzenie pokoju w kilka sekund i natychmiastowe zapraszanie.</p>
+                    </div>
+                    <div class="benefit-card reveal-on-scroll">
+                        <div class="benefit-icon">
+                            <i data-lucide="shuffle"></i>
+                        </div>
+                        <h3>Elastyczność rozgrywki</h3>
+                        <p>Rozgrywka lokalna i online dopasowana do Twoich potrzeb.</p>
+                    </div>
+                    <div class="benefit-card reveal-on-scroll">
+                        <div class="benefit-icon">
+                            <i data-lucide="plus-circle"></i>
+                        </div>
+                        <h3>Ciągły rozwój</h3>
+                        <p>Regularnie dodawane nowe gry i teleturnieje oparte o Wasze sugestie.</p>
+                    </div>
+                    <div class="benefit-card reveal-on-scroll">
+                        <div class="benefit-icon">
+                            <i data-lucide="layout"></i>
+                        </div>
+                        <h3>Przyjazny UI</h3>
+                        <p>Prosty i czytelny interfejs, w którym odnajdzie się każdy, bez względu na wiek.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEKCJA CTA -->
+        <section class="cta-section">
+            <div class="cta-container reveal-on-scroll">
+                <div class="cta-glow"></div>
+                <h2 class="cta-title">Gotowy na swoją pierwszą rozgrywkę?</h2>
+                <p class="cta-description">Wybierz teleturniej, zaproś znajomych i rozpocznij zabawę już teraz.</p>
+                <a href="#gry" class="btn btn-primary btn-lg">Rozpocznij grę</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- STOPKA -->
     <footer class="site-footer">
-        <div class="footer-inner">
-            <div class="footer-logo">
-                <span class="logo-play">▶</span>
-                <span class="logo-text">GrajMyTV</span>
+        <div class="footer-container">
+            <!-- Kolumna 1: Branding -->
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <img src="img/logo-ikona.png" alt="GrajMyTV Ikona" class="footer-logo-img">
+                    <span class="brand-name">GrajMyTV</span>
+                </div>
+                <p class="brand-tagline">
+                    Platforma interaktywnych teleturniejów dla całej rodziny. Rywalizuj, baw się i wygrywaj z najbliższymi.
+                </p>
+                <div class="social-links">
+                    <a href="/w-przygotowaniu?section=facebook" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+                    <a href="/w-przygotowaniu?section=youtube" aria-label="Youtube"><i data-lucide="youtube"></i></a>
+                    <a href="/w-przygotowaniu?section=twitter" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                </div>
             </div>
-            <div class="footer-copy">
-                © 2025 GrajMyTV · Wszystkie prawa zastrzeżone
+
+            <!-- Kolumna 2: Platforma -->
+            <div class="footer-links-col">
+                <h4>Platforma</h4>
+                <ul>
+                    <li><a href="#gry">Teleturnieje</a></li>
+                    <li><a href="#jak-dziala">Jak to działa</a></li>
+                </ul>
             </div>
+
+            <!-- Kolumna 3: Informacje -->
+            <div class="footer-links-col">
+                <h4>Informacje</h4>
+                <ul>
+                    <li><a href="/w-przygotowaniu?section=o-nas">O nas</a></li>
+                    <li><a href="/w-przygotowaniu?section=kontakt">Kontakt</a></li>
+                    <li><a href="/w-przygotowaniu?section=pomoc">Pomoc</a></li>
+                </ul>
+            </div>
+
+            <!-- Kolumna 4: Dokumenty -->
+            <div class="footer-links-col">
+                <h4>Dokumenty</h4>
+                <ul>
+                    <li><a href="/regulamin">Regulamin</a></li>
+                    <li><a href="/polityka-prywatnosci">Polityka prywatności</a></li>
+                    <li><a href="/polityka-cookies">Polityka cookies</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 GrajMyTV. Wszystkie prawa zastrzeżone.</p>
         </div>
     </footer>
 
+    <!-- Skrypt JS logiczny -->
     <script src="js/main.js"></script>
 </body>
 </html>

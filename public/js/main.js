@@ -1,98 +1,178 @@
-// ================== KARUZELA ==================
-const carousel     = document.getElementById('carousel');
-const cards        = document.querySelectorAll('.game-card');
-const prevBtn      = document.getElementById('carouselPrev');
-const nextBtn      = document.getElementById('carouselNext');
-const gameDetail   = document.getElementById('gameDetail');
-
-function rotateCarousel(direction) {
-    if (!document.startViewTransition) {
-        performRotation(direction);
-    } else {
-        document.startViewTransition(() => performRotation(direction));
-    }
-}
-
-function performRotation(direction) {
-    const children = Array.from(carousel.children);
-    if (children.length < 3) return;
-
-    if (direction === 'left') {
-        carousel.prepend(children[children.length - 1]);
-    } else if (direction === 'right') {
-        carousel.appendChild(children[0]);
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicjalizacja ikon Lucide
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
     }
 
-    // Update active state to the center card
-    const newChildren = Array.from(carousel.children);
-    const middleCard = newChildren[Math.floor(newChildren.length / 2)];
+    // ==========================================
+    // MENU MOBILNE (HAMBURGER MENU)
+    // ==========================================
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navMenu = document.getElementById('navMenu');
+    const hamburgerIcon = hamburgerBtn.querySelector('.hamburger-icon');
+    const closeIcon = hamburgerBtn.querySelector('.close-icon');
+    const mobileBackdrop = document.getElementById('mobileBackdrop');
+    const navLinks = document.querySelectorAll('.nav-link');
 
-    cards.forEach(c => c.classList.remove('active'));
-    middleCard.classList.add('active');
+    // Breakpoint musi być zgodny z CSS (@media max-width: 1100px)
+    const MOBILE_BREAKPOINT = 1100;
 
-    // Update detail panel
-    const game = middleCard.dataset.game;
-    document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('active'));
-    
-    if (middleCard.classList.contains('coming-soon')) {
-        const soonPanel = document.getElementById('detail-soon');
-        if (soonPanel) soonPanel.classList.add('active');
-    } else {
-        const panel = document.getElementById(`detail-${game}`);
-        if (panel) panel.classList.add('active');
-    }
-}
-
-prevBtn.addEventListener('click', () => rotateCarousel('left'));
-nextBtn.addEventListener('click', () => rotateCarousel('right'));
-
-// ================== KARTY - KLIKANIE ==================
-function selectCard(card) {
-    const children = Array.from(carousel.children);
-    const index = children.indexOf(card);
-
-    if (index === 0) {
-        rotateCarousel('left');
-    } else if (index === children.length - 1) {
-        rotateCarousel('right');
+    function openMenu() {
+        navMenu.classList.add('active');
+        mobileBackdrop.classList.add('active');
+        hamburgerIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
     }
 
-    setTimeout(() => {
-        gameDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 150);
-}
-
-// Klikanie wyłączone - nawigacja tylko strzałkami
-
-// ================== COMING SOON z URL ==================
-const urlParams = new URLSearchParams(window.location.search);
-const soonGame  = urlParams.get('soon');
-if (soonGame) {
-    const soonPanel = document.getElementById('detail-soon');
-    if (soonPanel) soonPanel.classList.add('active');
-
-    const targetCard = document.querySelector(`[data-game="${soonGame}"]`);
-    if (targetCard) {
-        cards.forEach(c => c.classList.remove('active'));
-        setTimeout(() => {
-            gameDetail.scrollIntoView({ behavior: 'smooth' });
-        }, 300);
+    function closeMenu() {
+        navMenu.classList.remove('active');
+        mobileBackdrop.classList.remove('active');
+        hamburgerIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+        document.body.style.overflow = '';
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
     }
-}
 
-// ================== ANIMACJE WEJŚCIA ==================
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+    function toggleMenu() {
+        if (navMenu.classList.contains('active')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }
+
+    hamburgerBtn.addEventListener('click', toggleMenu);
+
+    // Zamknij po kliknięciu w backdrop
+    mobileBackdrop.addEventListener('click', closeMenu);
+
+    // Zamknij po naciśnięciu klawisza Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+            closeMenu();
         }
     });
-}, { threshold: 0.1 });
 
-document.querySelectorAll('.about-card').forEach((card, i) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`;
-    observer.observe(card);
+    // Zamknij i zresetuj przy powiększeniu okna powyżej breakpointa
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > MOBILE_BREAKPOINT && navMenu.classList.contains('active')) {
+            closeMenu();
+        }
+    });
+
+    // Zamknij menu po kliknięciu w link nawigacyjny
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                closeMenu();
+            }
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+
+    // Podświetlanie aktywnego linku podczas przewijania
+    const sections = document.querySelectorAll('section[id]');
+    window.addEventListener('scroll', () => {
+        let scrollY = window.pageYOffset;
+        sections.forEach(current => {
+            const sectionHeight = current.offsetHeight;
+            const sectionTop = current.offsetTop - 100;
+            const sectionId = current.getAttribute('id');
+
+            if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                document.querySelector(`.nav-menu a[href*=${sectionId}]`)?.classList.add('active');
+            } else {
+                document.querySelector(`.nav-menu a[href*=${sectionId}]`)?.classList.remove('active');
+            }
+        });
+    });
+
+
+
+
+
+
+
+    // ==========================================
+    // FILTROWANIE KATALOGU GIER
+    // ==========================================
+    const gameModeTabs = document.querySelectorAll('[data-mode-filter]');
+    const gameCards = document.querySelectorAll('.game-card[data-game-variant="true"]');
+
+    function setGameMode(mode) {
+        gameModeTabs.forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.modeFilter === mode);
+        });
+
+        gameCards.forEach(card => {
+            const modes = (card.dataset.gameModes || '').split(' ');
+            card.classList.toggle('hidden-by-mode', !modes.includes(mode));
+        });
+    }
+
+    gameModeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            setGameMode(tab.dataset.modeFilter);
+        });
+    });
+
+    setGameMode('solo');
+
+    function resolveAppUrl(path) {
+        if (window.location.protocol === 'file:') {
+            return `http://localhost:3000${path}`;
+        }
+
+        return path;
+    }
+
+    document.querySelectorAll('a[href^="/"]').forEach(link => {
+        link.href = resolveAppUrl(link.getAttribute('href'));
+    });
+
+    document.querySelectorAll('[data-card-href]').forEach(card => {
+        const openCard = () => {
+            window.location.href = resolveAppUrl(card.dataset.cardHref);
+        };
+
+        card.addEventListener('click', event => {
+            if (event.target.closest('a, button')) return;
+            openCard();
+        });
+
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openCard();
+            }
+        });
+    });
+
+    // ==========================================
+    // ANIMACJA PRZY PRZEWIJANIU (SCROLL REVEAL)
+    // ==========================================
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                // Przestań obserwować po pokazaniu
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    revealElements.forEach(el => {
+        revealObserver.observe(el);
+    });
 });
