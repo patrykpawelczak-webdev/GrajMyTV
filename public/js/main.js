@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const RODZINIADA_SOLO_STORAGE_KEY = 'grajmytv:rodziniada-solo';
+    const RODZINIADA_SOLO_STORAGE_KEY = 'grajmytv:rodziniada-solo:v2';
+    const RODZINIADA_SOLO_LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo'];
 
     function clearRodziniadaSoloProgressFromUrl() {
         const params = new URLSearchParams(window.location.search);
         if (!params.has('resetRodziniadaSolo')) return;
 
-        localStorage.removeItem(RODZINIADA_SOLO_STORAGE_KEY);
+        [RODZINIADA_SOLO_STORAGE_KEY, ...RODZINIADA_SOLO_LEGACY_STORAGE_KEYS].forEach(key => localStorage.removeItem(key));
         params.delete('resetRodziniadaSolo');
         const nextQuery = params.toString();
         const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;

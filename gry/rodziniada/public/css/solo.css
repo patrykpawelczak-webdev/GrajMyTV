@@ -732,11 +732,18 @@ button {
 }
 
 .dialog-head {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  display: grid;
+  justify-items: center;
   gap: 0.875rem;
-  align-items: flex-start;
+  align-items: start;
   margin-bottom: 0.875rem;
+  text-align: center;
+}
+
+.dialog-head > div {
+  min-width: 0;
+  padding: 0 3rem;
 }
 
 .dialog-head span,
@@ -757,6 +764,9 @@ button {
 }
 
 .dialog-close {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 2.375rem;
   height: 2.375rem;
   border-radius: 62.4375rem;
@@ -1008,7 +1018,7 @@ button {
 
   .title-lockup h1 {
     width: 100%;
-    font-size: clamp(1.5rem, 6.4vw, 2.75rem);
+    font-size: clamp(1.75rem, 7.2vw, 3.05rem);
     line-height: 1.08;
     text-align: center;
     -webkit-text-stroke-width: 0.0875rem;
@@ -1088,7 +1098,7 @@ button {
   }
 
   .title-lockup h1 {
-    font-size: clamp(1.45rem, 7.4vw, 2.15rem);
+    font-size: clamp(1.62rem, 8vw, 2.35rem);
   }
 
   .answer-board {

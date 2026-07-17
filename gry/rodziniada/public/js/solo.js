@@ -5,13 +5,14 @@
     const JULY_CHALLENGE_MONTH = 6;
     const JULY_CHALLENGE_DAYS = 31;
     const START_CHALLENGE = new Date(JULY_CHALLENGE_YEAR, JULY_CHALLENGE_MONTH, 1);
-    const STORAGE_KEY = 'grajmytv:rodziniada-solo';
+    const STORAGE_KEY = 'grajmytv:rodziniada-solo:v2';
+    const LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo'];
 
     function clearProgressFromUrl() {
         const params = new URLSearchParams(window.location.search);
         if (!params.has('resetRodziniadaSolo')) return;
 
-        localStorage.removeItem(STORAGE_KEY);
+        [STORAGE_KEY, ...LEGACY_STORAGE_KEYS].forEach(key => localStorage.removeItem(key));
         params.delete('resetRodziniadaSolo');
         const nextQuery = params.toString();
         const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;

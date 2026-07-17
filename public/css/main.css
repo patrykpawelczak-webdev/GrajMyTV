@@ -596,8 +596,10 @@ main > section:nth-of-type(even)::before {
   max-width: 26.875rem;
   min-width: 0;
   display: grid;
+  justify-items: center;
   gap: 0;
   padding: 2px 0;
+  text-align: center;
 }
 
 .daily-challenge-kicker {
@@ -642,6 +644,7 @@ main > section:nth-of-type(even)::before {
 
 .daily-challenge-note {
   width: fit-content;
+  justify-self: center;
   color: #9BBEFF;
   font-size: 0.76rem;
   font-weight: 900;
@@ -2161,14 +2164,20 @@ main > section:nth-of-type(even)::before {
   }
 
   .daily-challenge-link::after {
-    right: 0.875rem;
+    left: 50%;
+    right: auto;
     top: auto;
-    bottom: 0.875rem;
-    width: 4.5rem;
+    bottom: 0;
+    width: 5.75rem;
     height: 0.25rem;
-    border-radius: 62.4375rem;
+    border-radius: 62.4375rem 62.4375rem 0 0;
     background: linear-gradient(90deg, rgba(215, 25, 63, 0.95), rgba(139, 61, 255, 0.82), rgba(23, 104, 201, 0.95));
     opacity: 0.72;
+    transform: translateX(-50%);
+  }
+
+  .daily-challenge-copy strong {
+    font-size: clamp(1.32rem, 6vw, 1.7rem);
   }
 
   .steps-grid {
