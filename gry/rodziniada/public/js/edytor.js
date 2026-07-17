@@ -23,7 +23,7 @@ function markUnsaved() {
     const btn = document.getElementById('btnSave');
     if (btn) {
         btn.textContent    = 'Zapisz *';
-        btn.style.boxShadow = '0 0 12px rgba(22,163,74,0.7)';
+        btn.style.boxShadow = '0 0 0.75rem rgba(22,163,74,0.7)';
     }
 }
 
@@ -189,7 +189,7 @@ async function saveAll() {
     try {
         const res  = await fetch('/rodziniada/api/questions', {
             method:  'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 'X-PIN': currentPin
             },

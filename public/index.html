@@ -6,15 +6,15 @@
     <title>GrajMyTV - Domowe Teleturnieje Online i Lokalnie</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="img/logo-favicon.png">
-    
+
     <!-- Google Fonts: Manrope -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <!-- CSS Stylizacyjny -->
     <link rel="stylesheet" href="css/main.css">
 </head>
@@ -31,7 +31,7 @@
             <a href="/" class="header-logo" aria-label="GrajMyTV - Strona Główna">
                 <img src="img/logo-napis.png" alt="GrajMyTV Logo" class="logo-image">
             </a>
-            
+
             <!-- Menu Nawigacyjne -->
             <nav class="nav-menu" id="navMenu" aria-label="Nawigacja główna">
                 <a href="#home" class="nav-link active">Strona główna</a>
@@ -39,7 +39,7 @@
                 <a href="#jak-dziala" class="nav-link">Jak to działa</a>
                 <a href="#korzysci" class="nav-link">O platformie</a>
             </nav>
-            
+
             <!-- Przycisk Hamburgera (Mobile) -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Otwórz menu nawigacyjne" aria-expanded="false">
                 <i data-lucide="menu" class="hamburger-icon"></i>
@@ -57,55 +57,20 @@
             <div class="hero-container">
                 <!-- Lewa strona: Nagłówek i Opis -->
                 <div class="hero-content">
-                    <div class="hero-badge">
-                        <i data-lucide="sparkles" class="icon-sm"></i> Nowa definicja domowej rozrywki
-                    </div>
                     <h1 class="hero-title">
                         Teleturnieje, <span class="gradient-text">kiedy chcesz</span> i gdzie chcesz.
                     </h1>
-                    <p class="hero-description">
-                        Zagraj w emocjonujące teleturnieje samodzielnie, ze znajomymi lokalnie lub online. Poczuj atmosferę prawdziwego programu telewizyjnego bez wychodzenia z domu.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="#gry" class="btn btn-primary btn-lg">Zagraj teraz</a>
-                        <a href="#jak-dziala" class="btn btn-secondary btn-lg">Jak to działa?</a>
-                    </div>
+                    <a href="/rodziniada/solo" class="daily-challenge-link" aria-label="Przejdź do dzisiejszego wyzwania Rodziniada - codzienne wyzwanie">
+                        <span class="daily-challenge-thumb rodziniada-banner" aria-hidden="true"></span>
+                        <span class="daily-challenge-copy">
+                            <span class="daily-challenge-kicker">Dzisiejsze wyzwanie</span>
+                            <strong>Rodziniada - codzienne wyzwanie</strong>
+                            <span class="daily-challenge-question">6 odpowiedzi · 3 błędy · ranking dnia</span>
+                            <span class="daily-challenge-note">Rozegraj wyzwanie <span data-daily-challenge-number>#...</span> →</span>
+                        </span>
+                    </a>
                 </div>
 
-
-            </div>
-        </section>
-
-        <!-- PASEK NAJWAŻNIEJSZYCH FUNKCJI -->
-        <section class="feature-bar-section">
-            <div class="feature-bar-container">
-                <div class="feature-bar-card">
-                    <div class="feature-icon-wrapper">
-                        <i data-lucide="tv"></i>
-                    </div>
-                    <div class="feature-bar-text">
-                        <h3>Kultowe emocje</h3>
-                        <p>Poczuj atmosferę prawdziwego teleturnieju.</p>
-                    </div>
-                </div>
-                <div class="feature-bar-card">
-                    <div class="feature-icon-wrapper">
-                        <i data-lucide="users"></i>
-                    </div>
-                    <div class="feature-bar-text">
-                        <h3>Gra solo lub ze znajomymi</h3>
-                        <p>Graj samodzielnie, lokalnie albo przez internet.</p>
-                    </div>
-                </div>
-                <div class="feature-bar-card">
-                    <div class="feature-icon-wrapper">
-                        <i data-lucide="globe"></i>
-                    </div>
-                    <div class="feature-bar-text">
-                        <h3>Online i offline</h3>
-                        <p>Rozpocznij rozgrywkę w dowolnym miejscu.</p>
-                    </div>
-                </div>
 
             </div>
         </section>
@@ -113,35 +78,32 @@
         <!-- SEKCJA TELETURNIEJÓW -->
         <section class="games-section" id="gry">
             <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Wybierz swoją grę</h2>
-                    <p class="section-subtitle">Każdy teleturniej oferuje inne zasady, tempo i rodzaj rywalizacji.</p>
-                </div>
-                
-                <div class="game-mode-switcher" aria-label="Sekcje gier">
-                    <button class="game-mode-tab active" type="button" data-mode-filter="solo">
-                        <i data-lucide="user-round"></i>
-                        <span>Gra solo</span>
-                    </button>
-                    <button class="game-mode-tab" type="button" data-mode-filter="local">
-                        <i data-lucide="home"></i>
-                        <span>Gry lokalne</span>
-                    </button>
-                    <button class="game-mode-tab" type="button" data-mode-filter="online">
-                        <i data-lucide="wifi"></i>
-                        <span>Gry online</span>
-                    </button>
+                <div class="games-toolbar">
+                    <div class="section-header games-header">
+                        <h2 class="section-title">Dostępne gry</h2>
+                    </div>
+
+                    <div class="game-mode-switcher" aria-label="Sekcje gier">
+                        <button class="game-mode-tab active" type="button" data-mode-filter="solo">
+                            <i data-lucide="user-round"></i>
+                            <span>Solo</span>
+                        </button>
+                        <button class="game-mode-tab" type="button" data-mode-filter="local">
+                            <i data-lucide="home"></i>
+                            <span>Lokalnie</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="games-grid">
-                    <div class="game-card is-clickable" data-game-variant="true" data-game-key="rodziniada-solo" data-game-modes="solo" data-card-href="/rodziniada/solo" tabindex="0" role="link" aria-label="Uruchom Rodziniadę Solo">
+                    <div class="game-card is-clickable" data-game-variant="true" data-game-key="rodziniada-solo" data-game-modes="solo" data-card-href="/rodziniada/solo" tabindex="0" role="link" aria-label="Uruchom Rodziniadę - codzienne wyzwanie">
                         <div class="game-card-banner game-card-image-banner rodziniada-banner">
                             <span class="game-badge badge-beta">Beta</span>
                             <div class="game-banner-icon"><i data-lucide="heart"></i></div>
                         </div>
                         <div class="game-card-content">
-                            <h3 class="game-name">Rodziniada</h3>
-                            <p class="game-desc">Jednoosobowy trening najpopularniejszych odpowiedzi. Szybkie rundy, automatyczne punktowanie i zabawa bez prowadzącego.</p>
+                            <h3 class="game-name">Rodziniada - codzienne wyzwanie</h3>
+                            <p class="game-desc">Codzienna ankieta z sześcioma odpowiedziami do odgadnięcia.</p>
                             <div class="game-meta">
                                 <span><i data-lucide="user-check"></i> Gra solo</span>
                                 <span><i data-lucide="users-2"></i> 1 gracz</span>
@@ -152,7 +114,7 @@
 
                     <div class="game-card" data-game-variant="true" data-game-key="droga-solo" data-game-modes="solo">
                         <div class="game-card-banner game-card-image-banner droga-banner">
-                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <span class="game-badge badge-progress">W trakcie</span>
                             <div class="game-banner-icon"><i data-lucide="landmark"></i></div>
                         </div>
                         <div class="game-card-content">
@@ -196,12 +158,12 @@
 
                     <div class="game-card" data-game-variant="true" data-game-key="rodziniada-local" data-game-modes="local">
                         <div class="game-card-banner game-card-image-banner rodziniada-banner">
-                            <span class="game-badge badge-soon">Wkrótce</span>
+                            <span class="game-badge badge-progress">W trakcie</span>
                             <div class="game-banner-icon"><i data-lucide="heart"></i></div>
                         </div>
                         <div class="game-card-content">
                             <h3 class="game-name">Rodziniada</h3>
-                            <p class="game-desc">Domowa wersja drużynowa przy jednym ekranie. Prowadzący steruje planszą, a dwie drużyny walczą o odpowiedzi z ankiety.</p>
+                            <p class="game-desc">Drużynowa wersja przy jednym ekranie, tworzona do gry ze znajomymi.</p>
                             <div class="game-meta">
                                 <span><i data-lucide="home"></i> Gry lokalne</span>
                                 <span><i data-lucide="users-2"></i> 3+ graczy</span>
@@ -380,7 +342,7 @@
                     <h2 class="section-title">Jak to działa?</h2>
                     <p class="section-subtitle">Rozgrywka w kilku prostych krokach. Bez zbędnych komplikacji.</p>
                 </div>
-                
+
                 <div class="steps-grid">
                     <div class="step-card reveal-on-scroll">
                         <div class="step-number">01</div>
@@ -417,7 +379,7 @@
                     <h2 class="section-title">Dlaczego GrajMyTV?</h2>
                     <p class="section-subtitle">Stworzyliśmy platformę z myślą o maksymalnej wygodzie i zabawie.</p>
                 </div>
-                
+
                 <div class="benefits-grid">
                     <div class="benefit-card reveal-on-scroll">
                         <div class="benefit-icon">
@@ -524,7 +486,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="footer-bottom">
             <p>&copy; 2026 GrajMyTV. Wszystkie prawa zastrzeżone.</p>
         </div>

@@ -77,7 +77,7 @@ export function showSetupScreenLocal() {
     safeAdd('setupScreenOnline', 'hidden');
     safeAdd('onlineLobbyScreen', 'hidden');
     safeRemove('gameScreen', 'active');
-    
+
     const nameInput = $('setupGameName');
     if (nameInput) nameInput.value = '';
     const team1Input = $('setupTeam1Name');
@@ -93,7 +93,7 @@ export function showSetupScreenOnline() {
     safeRemove('setupScreenOnline', 'hidden');
     safeAdd('onlineLobbyScreen', 'hidden');
     safeRemove('gameScreen', 'active');
-    
+
     const nameInput = $('setupGameNameOnline');
     if (nameInput) nameInput.value = '';
 }
@@ -196,13 +196,13 @@ export function renderGamesList(games, filterQuery = '', joinGameAsTvCallback) {
         const badgeText = isOnline ? 'Online' : 'Lokalna';
         const btnClass = isOnline ? 'lobby-btn-online' : 'lobby-btn-local';
         const btnText = isOnline ? 'Dołącz do lobby' : 'Ekran TV';
-        const onClickHandler = isOnline 
-            ? `joinGameAsTv('${g.tvCode}')` 
+        const onClickHandler = isOnline
+            ? `joinGameAsTv('${g.tvCode}')`
             : `openTvDirectly()`;
 
         return `
             <div class="lobby-row ${rowClass}" data-id="${g.gameId}">
-                <div class="lobby-col-name" style="display: flex; align-items: center; gap: 4px;">
+                <div class="lobby-col-name" style="display: flex; align-items: center; gap: 0.25rem;">
                     <span class="game-badge ${badgeClass}">${badgeText}</span>
                     <div class="lobby-game-name">${escapeHtml(g.name)}</div>
                 </div>
@@ -222,7 +222,7 @@ export function updateHeaderCodes(hostCode, tvCode) {
 
 export function updateUI(gameState, revealAnswerCallback) {
     if (!gameState) return;
-    
+
     const hostBlockOverlay = $('hostBlockOverlay');
     if (hostBlockOverlay) {
         if (gameState.displayStarted) {
@@ -391,10 +391,10 @@ function handleDrop(e) {
 
         const emptyItalic = this.querySelector('.player-item-empty-italic');
         if (emptyItalic) emptyItalic.remove();
-        
+
         this.appendChild(dragging);
         updateTeamCounts();
-        
+
         if (currentDropCallback) {
             currentDropCallback(rebuildLobbyStateFromDOM());
         }
@@ -429,7 +429,7 @@ function checkEmptyZones() {
             if (zone.id === 'rolePresenterContainer') emptyText = "Przeciągnij tutaj prowadzącego";
             else if (zone.id === 'lobbyPlayers1' || zone.id === 'lobbyPlayers2') emptyText = "Przeciągnij graczy";
             else emptyText = "Oczekiwanie na graczy...";
-            
+
             if (!zone.querySelector('.player-item-empty-italic')) {
                 const el = document.createElement('div');
                 el.className = 'player-item-empty-italic';

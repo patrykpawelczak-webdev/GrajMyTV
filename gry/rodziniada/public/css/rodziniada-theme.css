@@ -25,14 +25,14 @@
   background: linear-gradient(90deg, #ffffff, #ff8acb 42%, #91c7ff);
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 0 0 26px rgba(255, 47, 157, 0.28);
+  text-shadow: 0 0 1.625rem rgba(255, 47, 157, 0.28);
 }
 
 .theme-rodziniada .tv-logo {
   background: linear-gradient(90deg, #ffffff, #ff8acb 42%, #91c7ff);
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 0 0 26px rgba(255, 47, 157, 0.28);
+  text-shadow: 0 0 1.625rem rgba(255, 47, 157, 0.28);
 }
 
 .theme-rodziniada .setup-subtitle {
@@ -46,7 +46,7 @@
   background: var(--gradient);
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 14px 34px rgba(255, 47, 157, 0.18);
+  box-shadow: 0 0.875rem 2.125rem rgba(255, 47, 157, 0.18);
 }
 
 .theme-rodziniada .btn--secondary,
@@ -72,7 +72,7 @@
 
 .theme-rodziniada .game-type-card:hover {
   border-color: rgba(255, 209, 102, 0.52);
-  box-shadow: 0 18px 42px rgba(255, 47, 157, 0.15);
+  box-shadow: 0 1.125rem 2.625rem rgba(255, 47, 157, 0.15);
 }
 
 .theme-rodziniada .team-setup-title,
@@ -107,5 +107,5 @@
 .theme-rodziniada textarea:focus,
 .theme-rodziniada select:focus {
   border-color: rgba(255, 47, 157, 0.72);
-  box-shadow: 0 0 0 3px rgba(255, 47, 157, 0.16);
+  box-shadow: 0 0 0 0.1875rem rgba(255, 47, 157, 0.16);
 }

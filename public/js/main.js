@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const RODZINIADA_SOLO_STORAGE_KEY = 'grajmytv:rodziniada-solo';
+
+    function clearRodziniadaSoloProgressFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('resetRodziniadaSolo')) return;
+
+        localStorage.removeItem(RODZINIADA_SOLO_STORAGE_KEY);
+        params.delete('resetRodziniadaSolo');
+        const nextQuery = params.toString();
+        const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', nextUrl);
+    }
+
+    clearRodziniadaSoloProgressFromUrl();
+
     // Inicjalizacja ikon Lucide
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -14,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileBackdrop = document.getElementById('mobileBackdrop');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    // Breakpoint musi być zgodny z CSS (@media max-width: 1100px)
+    // Breakpoint musi być zgodny z CSS (@media max-width: 68.75rem)
     const MOBILE_BREAKPOINT = 1100;
 
     function openMenu() {
@@ -152,13 +167,88 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
+    // NUMER DZISIEJSZEGO WYZWANIA RODZINIADY
+    // ==========================================
+    const dailyChallengeLink = document.querySelector('.daily-challenge-link');
+    const dailyChallengeCopy = document.querySelector('.daily-challenge-copy');
+    const challengeNumberEls = document.querySelectorAll('[data-daily-challenge-number]');
+
+    function dateFromKey(key) {
+        const [year, month, day] = key.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function getTodayKey(date = new Date()) {
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, '0'),
+            String(date.getDate()).padStart(2, '0')
+        ].join('-');
+    }
+
+    function resolveChallengeNumber(startDate = '2026-07-01') {
+        const diff = Math.floor((dateFromKey(getTodayKey()) - dateFromKey(startDate)) / 86400000) + 1;
+        return Math.max(1, diff);
+    }
+
+    function setDailyChallengeNumber(number) {
+        challengeNumberEls.forEach(el => {
+            el.textContent = `#${number}`;
+        });
+    }
+
+    function getRodziniadaSoloStore() {
+        try {
+            return JSON.parse(localStorage.getItem(RODZINIADA_SOLO_STORAGE_KEY) || '{}');
+        } catch {
+            return {};
+        }
+    }
+
+    function isTodayChallengeCompleted() {
+        const store = getRodziniadaSoloStore();
+        return Boolean(store?.results?.[getTodayKey()]);
+    }
+
+    function renderCompletedDailyChallenge() {
+        if (!dailyChallengeLink || !dailyChallengeCopy || !isTodayChallengeCompleted()) return;
+
+        dailyChallengeLink.classList.add('is-completed');
+        dailyChallengeLink.setAttribute('aria-label', 'Dzisiejsze wyzwanie Rodziniady jest wykonane');
+        dailyChallengeCopy.innerHTML = `
+            <span class="daily-challenge-completed-title">Wyzwanie wykonane</span>
+            <span class="daily-challenge-completed-subtitle">Wróć jutro po więcej</span>
+        `;
+    }
+
+    async function loadDailyChallengeNumber() {
+        if (!challengeNumberEls.length) return;
+
+        setDailyChallengeNumber(resolveChallengeNumber());
+
+        try {
+            const response = await fetch(resolveAppUrl('/rodziniada/api/solo-calendar'), { cache: 'no-store' });
+            if (!response.ok) return;
+
+            const calendar = await response.json();
+            setDailyChallengeNumber(resolveChallengeNumber(calendar.startDate));
+        } catch {
+            setDailyChallengeNumber(resolveChallengeNumber());
+        }
+    }
+
+    loadDailyChallengeNumber();
+    renderCompletedDailyChallenge();
+    window.addEventListener('pageshow', renderCompletedDailyChallenge);
+
+    // ==========================================
     // ANIMACJA PRZY PRZEWIJANIU (SCROLL REVEAL)
     // ==========================================
     const revealElements = document.querySelectorAll('.reveal-on-scroll');
-    
+
     const observerOptions = {
         root: null,
-        rootMargin: '0px',
+        rootMargin: '0rem',
         threshold: 0.1
     };
 

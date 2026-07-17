@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (manualTab) manualTab.classList.add('active');
         const randomTab = $('modeTabRandom');
         if (randomTab) randomTab.classList.remove('active');
-        
+
         await loadQuestionsFromServer();
         await loadJokesFromServer();
         categoriesRendered = false;
@@ -60,26 +60,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSelectedQuestionsOrder();
     } else if (isOnlinePage) {
         isOnlineMode = true;
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const joinCode = urlParams.get('code');
-        
+
         if (joinCode) {
             const joinName = urlParams.get('name');
             if (!joinName) {
                 window.location.href = '/rodziniada';
                 return;
             }
-            
+
             ui.showOnlineLobbyScreen('Oczekiwanie...', joinCode);
-            
+
             const startBtn = document.getElementById('btnStartOnlineActive');
             if (startBtn) startBtn.style.display = 'none';
             const cancelBtn = document.querySelector('.btn-dashboard-cancel');
             if (cancelBtn) cancelBtn.style.display = 'none';
-            
+
             socket.emit('joinAsPlayer', { code: joinCode, name: joinName });
-            
+
             socket.on('joinedPlayer', (data) => {
                 currentGameId = data.gameId;
                 gameState = data.state;
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ui.renderLobbyPlayers(gameState.lobby, false);
                 ui.showToast('Pomyślnie dołączono do pokoju!', 'success');
             });
-            
+
             socket.on('joinError', (data) => {
                 ui.showToast(data.message, 'error');
                 setTimeout(() => { window.location.href = '/rodziniada'; }, 2000);
@@ -157,7 +157,7 @@ const netHandlers = {
         loadQuestion(0);
         ui.updateHeaderCodes(currentHostCode, currentTvCode);
         ui.updateUI(gameState, revealAnswer);
-        
+
         if (isOnlineMode) {
             ui.showOnlineLobbyScreen(gameState.name || 'Pokój Online', tvCode);
             ui.renderLobbyPlayers(gameState.lobby, true);
@@ -179,7 +179,7 @@ const netHandlers = {
     onGameStateUpdated: ({ gameId, state }) => {
         if (gameId !== currentGameId) return;
         gameState = state;
-        
+
         // Jeśli jesteśmy w poczekalni online (widoczny ekran lobby)
         const lobbyScreen = document.getElementById('onlineLobbyScreen');
         if (lobbyScreen && !lobbyScreen.classList.contains('hidden')) {
@@ -187,7 +187,7 @@ const netHandlers = {
             const nameEl = document.getElementById('lobbyRoomName');
             if (nameEl) nameEl.textContent = gameState.name;
         }
-        
+
         // Logika autoryzacji do odpowiednich widoków przy starcie gry
         if (gameState.displayStarted) {
             if (currentRole === 'player') {
@@ -208,7 +208,7 @@ const netHandlers = {
                 }
             }
         }
-        
+
         ui.updateUI(gameState, revealAnswer);
     },
     onGameEnded: () => {
@@ -257,12 +257,12 @@ window.goToOnlineStep2 = () => {
         ui.showToast('Pokój o takiej nazwie gracza już istnieje! Wybierz inny nick.', 'error');
         return;
     }
-    
+
     // Tworzymy grę/lobby online OD RAZU!
     const initialState = createEmptyState();
     initialState.isOnline = true;
     initialState.name = lobbyName;
-    
+
     // Zapiszmy założyciela w lobby
     initialState.lobby.unassigned.push({ id: 'creator', name: playerName });
 
@@ -300,7 +300,7 @@ window.startOnlineActiveGame = async () => {
     if (questionCategories.length === 0) {
         await loadQuestionsFromServer();
     }
-    
+
     const allQ = [];
     if (questionCategories && questionCategories.length > 0) {
         questionCategories.forEach((cat) => {
@@ -327,7 +327,7 @@ window.startOnlineActiveGame = async () => {
     newState.isOnline = true;
     newState.selectedQuestions = selected;
     newState.name = gameState.name;
-    
+
     if (gameState && gameState.lobby) {
         newState.lobby = gameState.lobby;
     }
@@ -338,14 +338,14 @@ window.startOnlineActiveGame = async () => {
     if (newState.lobby && newState.lobby.team2 && newState.lobby.team2.length > 0) {
         newState.team2.name = "Drużyna Czerwonych";
     }
-    
+
     newState.currentQuestionIndex = 0;
     newState.currentQuestion = newState.selectedQuestions[0];
     newState.displayStarted = true;
-    
+
     gameState = newState;
     net.updateGameState(socket, currentGameId, gameState);
-    
+
     if (gameState.lobby && gameState.lobby.presenter && gameState.lobby.presenter.id !== 'creator') {
         window.location.href = `/rodziniada/tv?code=${currentTvCode}`;
     } else {
@@ -371,11 +371,11 @@ window.joinGameAsTv = (tvCode) => {
     ui.showModal('DOŁĄCZ DO LOBBY', '', 'Dołącz', 'btn--primary', () => {
         const code = $('lobbyTvCodeInput')?.value?.trim();
         const playerName = $('lobbyPlayerNameInput')?.value?.trim();
-        
+
         if (!code) { ui.showToast('Wpisz kod pokoju!', 'error'); return; }
         if (!playerName) { ui.showToast('Wpisz swoją nazwę (Nick)!', 'error'); return; }
         if (code !== tvCode) { ui.showToast('Nieprawidłowy kod pokoju!', 'error'); return; }
-        
+
         // Przenosi gracza do poczekalni online (lobby) wraz z jego nickiem
         window.location.href = `/rodziniada/online?code=${tvCode}&name=${encodeURIComponent(playerName)}`;
     });
@@ -384,18 +384,18 @@ window.joinGameAsTv = (tvCode) => {
         const msgEl = $('modalMessage');
         if (msgEl) {
             msgEl.innerHTML = `
-                <div style="text-align:center; margin-bottom: 10px; color: var(--gray); font-size: 0.95rem;">
+                <div style="text-align:center; margin-bottom: 0.625rem; color: var(--gray); font-size: 0.95rem;">
                     Kod pokoju:
                 </div>
-                <input type="text" id="lobbyTvCodeInput" 
-                       style="width: 100%; text-align: center; font-size: 2rem; font-family: 'Russo One', sans-serif; letter-spacing: 8px; color: var(--gold); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.3); padding: 15px; border-radius: 12px; outline: none; margin-bottom: 20px;" 
+                <input type="text" id="lobbyTvCodeInput"
+                       style="width: 100%; text-align: center; font-size: 2rem; font-family: 'Russo One', sans-serif; letter-spacing: 0.5rem; color: var(--gold); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.3); padding: 0.9375rem; border-radius: 0.75rem; outline: none; margin-bottom: 1.25rem;"
                        placeholder="------" maxlength="6" autocomplete="off" inputmode="numeric">
-                
-                <div style="text-align:center; margin-bottom: 10px; color: var(--gray); font-size: 0.95rem;">
+
+                <div style="text-align:center; margin-bottom: 0.625rem; color: var(--gray); font-size: 0.95rem;">
                     Twój Nick:
                 </div>
-                <input type="text" id="lobbyPlayerNameInput" 
-                       style="width: 100%; text-align: center; font-size: 1.5rem; font-family: 'Russo One', sans-serif; color: var(--white); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; outline: none;" 
+                <input type="text" id="lobbyPlayerNameInput"
+                       style="width: 100%; text-align: center; font-size: 1.5rem; font-family: 'Russo One', sans-serif; color: var(--white); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); padding: 0.9375rem; border-radius: 0.75rem; outline: none;"
                        placeholder="Wpisz imię..." maxlength="15" autocomplete="off">
             `;
             setTimeout(() => {
@@ -492,11 +492,11 @@ window.handleDragOver = (e, index) => {
     if (draggedIndex === null || draggedIndex === index) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     const midY = rect.top + rect.height / 2;
     const isAbove = e.clientY < midY;
-    
+
     if (isAbove) {
         e.currentTarget.classList.add('drag-over-above');
         e.currentTarget.classList.remove('drag-over-below');
@@ -513,11 +513,11 @@ window.handleDragLeave = (e) => {
 window.handleDrop = (e, targetIndex) => {
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === targetIndex) return;
-    
+
     const draggedItem = selectedQuestionsOrder[draggedIndex];
     selectedQuestionsOrder.splice(draggedIndex, 1);
     selectedQuestionsOrder.splice(targetIndex, 0, draggedItem);
-    
+
     renderSelectedQuestionsOrder();
     updateSelectedQuestions();
 };
@@ -526,11 +526,11 @@ window.removeSelectedQuestion = (index) => {
     if (index < 0 || index >= selectedQuestionsOrder.length) return;
     const { ci, qi } = selectedQuestionsOrder[index];
     selectedQuestionsOrder.splice(index, 1);
-    
+
     // Also uncheck the checkbox in the UI
     const cb = $(`q${ci}_${qi}`);
     if (cb) cb.checked = false;
-    
+
     renderSelectedQuestionsOrder();
     updateSelectedQuestions();
 };
@@ -546,11 +546,11 @@ function renderSelectedQuestionsOrder() {
     }
 
     section.classList.remove('hidden');
-    
+
     listContainer.innerHTML = selectedQuestionsOrder.map((item, index) => {
         const cat = questionCategories[item.ci];
         const q = cat.questions[item.qi];
-        
+
         return `
             <div class="selected-question-item" draggable="true"
                  ondragstart="handleDragStart(event, ${index})"
@@ -671,15 +671,15 @@ window.startGame = () => {
     if (isOnlineMode) {
         // Gry online: aktualizujemy stan istniejącej gry i przechodzimy do planszy!
         const setupState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions, selectedQuestionsOrder);
-        
+
         // Przenosimy wybrane pytania do aktywnego stanu gry
         gameState.selectedQuestions = setupState.selectedQuestions;
         gameState.displayStarted = false; // Rozpoczynamy od ekranu powitalnego dla TV
-        
+
         // Zapisujemy i rozsyłamy zaktualizowany stan
         sendStateUpdate();
         loadQuestion(0);
-        
+
         ui.showGameScreen();
     } else {
         // Gra lokalna: tworzymy nową grę
@@ -691,7 +691,7 @@ window.startGame = () => {
         }
         const initialState = buildInitialStateFromSetup(currentMode, questionCategories, drawnQuestions, selectedQuestionsOrder);
         initialState.isOnline = isOnlineMode;
-        
+
         // Losowanie żartu
         if (jokesList && jokesList.length > 0) {
             const rndIndex = Math.floor(Math.random() * jokesList.length);
@@ -699,7 +699,7 @@ window.startGame = () => {
         } else {
             initialState.joke = { text: "Dlaczego programiści nie lubią natury? Bo ma za dużo robaków! 🐛" };
         }
-        
+
         net.createGame(socket, initialState, gameName, false);
     }
 };
@@ -721,7 +721,7 @@ window.addStrike = (n) => {
         ui.showToast("Punkty w tej rundzie zostały już przyznane!", "warning");
         return;
     }
-    
+
     // 2. Walidacja wyboru drużyny
     if (gameState.currentTeam === null) {
         ui.showToast("Musisz najpierw wybrać aktywną drużynę!", "warning");
@@ -731,7 +731,7 @@ window.addStrike = (n) => {
         ui.showToast("Błąd X można przyznać tylko aktywnej drużynie!", "warning");
         return;
     }
-    
+
     // 3. Walidacja odsłonięcia przynajmniej jednej odpowiedzi
     if (gameState.revealedAnswers.length === 0) {
         ui.showToast("Błąd X można przyznać dopiero po odsłonięciu co najmniej jednej odpowiedzi!", "warning");
@@ -786,9 +786,9 @@ window.awardPoints = (n, qIdx) => {
         team.score += gameState.roundPoints;
         net.showPoints(socket, currentGameId, gameState.roundPoints, team.name);
     }
-    gameState.pointsAwarded = true; 
+    gameState.pointsAwarded = true;
     gameState.roundPoints = 0;
-    
+
     ui.updateUI(gameState, window.revealAnswer); sendStateUpdate();
 };
 
@@ -805,7 +805,7 @@ window.revealAnswer = (i) => {
     gameState.revealedAnswers.push(i);
     gameState.roundPoints += gameState.currentQuestion.answers[i].points * gameState.multiplier;
     net.playRevealSound(socket, currentGameId);
-    
+
     const qIdx = gameState.currentQuestionIndex;
     if (gameState.isStealMode && gameState.currentTeam) {
         setTimeout(() => { window.awardPoints(gameState.currentTeam, qIdx); endStealMode(); }, 800);
@@ -919,7 +919,7 @@ window.showWinner = () => {
     if (s1 === s2) { ui.showToast('Remis! Nie można ogłosić zwycięzcy.', 'error'); return; }
     const winnerName = s1 > s2 ? gameState.team1.name : gameState.team2.name;
     net.showWinner(socket, currentGameId, winnerName);
-    
+
     // W grze lokalnej nie wyłączamy ekranu TV automatycznie po 10 sekundach.
     // Pozwalamy hostowi na ręczne zakończenie gry przyciskiem MENU.
     if (isOnlineMode) {

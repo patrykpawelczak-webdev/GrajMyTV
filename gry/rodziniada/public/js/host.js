@@ -187,7 +187,7 @@ function joinGameAsTv(tvCode) {
         const msgEl = $('modalMessage');
         if (msgEl) {
             msgEl.innerHTML = `
-                <p style="margin-bottom:14px;color:#94a3b8;">
+                <p style="margin-bottom:0.875rem;color:#94a3b8;">
                     Wpisz kod TV podany przez prowadzącego.
                 </p>
                 <input type="text"
@@ -197,14 +197,14 @@ function joinGameAsTv(tvCode) {
                        placeholder="------"
                        style="
                            width:100%;
-                           padding:12px 16px;
+                           padding:0.75rem 1rem;
                            background:rgba(0,0,0,0.4);
                            border:2px solid rgba(255,215,0,0.4);
-                           border-radius:10px;
+                           border-radius:0.625rem;
                            color:#ffd700;
                            font-size:1.6rem;
                            text-align:center;
-                           letter-spacing:8px;
+                           letter-spacing:0.5rem;
                            font-family:'Roboto',sans-serif;
                            outline:none;
                        ">

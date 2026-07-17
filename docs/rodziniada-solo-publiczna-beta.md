@@ -1,4 +1,4 @@
-# Rodziniada Solo - publiczna beta
+# Rodziniada - codzienne wyzwanie - publiczna beta
 
 Ten plik zbiera rzeczy potrzebne przed pierwszym publicznym uruchomieniem.
 

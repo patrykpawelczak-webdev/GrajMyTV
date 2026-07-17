@@ -31,14 +31,14 @@
         </div>
         <div class="setup-content">
             <button class="btn-back-to-lobby" onclick="backToGameTypeSelection()">Wróć do Lobby</button>
-            
-            <div class="game-name-section" style="max-width: 600px; margin: 40px auto; padding: 40px 30px; text-align: center;">
-                <div class="team-setup-title" style="font-size: 1.3rem; margin-bottom: 20px;">👤 Wpisz swoją nazwę gracza</div>
-                <input type="text" class="team-setup-input game-name-input" id="setupGameNameOnline" 
+
+            <div class="game-name-section" style="max-width: 37.5rem; margin: 2.5rem auto; padding: 2.5rem 1.875rem; text-align: center;">
+                <div class="team-setup-title" style="font-size: 1.3rem; margin-bottom: 1.25rem;">👤 Wpisz swoją nazwę gracza</div>
+                <input type="text" class="team-setup-input game-name-input" id="setupGameNameOnline"
                        placeholder="Np. Patryk" maxlength="30" style="text-align: center;">
-                <div style="margin-top: 30px;">
-                    <button class="btn btn--primary" id="btnOnlineNext" onclick="goToOnlineStep2()" 
-                            style="padding: 12px 30px; font-size: 1.1rem; min-width: 180px;">Stwórz Pokój</button>
+                <div style="margin-top: 1.875rem;">
+                    <button class="btn btn--primary" id="btnOnlineNext" onclick="goToOnlineStep2()"
+                            style="padding: 0.75rem 1.875rem; font-size: 1.1rem; min-width: 11.25rem;">Stwórz Pokój</button>
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
     <!-- ===== LOBBY ONLINE POCZEKALNIA ===== -->
     <div class="setup-screen hidden" id="onlineLobbyScreen">
         <button class="host-fullscreen-button" onclick="toggleFullscreenHost()">⛶</button>
-        
+
         <div class="setup-header">
             <div class="setup-logo">RODZINIADA</div>
             <div class="setup-subtitle">Pokój oczekiwania na grę</div>
@@ -65,7 +65,7 @@
 
             <!-- UKŁAD TRZYKOLUMNOWY -->
             <div class="lobby-dashboard-body">
-                
+
                 <!-- KOLUMNA 1: LISTA WSZYSTKICH GRACZY -->
                 <div class="dashboard-col col-players">
                     <div class="col-header">
@@ -171,8 +171,8 @@
                 <input type="text" id="setupTeam2Name" value="Drużyna 2">
             </div>
 
-            <div class="team-setup-box" style="margin-top: 20px;">
-                <div class="team-setup-title" style="margin-bottom: 12px; text-align: left;">⏳ Ile rund chcesz zagrać?</div>
+            <div class="team-setup-box" style="margin-top: 1.25rem;">
+                <div class="team-setup-title" style="margin-bottom: 0.75rem; text-align: left;">⏳ Ile rund chcesz zagrać?</div>
                 <div class="random-rounds-wrap">
                     <div class="random-rounds-options">
                         <button class="rounds-opt active" data-rounds="3" onclick="selectRounds(3)">3</button>
@@ -184,7 +184,7 @@
                 </div>
             </div>
 
-            <div class="categories-section" style="margin-top: 20px;">
+            <div class="categories-section" style="margin-top: 1.25rem;">
                 <div class="categories-title" style="text-align: left;">📚 Wybierz pytania do gry</div>
 
                 <div class="mode-tabs">
@@ -243,7 +243,7 @@
             </div>
 
             <!-- KOLEJNOŚĆ PYTAŃ -->
-            <div class="team-setup-box selected-questions-order-section hidden" id="selectedQuestionsOrderSection" style="margin-top: 20px;">
+            <div class="team-setup-box selected-questions-order-section hidden" id="selectedQuestionsOrderSection" style="margin-top: 1.25rem;">
                 <div class="team-setup-title" style="text-align: left;">📋 Kolejność wybranych pytań</div>
                 <div class="selected-questions-list" id="selectedQuestionsList"></div>
             </div>
@@ -279,7 +279,7 @@
             </header>
 
             <div class="main-grid" style="position: relative;">
-                
+
                 <!-- NAKŁADKA BLOKUJĄCA PRZED START TV -->
                 <div id="hostBlockOverlay" class="host-block-overlay">
                     <h2>Rozpocznij transmisję</h2>
@@ -343,7 +343,7 @@
                             <span class="round-info-value" id="questionProgress">0/0</span>
                         </div>
                     </div>
-                    <div class="section-title" style="margin-top:8px;">🎮 KONTROLA</div>
+                    <div class="section-title" style="margin-top:0.5rem;">🎮 KONTROLA</div>
                     <div class="controls-grid">
                         <div class="round-controls">
                             <button class="round-btn active" onclick="setMultiplier(1)">×1</button>

@@ -7,6 +7,19 @@
     const START_CHALLENGE = new Date(JULY_CHALLENGE_YEAR, JULY_CHALLENGE_MONTH, 1);
     const STORAGE_KEY = 'grajmytv:rodziniada-solo';
 
+    function clearProgressFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('resetRodziniadaSolo')) return;
+
+        localStorage.removeItem(STORAGE_KEY);
+        params.delete('resetRodziniadaSolo');
+        const nextQuery = params.toString();
+        const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', nextUrl);
+    }
+
+    clearProgressFromUrl();
+
     const $ = id => document.getElementById(id);
     const els = {
         challengeNumber: $('challengeNumber'),

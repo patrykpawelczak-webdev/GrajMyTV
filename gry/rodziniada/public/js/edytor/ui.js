@@ -306,7 +306,7 @@ export function renderJokes(selectJokeCallback) {
         const textSnippet = joke.text ? (joke.text.length > 35 ? joke.text.slice(0, 35) + '...' : joke.text) : 'Pusty suchar...';
 
         item.innerHTML = `
-            <span class="joke-drag-handle" style="cursor: grab; padding: 0 6px 0 2px; color: var(--gray); font-size: 1.1rem; display: inline-block;">&#8942;</span>
+            <span class="joke-drag-handle" style="cursor: grab; padding: 0 0.375rem 0 2px; color: var(--gray); font-size: 1.1rem; display: inline-block;">&#8942;</span>
             <span class="cat-icon-display">💬</span>
             <div class="cat-info" style="flex: 1; min-width: 0;">
                 <div class="cat-name-display" style="font-weight: 700; color: var(--white); font-size: 0.85rem;">Suchar #${index + 1}</div>
@@ -370,11 +370,11 @@ export function updateJokeEditorUI() {
     const textarea = document.getElementById('activeJokeTextarea');
     if (textarea) {
         textarea.value = joke.text || '';
-        
+
         textarea.oninput = () => {
             joke.text = textarea.value;
             markUnsaved();
-            
+
             // Zaktualizuj tylko snippet w pasującym elemencie paska bocznego w locie bez pełnego re-renderu!
             const sidebarItem = document.querySelector(`#jokesSidebarList .category-item[data-id="${joke.id}"] .cat-count-display`);
             if (sidebarItem) {
