@@ -188,12 +188,17 @@ function sanitizeLoginIdentifier(value) {
         .slice(0, 64);
 }
 
+function createLoginError(message, status, code) {
+    const error = new Error(message);
+    error.status = status;
+    error.code = code;
+    return error;
+}
+
 async function emailForLoginIdentifier(identifier) {
     const cleanIdentifier = sanitizeLoginIdentifier(identifier);
     if (!cleanIdentifier) {
-        const error = new Error('Brak nazwy uzytkownika');
-        error.status = 400;
-        throw error;
+        throw createLoginError('Brak nazwy uzytkownika', 400, 'missing_identifier');
     }
 
     if (cleanIdentifier.includes('@')) {
@@ -208,17 +213,13 @@ async function emailForLoginIdentifier(identifier) {
     const profiles = await supabaseRestAdminRequest(`profiles?${query}`);
     const userId = profiles?.[0]?.id;
     if (!userId) {
-        const error = new Error('Nie znaleziono konta');
-        error.status = 404;
-        throw error;
+        throw createLoginError('Nie znaleziono konta', 404, 'account_not_found');
     }
 
     const userData = await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`);
     const account = userData.user || userData.data?.user || userData;
     if (!account?.email) {
-        const error = new Error('Nie znaleziono konta');
-        error.status = 404;
-        throw error;
+        throw createLoginError('Nie znaleziono konta', 404, 'account_not_found');
     }
 
     return account.email;
@@ -282,7 +283,21 @@ app.post('/api/auth/login', async (req, res) => {
 
         res.json(session);
     } catch(e) {
-        res.status(401).json({ error: 'Nieprawidlowa nazwa uzytkownika lub haslo' });
+        const code = e.code || 'invalid_credentials';
+        const status = code === 'account_not_found' ? 404 : code === 'missing_identifier' ? 400 : 401;
+        const message = status === 404
+            ? 'Nie znaleziono konta o takiej nazwie uzytkownika'
+            : status === 400
+                ? 'Podaj nazwe uzytkownika i haslo'
+                : 'Nieprawidlowa nazwa uzytkownika lub haslo';
+
+        console.warn('Tester login failed:', {
+            code,
+            status: e.status || status,
+            message: e.message
+        });
+
+        res.status(status).json({ error: message, code });
     }
 });
 
