@@ -124,9 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>${account.confirmed ? 'Potwierdzone' : 'Niepotwierdzone'}</span>
                     <span>Ostatnio: ${formatDate(account.lastSignInAt)}</span>
                 </div>
-                <button type="button" class="account-delete" data-delete="${account.id}" data-name="${escapeHtml(account.nickname)}">Usuń</button>
+                <div class="account-actions">
+                    <button type="button" class="account-password" data-password="${account.id}" data-name="${escapeHtml(account.nickname)}">Hasło</button>
+                    <button type="button" class="account-delete" data-delete="${account.id}" data-name="${escapeHtml(account.nickname)}">Usuń</button>
+                </div>
             </article>
         `).join('');
+
+        els.list.querySelectorAll('[data-password]').forEach(button => {
+            button.addEventListener('click', () => changeAccountPassword(button.dataset.password, button.dataset.name));
+        });
 
         els.list.querySelectorAll('[data-delete]').forEach(button => {
             button.addEventListener('click', () => deleteAccount(button.dataset.delete, button.dataset.name));
@@ -153,6 +160,23 @@ document.addEventListener('DOMContentLoaded', () => {
         await api('/api/accounts/delete', { id });
         await loadAccounts();
         setMessage('Konto usunięte.', 'success');
+    }
+
+    async function changeAccountPassword(id, name) {
+        const password = window.prompt(`Nowe hasło dla konta ${name}`);
+        if (!password) return;
+        if (password.length < 6) {
+            setMessage('Hasło musi mieć minimum 6 znaków.', 'error');
+            return;
+        }
+
+        setMessage('Zmienianie hasła...');
+        try {
+            await api('/api/accounts/password', { id, password });
+            setMessage('Hasło zostało zmienione.', 'success');
+        } catch (error) {
+            setMessage(error.message, 'error');
+        }
     }
 
     els.pinForm?.addEventListener('submit', async event => {

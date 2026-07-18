@@ -2080,6 +2080,7 @@ main > section:nth-of-type(even)::before {
 }
 
 .accounts-refresh,
+.account-password,
 .account-delete {
   min-height: 2.35rem;
   padding: 0 0.85rem;
@@ -2150,6 +2151,17 @@ main > section:nth-of-type(even)::before {
 .account-meta {
   display: grid;
   gap: 0.15rem;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.account-password:hover {
+  background: rgba(59, 130, 255, 0.14);
 }
 
 .account-delete {
@@ -2701,8 +2713,13 @@ main > section:nth-of-type(even)::before {
   }
 
   .accounts-refresh,
+  .account-password,
   .account-delete {
     width: 100%;
+  }
+
+  .account-actions {
+    justify-content: stretch;
   }
 
   .accounts-shell {

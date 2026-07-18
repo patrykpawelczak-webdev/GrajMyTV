@@ -84,6 +84,7 @@ async function supabaseAuthPublicRequest(pathname, body = {}) {
         method: 'POST',
         headers: {
             apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
@@ -426,6 +427,36 @@ app.post('/api/accounts/delete', async (req, res) => {
         res.json({ ok: true });
     } catch(e) {
         res.status(500).json({ error: 'Nie udalo sie usunac konta', details: e.body || e.message });
+    }
+});
+
+app.post('/api/accounts/password', async (req, res) => {
+    if (readPin(req) !== EDITOR_PIN) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
+    }
+    if (!supabaseAdminEnabled()) {
+        return res.status(503).json({ error: 'Supabase nie jest skonfigurowany' });
+    }
+
+    const userId = String(req.body?.id || '').trim();
+    const password = String(req.body?.password || '');
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)) {
+        return res.status(400).json({ error: 'Nieprawidlowe ID konta' });
+    }
+    if (password.length < 6) {
+        return res.status(400).json({ error: 'Haslo musi miec minimum 6 znakow' });
+    }
+
+    try {
+        await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+
+        res.json({ ok: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Nie udalo sie zmienic hasla', details: e.body || e.message });
     }
 });
 
