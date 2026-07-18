@@ -162,13 +162,19 @@
     }
 
     async function signIn(identifier, password) {
+        const cleanIdentifier = String(identifier || '').trim();
+        const cleanPassword = String(password || '');
+        if (!cleanIdentifier || !cleanPassword) {
+            throw new Error('Podaj nazwe uzytkownika i haslo.');
+        }
+
         await getConfig();
         const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                identifier,
-                password
+                identifier: cleanIdentifier,
+                password: cleanPassword
             })
         });
         const data = await response.json().catch(() => ({}));

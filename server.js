@@ -282,7 +282,7 @@ app.post('/api/auth/login', async (req, res) => {
 
         res.json(session);
     } catch(e) {
-        res.status(e.status === 400 ? 400 : 401).json({ error: 'Nieprawidlowa nazwa uzytkownika lub haslo' });
+        res.status(401).json({ error: 'Nieprawidlowa nazwa uzytkownika lub haslo' });
     }
 });
 

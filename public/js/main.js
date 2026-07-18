@@ -131,15 +131,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (loginMessage) loginMessage.textContent = '';
         const submitButton = loginForm.querySelector('button[type="submit"]');
+        const username = loginUsername?.value.trim() || '';
+        const password = loginPassword?.value || '';
+        if (!username || !password) {
+            if (loginMessage) {
+                loginMessage.textContent = 'Podaj nazwe uzytkownika i haslo.';
+            }
+            return;
+        }
+
         if (submitButton) submitButton.disabled = true;
 
         try {
-            await window.GrajMyTVAuth.signIn(loginUsername.value.trim(), loginPassword.value);
+            await window.GrajMyTVAuth.signIn(username, password);
             loginPassword.value = '';
             closeLoginDialog();
-        } catch {
+        } catch (error) {
             if (loginMessage) {
-                loginMessage.textContent = 'Nieprawidlowa nazwa uzytkownika lub haslo.';
+                loginMessage.textContent = error.message || 'Nieprawidlowa nazwa uzytkownika lub haslo.';
             }
         } finally {
             if (submitButton) submitButton.disabled = false;
