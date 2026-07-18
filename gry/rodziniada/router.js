@@ -156,10 +156,17 @@ async function supabaseRequest(pathname, options = {}) {
     const text = await response.text();
 
     if (!response.ok) {
-        throw new Error(`Supabase request failed ${response.status}: ${text}`);
+        const error = new Error(`Supabase request failed ${response.status}: ${text}`);
+        error.status = response.status;
+        error.body = text;
+        throw error;
     }
 
     return text ? JSON.parse(text) : null;
+}
+
+function readPin(req) {
+    return req.headers['x-pin'] || req.body?.pin || req.query?.pin;
 }
 
 function resultToSupabaseRow(entry) {
@@ -436,6 +443,51 @@ router.get('/api/solo-ranking', async (req, res) => {
         });
     } catch(e) {
         res.status(500).json({ error: 'Blad odczytu rankingu' });
+    }
+});
+
+router.post('/api/solo-storage-status', async (req, res) => {
+    if (readPin(req) !== EDITOR_PIN) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
+    }
+
+    const status = {
+        mode: supabaseEnabled() ? 'supabase' : 'file',
+        supabase: {
+            hasUrl: Boolean(SUPABASE_URL),
+            hasKey: Boolean(SUPABASE_KEY),
+            table: SUPABASE_RESULTS_TABLE
+        }
+    };
+
+    if (!supabaseEnabled()) {
+        return res.json({
+            ok: true,
+            ...status,
+            file: {
+                path: RESULTS_FILE,
+                exists: fs.existsSync(RESULTS_FILE)
+            }
+        });
+    }
+
+    try {
+        await supabaseRequest(`${SUPABASE_RESULTS_TABLE}?select=id&limit=1`);
+        res.json({
+            ok: true,
+            ...status,
+            check: 'Supabase table is reachable'
+        });
+    } catch(e) {
+        res.status(500).json({
+            ok: false,
+            ...status,
+            supabaseError: {
+                status: e.status || null,
+                message: e.message,
+                body: e.body || null
+            }
+        });
     }
 });
 
