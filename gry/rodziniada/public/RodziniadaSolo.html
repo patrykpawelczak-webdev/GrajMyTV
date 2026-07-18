@@ -52,16 +52,14 @@
                 <button class="submit-button" type="submit" id="submitButton" disabled>Sprawdź</button>
             </form>
 
-            <aside class="ranking-board is-disabled" aria-label="Ranking graczy" aria-disabled="true">
+            <aside class="ranking-board" aria-label="Ranking graczy">
                 <div class="ranking-head">
                     <h2>Ranking</h2>
-                    <span>Wkrótce</span>
+                    <span>Dzisiaj</span>
                 </div>
-                <p>Ranking pojawi się po uruchomieniu profili graczy.</p>
-                <ol aria-hidden="true">
-                    <li><span>1. miejsce</span><strong>---</strong></li>
-                    <li><span>2. miejsce</span><strong>---</strong></li>
-                    <li><span>3. miejsce</span><strong>---</strong></li>
+                <p>Najlepsze wyniki dzisiejszego wyzwania.</p>
+                <ol id="rankingList">
+                    <li><span>Ładowanie rankingu</span><strong>---</strong></li>
                 </ol>
             </aside>
         </section>
@@ -111,6 +109,10 @@
                         <strong id="resultMisses">0/3</strong>
                     </div>
                 </div>
+                <label class="result-nickname">
+                    <span>Nick w rankingu</span>
+                    <input id="nicknameInput" type="text" maxlength="24" autocomplete="nickname" placeholder="Wpisz nick">
+                </label>
                 <div class="result-actions">
                     <button class="submit-button" id="resultShareButton" type="button">Udostępnij</button>
                     <button class="share-button" id="resultCloseButton" type="button">Zamknij</button>

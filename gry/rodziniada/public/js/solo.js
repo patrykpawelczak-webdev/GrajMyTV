@@ -7,6 +7,8 @@
     const START_CHALLENGE = new Date(JULY_CHALLENGE_YEAR, JULY_CHALLENGE_MONTH, 1);
     const STORAGE_KEY = 'grajmytv:rodziniada-solo:v2';
     const LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo'];
+    const PLAYER_KEY = 'grajmytv:rodziniada-solo:player';
+    const NICKNAME_KEY = 'grajmytv:rodziniada-solo:nickname';
 
     function clearProgressFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -45,8 +47,13 @@
         resultPoints: $('resultPoints'),
         resultAnswers: $('resultAnswers'),
         resultMisses: $('resultMisses'),
+        nicknameInput: $('nicknameInput'),
         resultShareButton: $('resultShareButton'),
         resultCloseButton: $('resultCloseButton'),
+        rankingList: $('rankingList'),
+        rankingBoard: document.querySelector('.ranking-board'),
+        rankingBadge: document.querySelector('.ranking-head span'),
+        rankingSummary: document.querySelector('.ranking-board p'),
         strikes: [$('strike1'), $('strike2'), $('strike3')]
     };
 
@@ -82,15 +89,20 @@
         revealed: new Set(),
         guesses: [],
         justRevealed: null,
+        resultSynced: false,
         message: ''
     };
 
     function getTodayKey(date = new Date()) {
-        return [
-            date.getFullYear(),
-            String(date.getMonth() + 1).padStart(2, '0'),
-            String(date.getDate()).padStart(2, '0')
-        ].join('-');
+        const parts = new Intl.DateTimeFormat('pl-PL', {
+            timeZone: 'Europe/Warsaw',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).formatToParts(date);
+        const part = type => parts.find(item => item.type === type)?.value;
+
+        return [part('year'), part('month'), part('day')].join('-');
     }
 
     function dateFromKey(key) {
@@ -143,6 +155,39 @@
         state.lastResult = store.results[state.currentChallenge] || null;
     }
 
+    function getPlayerId() {
+        const savedId = localStorage.getItem(PLAYER_KEY);
+        if (savedId) return savedId;
+
+        const generatedId = window.crypto?.randomUUID
+            ? window.crypto.randomUUID()
+            : `player-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+        localStorage.setItem(PLAYER_KEY, generatedId);
+        return generatedId;
+    }
+
+    function cleanNickname(value) {
+        return String(value || '')
+            .replace(/\s+/g, ' ')
+            .replace(/[<>]/g, '')
+            .trim()
+            .slice(0, 24);
+    }
+
+    function getNickname() {
+        const savedNickname = cleanNickname(localStorage.getItem(NICKNAME_KEY));
+        const typedNickname = cleanNickname(els.nicknameInput?.value);
+        const nickname = typedNickname.length >= 2
+            ? typedNickname
+            : savedNickname.length >= 2
+                ? savedNickname
+                : 'Gracz';
+
+        localStorage.setItem(NICKNAME_KEY, nickname);
+        return nickname;
+    }
+
     function getStoredResult(key) {
         return readStore().results[key] || null;
     }
@@ -159,6 +204,7 @@
         state.revealed = new Set(Array.isArray(savedState.revealed) ? savedState.revealed : []);
         state.guesses = Array.isArray(savedState.guesses) ? [...savedState.guesses] : [];
         state.justRevealed = null;
+        state.resultSynced = finished && Boolean(savedState.synced);
         state.message = finished ? 'To wyzwanie jest już zapisane.' : 'Postęp został przywrócony.';
         state.lastResult = finished ? savedState : null;
     }
@@ -311,6 +357,7 @@
         state.revealed = new Set();
         state.guesses = [];
         state.justRevealed = null;
+        state.resultSynced = false;
         state.message = '';
 
         state.lastResult = storedResult;
@@ -318,6 +365,11 @@
             applyStoredState(storedResult, true);
         } else if (storedProgress) {
             applyStoredState(storedProgress, false);
+        }
+
+        loadRanking(key);
+        if (storedResult && key === getTodayKey() && !state.resultSynced) {
+            submitResultToServer();
         }
     }
 
@@ -352,6 +404,82 @@
                 </div>
             `;
         }).join('');
+    }
+
+    function escapeHtml(value) {
+        const element = document.createElement('span');
+        element.textContent = String(value || '');
+        return element.innerHTML;
+    }
+
+    function renderRanking(entries = []) {
+        if (els.rankingBadge) {
+            els.rankingBadge.textContent = 'Dzisiaj';
+        }
+        if (els.rankingSummary) {
+            els.rankingSummary.textContent = 'Najlepsze wyniki dzisiejszego wyzwania.';
+        }
+        if (!els.rankingList) return;
+
+        if (!entries.length) {
+            els.rankingList.innerHTML = '<li><span>Brak wynikow</span><strong>---</strong></li>';
+            return;
+        }
+
+        els.rankingList.innerHTML = entries.map((entry, index) => {
+            const place = entry.place || index + 1;
+            const points = Number(entry.score || 0);
+            return `<li><span>${place}. ${escapeHtml(entry.nickname)}</span><strong>${points} pkt</strong></li>`;
+        }).join('');
+    }
+
+    async function loadRanking(key = state.currentChallenge) {
+        if (!els.rankingList) return;
+
+        try {
+            const response = await fetch(`/rodziniada/api/solo-ranking?date=${encodeURIComponent(key)}&limit=10`, {
+                cache: 'no-store'
+            });
+            if (!response.ok) throw new Error('ranking');
+            const data = await response.json();
+            renderRanking(data.ranking || []);
+        } catch {
+            renderRanking([]);
+            if (els.rankingSummary) {
+                els.rankingSummary.textContent = 'Ranking jest chwilowo niedostepny.';
+            }
+        }
+    }
+
+    async function submitResultToServer() {
+        if (state.currentChallenge !== getTodayKey()) return;
+        if (!state.finished || state.resultSynced) return;
+
+        try {
+            const response = await fetch('/rodziniada/api/solo-results', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    playerId: getPlayerId(),
+                    nickname: getNickname(),
+                    challengeKey: state.currentChallenge,
+                    misses: state.misses,
+                    revealed: [...state.revealed]
+                })
+            });
+
+            if (!response.ok) throw new Error('result');
+            const data = await response.json();
+            renderRanking(data.ranking || []);
+            state.resultSynced = true;
+            const store = readStore();
+            if (store.results[state.currentChallenge]) {
+                store.results[state.currentChallenge].synced = true;
+                writeStore(store);
+            }
+        } catch {
+            await loadRanking();
+        }
     }
 
     function renderGame() {
@@ -461,6 +589,7 @@
             misses: state.misses,
             revealed: [...state.revealed],
             guesses: state.guesses,
+            synced: false,
             completedAt: new Date().toISOString()
         };
         delete store.progress[state.currentChallenge];
@@ -480,6 +609,9 @@
         els.resultPoints.textContent = `${state.score}/${maxScore}`;
         els.resultAnswers.textContent = `${state.revealed.size}/${ANSWERS_COUNT}`;
         els.resultMisses.textContent = `${state.misses}/${MAX_MISSES}`;
+        if (els.nicknameInput) {
+            els.nicknameInput.value = cleanNickname(localStorage.getItem(NICKNAME_KEY));
+        }
         if (typeof els.resultDialog.showModal === 'function') {
             els.resultDialog.showModal();
         }
@@ -592,9 +724,16 @@
             }
         });
         els.shareButton.addEventListener('click', shareResult);
-        els.resultShareButton.addEventListener('click', shareResult);
-        els.resultCloseButton.addEventListener('click', () => {
+        els.resultShareButton.addEventListener('click', async () => {
+            await submitResultToServer();
+            await shareResult();
+        });
+        els.resultCloseButton.addEventListener('click', async () => {
+            await submitResultToServer();
             els.resultDialog.close();
+        });
+        els.resultDialog.addEventListener('cancel', () => {
+            submitResultToServer();
         });
     }
 
