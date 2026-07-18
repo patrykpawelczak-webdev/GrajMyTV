@@ -122,7 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     loginForm?.addEventListener('submit', async event => {
         event.preventDefault();
-        if (!window.GrajMyTVAuth) return;
+        if (!window.GrajMyTVAuth) {
+            if (loginMessage) {
+                loginMessage.textContent = 'Logowanie chwilowo niedostepne. Odśwież stronę i spróbuj ponownie.';
+            }
+            return;
+        }
 
         if (loginMessage) loginMessage.textContent = '';
         const submitButton = loginForm.querySelector('button[type="submit"]');
@@ -369,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const observerOptions = {
         root: null,
-        rootMargin: '0rem',
+        rootMargin: '0px',
         threshold: 0.1
     };
 
