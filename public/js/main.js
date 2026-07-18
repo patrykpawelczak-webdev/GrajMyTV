@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeLoginDialog();
         } catch {
             if (loginMessage) {
-                loginMessage.textContent = 'Nieprawidlowy e-mail lub haslo.';
+                loginMessage.textContent = 'Nieprawidlowa nazwa uzytkownika lub haslo.';
             }
         } finally {
             if (submitButton) submitButton.disabled = false;

@@ -162,6 +162,32 @@
     }
 
     async function signIn(identifier, password) {
+        await getConfig();
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                identifier,
+                password
+            })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(data.error || 'Nie udalo sie zalogowac.');
+        }
+
+        session = normalizeSession(data);
+        if (!session) {
+            throw new Error('Nie udalo sie zalogowac.');
+        }
+
+        writeJson(STORAGE_KEY, session);
+        await fetchProfile();
+        emit();
+        return getState();
+    }
+
+    async function signInDirect(identifier, password) {
         const email = await emailForUsername(identifier);
         const data = await supabaseAuthRequest('token?grant_type=password', {
             email,

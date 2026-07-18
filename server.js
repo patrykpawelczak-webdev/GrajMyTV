@@ -50,6 +50,10 @@ function supabaseAdminEnabled() {
     return Boolean(SUPABASE_URL && SUPABASE_SECRET_KEY);
 }
 
+function supabaseAuthEnabled() {
+    return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_SECRET_KEY);
+}
+
 function supabaseAdminHeaders(extra = {}) {
     return {
         apikey: SUPABASE_SECRET_KEY,
@@ -67,6 +71,27 @@ async function supabaseAuthAdminRequest(pathname, options = {}) {
 
     if (!response.ok) {
         const error = new Error(`Supabase auth admin failed ${response.status}: ${text}`);
+        error.status = response.status;
+        error.body = text;
+        throw error;
+    }
+
+    return text ? JSON.parse(text) : null;
+}
+
+async function supabaseAuthPublicRequest(pathname, body = {}) {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/${pathname}`, {
+        method: 'POST',
+        headers: {
+            apikey: SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+    const text = await response.text();
+
+    if (!response.ok) {
+        const error = new Error(`Supabase auth public failed ${response.status}: ${text}`);
         error.status = response.status;
         error.body = text;
         throw error;
@@ -155,6 +180,50 @@ function isSupabaseEmailError(error) {
     return /email/i.test(String(error?.body || error?.message || ''));
 }
 
+function sanitizeLoginIdentifier(value) {
+    return String(value || '')
+        .replace(/\s+/g, ' ')
+        .replace(/[<>]/g, '')
+        .trim()
+        .slice(0, 64);
+}
+
+async function emailForLoginIdentifier(identifier) {
+    const cleanIdentifier = sanitizeLoginIdentifier(identifier);
+    if (!cleanIdentifier) {
+        const error = new Error('Brak nazwy uzytkownika');
+        error.status = 400;
+        throw error;
+    }
+
+    if (cleanIdentifier.includes('@')) {
+        return cleanIdentifier.toLowerCase();
+    }
+
+    const query = [
+        `nickname=ilike.${encodeURIComponent(cleanIdentifier)}`,
+        'select=id',
+        'limit=1'
+    ].join('&');
+    const profiles = await supabaseRestAdminRequest(`profiles?${query}`);
+    const userId = profiles?.[0]?.id;
+    if (!userId) {
+        const error = new Error('Nie znaleziono konta');
+        error.status = 404;
+        throw error;
+    }
+
+    const userData = await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`);
+    const account = userData.user || userData.data?.user || userData;
+    if (!account?.email) {
+        const error = new Error('Nie znaleziono konta');
+        error.status = 404;
+        throw error;
+    }
+
+    return account.email;
+}
+
 // ===== MIDDLEWARE =====
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -191,6 +260,30 @@ app.get('/api/auth-config', (req, res) => {
         supabaseUrl: SUPABASE_URL,
         supabaseAnonKey: SUPABASE_ANON_KEY
     });
+});
+
+app.post('/api/auth/login', async (req, res) => {
+    if (!supabaseAuthEnabled()) {
+        return res.status(503).json({ error: 'Logowanie nie jest skonfigurowane' });
+    }
+
+    const identifier = sanitizeLoginIdentifier(req.body?.identifier || req.body?.username || req.body?.email);
+    const password = String(req.body?.password || '');
+    if (!identifier || !password) {
+        return res.status(400).json({ error: 'Podaj nazwe uzytkownika i haslo' });
+    }
+
+    try {
+        const email = await emailForLoginIdentifier(identifier);
+        const session = await supabaseAuthPublicRequest('token?grant_type=password', {
+            email,
+            password
+        });
+
+        res.json(session);
+    } catch(e) {
+        res.status(e.status === 400 ? 400 : 401).json({ error: 'Nieprawidlowa nazwa uzytkownika lub haslo' });
+    }
 });
 
 app.post('/api/accounts/list', async (req, res) => {
