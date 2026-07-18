@@ -381,6 +381,14 @@
         setStatus('Uzupełniono puste dni pierwszymi dostępnymi pytaniami.');
     }
 
+    function clearPinDigits() {
+        pinDigits.forEach(input => {
+            input.value = '';
+            input.classList.remove('is-filled');
+        });
+        els.pinInput.value = '';
+    }
+
     els.pinForm.addEventListener('submit', async event => {
         event.preventDefault();
         const pin = pinDigits.map(input => input.value).join('');
@@ -397,6 +405,7 @@
         }
 
         state.pin = pin;
+        clearPinDigits();
         els.pinScreen.classList.add('is-hidden');
         els.adminPanel.classList.remove('is-hidden');
         await loadData();

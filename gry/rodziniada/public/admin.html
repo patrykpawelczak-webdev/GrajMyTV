@@ -5,26 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rodziniada - Panel admina</title>
     <link rel="stylesheet" href="/rodziniada/css/admin.css">
+    <link rel="stylesheet" href="/css/secure-access.css">
     <link rel="icon" href="/img/logo-favicon.png" type="image/png">
 </head>
-<body>
+<body class="secure-access-page">
     <main class="admin-app">
-        <section class="pin-screen" id="pinScreen">
-            <div class="pin-card">
-                <div class="pin-brand">
-                    <img src="/img/logo-ikona-biale.png" alt="" class="pin-logo">
-                    <h1>Rodziniada - codzienne wyzwanie</h1>
-                    <p>Dostęp do kalendarza i pytań dziennego wyzwania.</p>
+        <section class="pin-screen secure-access-shell" id="pinScreen">
+            <div class="pin-card secure-access-card">
+                <div class="pin-brand secure-access-brand">
+                    <img src="/img/logo-ikona-biale.png" alt="" class="pin-logo secure-access-logo">
+                    <h1 class="secure-access-title">Edytor pytań</h1>
+                    <p class="secure-access-subtitle">Zarządzanie strukturą pytań oraz kalendarzem wyzwania</p>
                 </div>
-                <form id="pinForm" class="pin-form">
-                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Pierwsza cyfra PIN">
-                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Druga cyfra PIN">
-                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Trzecia cyfra PIN">
-                    <input class="pin-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Czwarta cyfra PIN">
+                <form id="pinForm" class="pin-form secure-access-digits">
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Pierwsza cyfra PIN">
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Druga cyfra PIN">
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Trzecia cyfra PIN">
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Czwarta cyfra PIN">
                     <input id="pinInput" type="hidden">
-                    <button type="submit" aria-label="Zatwierdź PIN"></button>
+                    <button class="secure-access-submit" type="submit" aria-label="Zatwierdź PIN"></button>
                 </form>
-                <div class="pin-error" id="pinError" role="alert"></div>
+                <div class="pin-error secure-access-error" id="pinError" role="alert"></div>
             </div>
         </section>
 

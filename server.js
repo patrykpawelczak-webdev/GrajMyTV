@@ -93,7 +93,6 @@ async function supabaseRestAdminRequest(pathname, options = {}) {
 }
 
 function sanitizeAccountInput(data) {
-    const email = String(data.email || '').trim().toLowerCase();
     const password = String(data.password || '');
     const nickname = String(data.nickname || '')
         .replace(/\s+/g, ' ')
@@ -102,9 +101,6 @@ function sanitizeAccountInput(data) {
         .slice(0, 24);
     const role = ['admin', 'tester', 'player'].includes(data.role) ? data.role : 'tester';
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return { error: 'Nieprawidlowy e-mail' };
-    }
     if (password.length < 6) {
         return { error: 'Haslo musi miec minimum 6 znakow' };
     }
@@ -112,7 +108,14 @@ function sanitizeAccountInput(data) {
         return { error: 'Nick musi miec minimum 2 znaki' };
     }
 
-    return { email, password, nickname, role };
+    return { email: generatedAccountEmail(), password, nickname, role };
+}
+
+function generatedAccountEmail(domain = 'grajmytv.pl') {
+    const suffix = Math.random().toString(36).slice(2, 10);
+    const stamp = Date.now().toString(36);
+
+    return `tester-${stamp}-${suffix}@${domain}`;
 }
 
 function publicAccount(user, profile = {}) {
@@ -125,6 +128,31 @@ function publicAccount(user, profile = {}) {
         lastSignInAt: user.last_sign_in_at || null,
         createdAt: user.created_at || null
     };
+}
+
+async function createSupabaseAccount(input, email = input.email) {
+    const authData = await supabaseAuthAdminRequest('admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            password: input.password,
+            email_confirm: true,
+            user_metadata: {
+                nickname: input.nickname,
+                role: input.role
+            }
+        })
+    });
+
+    return {
+        email,
+        user: authData.user || authData.data?.user || authData
+    };
+}
+
+function isSupabaseEmailError(error) {
+    return /email/i.test(String(error?.body || error?.message || ''));
 }
 
 // ===== MIDDLEWARE =====
@@ -196,6 +224,29 @@ app.post('/api/accounts/list', async (req, res) => {
     }
 });
 
+app.get('/api/accounts/public-email', async (req, res) => {
+    if (!supabaseAdminEnabled()) {
+        return res.status(503).json({ error: 'Supabase nie jest skonfigurowany' });
+    }
+
+    const userId = String(req.query.id || '').trim();
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)) {
+        return res.status(400).json({ error: 'Nieprawidlowe ID konta' });
+    }
+
+    try {
+        const user = await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`);
+        const account = user.user || user.data?.user || user;
+        if (!account?.email) {
+            return res.status(404).json({ error: 'Nie znaleziono konta' });
+        }
+
+        res.json({ email: account.email });
+    } catch(e) {
+        res.status(404).json({ error: 'Nie znaleziono konta' });
+    }
+});
+
 app.post('/api/accounts/create', async (req, res) => {
     if (readPin(req) !== EDITOR_PIN) {
         return res.status(401).json({ error: 'Brak autoryzacji' });
@@ -210,20 +261,14 @@ app.post('/api/accounts/create', async (req, res) => {
     }
 
     try {
-        const authData = await supabaseAuthAdminRequest('admin/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: input.email,
-                password: input.password,
-                email_confirm: true,
-                user_metadata: {
-                    nickname: input.nickname,
-                    role: input.role
-                }
-            })
-        });
-        const user = authData.user || authData.data?.user || authData;
+        let created;
+        try {
+            created = await createSupabaseAccount(input);
+        } catch(e) {
+            if (!isSupabaseEmailError(e)) throw e;
+            created = await createSupabaseAccount(input, generatedAccountEmail('example.com'));
+        }
+        const user = created.user;
 
         await supabaseRestAdminRequest('profiles?on_conflict=id', {
             method: 'POST',
@@ -239,7 +284,7 @@ app.post('/api/accounts/create', async (req, res) => {
             })
         });
 
-        res.json({ ok: true, account: publicAccount(user, input) });
+        res.json({ ok: true, account: publicAccount({ ...user, email: created.email }, input) });
     } catch(e) {
         res.status(500).json({ error: 'Nie udalo sie utworzyc konta', details: e.body || e.message });
     }

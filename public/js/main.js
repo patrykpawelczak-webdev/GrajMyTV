@@ -15,6 +15,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearRodziniadaSoloProgressFromUrl();
 
+    function clearLocalRodziniadaSoloAchievements() {
+        [RODZINIADA_SOLO_STORAGE_KEY, ...RODZINIADA_SOLO_LEGACY_STORAGE_KEYS].forEach(key => {
+            try {
+                const store = JSON.parse(localStorage.getItem(key) || '{}');
+                if (store?.results && Object.keys(store.results).length) {
+                    delete store.results;
+                    localStorage.setItem(key, JSON.stringify({
+                        progress: store.progress && typeof store.progress === 'object' ? store.progress : {}
+                    }));
+                }
+            } catch {
+                localStorage.removeItem(key);
+            }
+        });
+    }
+
+    clearLocalRodziniadaSoloAchievements();
+
     // Inicjalizacja ikon Lucide
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -28,9 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const authUser = document.getElementById('authUser');
     const authUserName = document.getElementById('authUserName');
     const logoutButton = document.getElementById('logoutButton');
+    const mobileAuthWidget = document.getElementById('mobileAuthWidget');
+    const mobileOpenLoginButton = document.getElementById('mobileOpenLoginButton');
+    const mobileAuthUser = document.getElementById('mobileAuthUser');
+    const mobileAuthUserName = document.getElementById('mobileAuthUserName');
+    const mobileLogoutButton = document.getElementById('mobileLogoutButton');
     const loginDialog = document.getElementById('loginDialog');
     const loginForm = document.getElementById('loginForm');
-    const loginEmail = document.getElementById('loginEmail');
+    const loginUsername = document.getElementById('loginUsername');
     const loginPassword = document.getElementById('loginPassword');
     const loginMessage = document.getElementById('loginMessage');
     const loginCloseButton = document.getElementById('loginCloseButton');
@@ -42,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             loginDialog.setAttribute('open', '');
         }
-        loginEmail?.focus();
+        loginUsername?.focus();
     }
 
     function closeLoginDialog() {
@@ -55,13 +78,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAuth(state = {}) {
-        if (!authWidget) return;
-
-        authWidget.hidden = false;
+        if (authWidget) authWidget.hidden = false;
+        if (mobileAuthWidget) mobileAuthWidget.hidden = false;
         const loggedIn = Boolean(state.isLoggedIn);
         if (openLoginButton) openLoginButton.hidden = loggedIn;
+        if (mobileOpenLoginButton) mobileOpenLoginButton.hidden = loggedIn;
         if (authUser) authUser.hidden = !loggedIn;
+        if (mobileAuthUser) mobileAuthUser.hidden = !loggedIn;
         if (authUserName) authUserName.textContent = state.nickname || 'Tester';
+        if (mobileAuthUserName) mobileAuthUserName.textContent = state.nickname || 'Tester';
     }
 
     if (window.GrajMyTVAuth) {
@@ -70,18 +95,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!state.enabled && authWidget) {
                 authWidget.hidden = true;
             }
+            if (!state.enabled && mobileAuthWidget) {
+                mobileAuthWidget.hidden = true;
+            }
         }).catch(() => {
             if (authWidget) authWidget.hidden = true;
+            if (mobileAuthWidget) mobileAuthWidget.hidden = true;
         });
     }
 
     openLoginButton?.addEventListener('click', openLoginDialog);
+    mobileOpenLoginButton?.addEventListener('click', () => {
+        closeMenu();
+        openLoginDialog();
+    });
     loginCloseButton?.addEventListener('click', closeLoginDialog);
     loginDialog?.addEventListener('click', event => {
         if (event.target === loginDialog) closeLoginDialog();
     });
     logoutButton?.addEventListener('click', async () => {
         await window.GrajMyTVAuth?.signOut();
+    });
+    mobileLogoutButton?.addEventListener('click', async () => {
+        await window.GrajMyTVAuth?.signOut();
+        closeMenu();
     });
     loginForm?.addEventListener('submit', async event => {
         event.preventDefault();
@@ -92,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (submitButton) submitButton.disabled = true;
 
         try {
-            await window.GrajMyTVAuth.signIn(loginEmail.value.trim(), loginPassword.value);
+            await window.GrajMyTVAuth.signIn(loginUsername.value.trim(), loginPassword.value);
             loginPassword.value = '';
             closeLoginDialog();
         } catch {
@@ -291,8 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function isTodayChallengeCompleted() {
-        const store = getRodziniadaSoloStore();
-        return Boolean(store?.results?.[getTodayKey()]);
+        return false;
     }
 
     function renderCompletedDailyChallenge() {

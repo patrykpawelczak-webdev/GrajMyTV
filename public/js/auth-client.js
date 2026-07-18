@@ -103,6 +103,42 @@
         return profile;
     }
 
+    async function emailForUsername(username) {
+        const config = await getConfig();
+        const cleanUsername = String(username || '').trim();
+        if (!config.enabled || !cleanUsername) {
+            throw new Error('Nie udalo sie znalezc uzytkownika.');
+        }
+
+        if (cleanUsername.includes('@')) {
+            return cleanUsername.toLowerCase();
+        }
+
+        const query = `profiles?nickname=eq.${encodeURIComponent(cleanUsername)}&select=id&limit=1`;
+        const profileResponse = await fetch(`${config.supabaseUrl}/rest/v1/${query}`, {
+            headers: {
+                apikey: config.supabaseAnonKey
+            }
+        });
+        const profiles = profileResponse.ok ? await profileResponse.json() : [];
+        const userId = profiles?.[0]?.id;
+
+        if (!userId) {
+            throw new Error('Nie znaleziono takiego uzytkownika.');
+        }
+
+        const userResponse = await fetch(`/api/accounts/public-email?id=${encodeURIComponent(userId)}`, {
+            cache: 'no-store'
+        });
+        const userData = await userResponse.json().catch(() => ({}));
+
+        if (!userResponse.ok || !userData.email) {
+            throw new Error('Nie znaleziono takiego uzytkownika.');
+        }
+
+        return userData.email;
+    }
+
     async function refreshSession() {
         if (!session?.refreshToken) return null;
 
@@ -125,7 +161,8 @@
         return session?.accessToken || null;
     }
 
-    async function signIn(email, password) {
+    async function signIn(identifier, password) {
+        const email = await emailForUsername(identifier);
         const data = await supabaseAuthRequest('token?grant_type=password', {
             email,
             password

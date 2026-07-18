@@ -141,6 +141,48 @@ function sortRanking(entries) {
     });
 }
 
+function aggregateAllTimeRanking(entries, limit) {
+    const players = new Map();
+
+    entries.forEach(entry => {
+        const playerKey = entry.userId || entry.playerId;
+        if (!playerKey) return;
+
+        const current = players.get(playerKey) || {
+            nickname: entry.nickname,
+            score: 0,
+            maxScore: 0,
+            misses: 0,
+            revealed: [],
+            submittedAt: entry.submittedAt,
+            updatedAt: entry.updatedAt,
+            challenges: 0
+        };
+
+        current.nickname = entry.nickname || current.nickname;
+        current.score += Number(entry.score || 0);
+        current.maxScore += Number(entry.maxScore || 0);
+        current.misses += Number(entry.misses || 0);
+        current.challenges += 1;
+        current.submittedAt = String(current.submittedAt || '').localeCompare(String(entry.submittedAt || '')) <= 0
+            ? current.submittedAt
+            : entry.submittedAt;
+        current.updatedAt = String(current.updatedAt || '').localeCompare(String(entry.updatedAt || '')) >= 0
+            ? current.updatedAt
+            : entry.updatedAt;
+        players.set(playerKey, current);
+    });
+
+    return [...players.values()]
+        .sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            if (b.challenges !== a.challenges) return b.challenges - a.challenges;
+            if (a.misses !== b.misses) return a.misses - b.misses;
+            return String(a.submittedAt).localeCompare(String(b.submittedAt));
+        })
+        .slice(0, limit);
+}
+
 function supabaseEnabled() {
     return Boolean(SUPABASE_URL && SUPABASE_KEY);
 }
@@ -204,6 +246,14 @@ async function getSupabaseProfile(userId) {
     return rows?.[0] || null;
 }
 
+function isAllowedResultProfile(profile) {
+    return Boolean(
+        profile
+        && sanitizeNickname(profile.nickname)
+        && ['admin', 'tester', 'player'].includes(profile.role)
+    );
+}
+
 function readPin(req) {
     return req.headers['x-pin'] || req.body?.pin || req.query?.pin;
 }
@@ -240,21 +290,17 @@ function supabaseRowToResult(row) {
     };
 }
 
-async function getRankingEntries(challengeKey, limit) {
+async function getRankingEntries(limit) {
     if (supabaseEnabled()) {
         const query = [
-            `challenge_key=eq.${encodeURIComponent(challengeKey)}`,
-            'select=nickname,score,max_score,misses,revealed,submitted_at,updated_at',
-            'order=score.desc,misses.asc,submitted_at.asc',
-            `limit=${limit}`
+            'select=nickname,player_id,user_id,score,max_score,misses,revealed,submitted_at,updated_at',
+            'limit=1000'
         ].join('&');
         const rows = await supabaseRequest(`${SUPABASE_RESULTS_TABLE}?${query}`);
-        return (rows || []).map(supabaseRowToResult);
+        return aggregateAllTimeRanking((rows || []).map(supabaseRowToResult), limit);
     }
 
-    const data = await readJsonFile(RESULTS_FILE, { results: [] });
-    const entries = Array.isArray(data.results) ? data.results : [];
-    return sortRanking(entries.filter(entry => entry.challengeKey === challengeKey)).slice(0, limit);
+    return [];
 }
 
 async function findSavedResult(challengeKey, playerId) {
@@ -470,16 +516,14 @@ router.post('/api/solo-calendar', async (req, res) => {
 router.get('/api/solo-ranking', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
-    const challengeKey = normalizeDateKey(req.query.date) || todayKey();
     const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 50);
 
     try {
-        const ranking = (await getRankingEntries(challengeKey, limit))
+        const ranking = (await getRankingEntries(limit))
             .map((entry, index) => publicRankingEntry(entry, index + 1));
 
         res.json({
-            challengeKey,
-            challengeNumber: challengeNumber(challengeKey),
+            mode: 'all-time',
             ranking
         });
     } catch(e) {
@@ -544,22 +588,26 @@ router.post('/api/solo-results', async (req, res) => {
             .filter(index => Number.isInteger(index) && index >= 0 && index < ANSWERS_COUNT)
         : [];
 
-    if (supabaseEnabled()) {
-        try {
-            const user = await getAuthenticatedSupabaseUser(req);
-            if (!user?.id) {
-                return res.status(401).json({ error: 'Zaloguj sie, aby zapisac wynik w rankingu' });
-            }
+    if (!supabaseEnabled()) {
+        return res.status(503).json({ error: 'Zapisywanie wynikow wymaga aktywnego Supabase' });
+    }
 
-            const profile = await getSupabaseProfile(user.id);
-            userId = user.id;
-            playerId = user.id;
-            nickname = sanitizeNickname(profile?.nickname)
-                || sanitizeNickname(req.body.nickname)
-                || sanitizeNickname(nicknameFromEmail(user.email));
-        } catch(e) {
-            return res.status(401).json({ error: 'Nieprawidlowa sesja logowania' });
+    try {
+        const user = await getAuthenticatedSupabaseUser(req);
+        if (!user?.id) {
+            return res.status(401).json({ error: 'Zaloguj sie, aby zapisac wynik w rankingu' });
         }
+
+        const profile = await getSupabaseProfile(user.id);
+        if (!isAllowedResultProfile(profile)) {
+            return res.status(403).json({ error: 'Tylko konta testerow moga zapisywac wyniki' });
+        }
+
+        userId = user.id;
+        playerId = user.id;
+        nickname = sanitizeNickname(profile.nickname);
+    } catch(e) {
+        return res.status(401).json({ error: 'Nieprawidlowa sesja logowania' });
     }
 
     if (!challengeKey || !playerId || !nickname || !Number.isInteger(misses) || misses < 0 || misses > MAX_MISSES) {
@@ -596,7 +644,7 @@ router.post('/api/solo-results', async (req, res) => {
         };
 
         const savedEntry = await saveResultEntry(entry);
-        const ranking = (await getRankingEntries(challengeKey, 10))
+        const ranking = (await getRankingEntries(10))
             .map((result, index) => publicRankingEntry(result, index + 1));
 
         res.json({

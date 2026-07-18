@@ -1,0 +1,174 @@
+.secure-access-page {
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(139, 61, 255, 0.18), transparent 28rem),
+    radial-gradient(circle at 88% 16%, rgba(59, 130, 255, 0.18), transparent 30rem),
+    linear-gradient(135deg, #060b1d 0%, #071126 48%, #0b1730 100%);
+  background-attachment: fixed;
+}
+
+.secure-access-page::before,
+.secure-access-page::after {
+  display: none;
+  content: none;
+}
+
+.secure-access-page main > section::before {
+  display: none;
+  content: none;
+}
+
+.secure-access-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2.5rem);
+}
+
+.secure-access-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: min(24.5rem, 100%);
+  padding: clamp(1.45rem, 4vw, 2.15rem) clamp(1.1rem, 3.6vw, 1.8rem);
+  overflow: hidden;
+  border: 1px solid rgba(80, 103, 180, 0.48);
+  border-radius: clamp(1.25rem, 3vw, 1.75rem);
+  background:
+    linear-gradient(145deg, rgba(139, 61, 255, 0.16), rgba(59, 130, 255, 0.12) 54%, rgba(11, 20, 48, 0.92)),
+    rgba(16, 25, 56, 0.94);
+  box-shadow:
+    0 1rem 2.75rem rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+
+.secure-access-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(236, 45, 143, 0.1), transparent 32%),
+    radial-gradient(circle at 82% 0%, rgba(59, 130, 255, 0.13), transparent 34%);
+}
+
+.secure-access-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.secure-access-brand {
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.6rem, 1.8vw, 0.85rem);
+}
+
+.secure-access-logo,
+.secure-access-logo img {
+  display: block;
+  width: clamp(1.9rem, 4.5vw, 2.35rem);
+  height: clamp(1.9rem, 4.5vw, 2.35rem);
+  object-fit: contain;
+}
+
+.secure-access-card .secure-access-title {
+  max-width: 19rem;
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.55rem, 4.6vw, 2.3rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.secure-access-card .secure-access-subtitle {
+  display: block;
+  max-width: 19rem;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: clamp(0.86rem, 2.15vw, 0.98rem);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.secure-access-digits {
+  display: grid;
+  grid-template-columns: repeat(4, clamp(2.65rem, 8.5vw, 3.25rem));
+  gap: clamp(0.55rem, 1.8vw, 0.75rem);
+  margin-top: clamp(1rem, 2.6vw, 1.35rem);
+}
+
+.secure-access-card .secure-access-digit {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid rgba(80, 103, 180, 0.6);
+  border-radius: clamp(0.85rem, 2.4vw, 1.1rem);
+  color: var(--text);
+  background: rgba(6, 11, 29, 0.6);
+  text-align: center;
+  font-size: clamp(1.15rem, 4.4vw, 1.55rem);
+  font-weight: 900;
+  caret-color: var(--secondary);
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease, background 0.16s ease;
+}
+
+.secure-access-card .pin-logo,
+.secure-access-card .accounts-access-logo {
+  margin: 0;
+  opacity: 0.96;
+}
+
+.secure-access-card .secure-access-digit:focus {
+  border-color: var(--secondary);
+  box-shadow:
+    0 0 0 0.22rem rgba(59, 130, 255, 0.17),
+    0 0.75rem 1.8rem rgba(59, 130, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.secure-access-card .secure-access-digit.is-filled {
+  border-color: rgba(139, 61, 255, 0.82);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
+    rgba(11, 20, 48, 0.94);
+}
+
+.secure-access-card .secure-access-submit {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 1px;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.secure-access-error {
+  min-height: 1.25rem;
+  margin-top: 0.75rem;
+  color: var(--danger);
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+@media (max-width: 35rem) {
+  .secure-access-card {
+    padding: clamp(1.45rem, 7vw, 1.9rem) 1rem;
+  }
+
+  .secure-access-card .secure-access-title {
+    font-size: clamp(1.6rem, 8.2vw, 2.05rem);
+  }
+
+  .secure-access-digits {
+    grid-template-columns: repeat(4, minmax(2.55rem, 1fr));
+    width: min(15rem, 100%);
+  }
+}

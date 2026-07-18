@@ -68,6 +68,8 @@ Z poziomu panelu mozna:
 - zapisac nick i role w tabeli `profiles`,
 - usunac konto oraz jego wyniki z rankingu Rodziniady.
 
+Logowanie na stronie glownej odbywa sie nazwa uzytkownika, czyli polem `nickname` z tabeli `profiles`, oraz haslem ustawionym przy tworzeniu konta.
+
 ## Fallback lokalny
 
 Jesli zmienne Supabase nie sa ustawione, wyniki dalej zapisuja sie lokalnie do pliku:

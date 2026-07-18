@@ -3,17 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const els = {
         pinForm: document.getElementById('pinForm'),
         adminPin: document.getElementById('adminPin'),
+        pinDigits: [...document.querySelectorAll('[data-pin-digit]')],
         workspace: document.getElementById('accountsWorkspace'),
         accountForm: document.getElementById('accountForm'),
         nickname: document.getElementById('accountNickname'),
-        email: document.getElementById('accountEmail'),
         password: document.getElementById('accountPassword'),
         role: document.getElementById('accountRole'),
         list: document.getElementById('accountsList'),
         message: document.getElementById('accountsMessage'),
         refresh: document.getElementById('refreshAccountsButton')
     };
-    let pin = sessionStorage.getItem(PIN_KEY) || '';
+    let pin = '';
 
     function setMessage(text, type = 'neutral') {
         if (!els.message) return;
@@ -56,11 +56,61 @@ document.addEventListener('DOMContentLoaded', () => {
         els.workspace.hidden = false;
     }
 
+    function updatePinFromDigits() {
+        pin = els.pinDigits.map(input => input.value.replace(/\D/g, '').slice(0, 1)).join('');
+        els.adminPin.value = pin;
+    }
+
+    function fillPinDigits(value) {
+        const digits = String(value || '').replace(/\D/g, '').slice(0, 4).split('');
+        els.pinDigits.forEach((input, index) => {
+            input.value = digits[index] || '';
+            input.classList.toggle('is-filled', Boolean(input.value));
+        });
+        updatePinFromDigits();
+    }
+
+    function clearPinDigits() {
+        els.pinDigits.forEach(input => {
+            input.value = '';
+            input.classList.remove('is-filled');
+        });
+        els.adminPin.value = '';
+    }
+
+    function focusFirstEmptyDigit() {
+        const emptyInput = els.pinDigits.find(input => !input.value);
+        (emptyInput || els.pinDigits[els.pinDigits.length - 1])?.focus();
+    }
+
+    async function openWithPin() {
+        updatePinFromDigits();
+        if (pin.length !== 4) {
+            focusFirstEmptyDigit();
+            return;
+        }
+
+        try {
+            showWorkspace();
+            await loadAccounts();
+            sessionStorage.removeItem(PIN_KEY);
+            clearPinDigits();
+        } catch (error) {
+            els.workspace.hidden = true;
+            els.pinForm.hidden = false;
+            sessionStorage.removeItem(PIN_KEY);
+            setMessage('');
+            window.alert(error.message);
+            fillPinDigits('');
+            focusFirstEmptyDigit();
+        }
+    }
+
     function renderAccounts(accounts = []) {
         if (!els.list) return;
 
         if (!accounts.length) {
-            els.list.innerHTML = '<div class="account-empty">Nie ma jeszcze kont testerów.</div>';
+            els.list.innerHTML = '<div class="account-empty">Nie ma jeszcze kont.</div>';
             return;
         }
 
@@ -68,19 +118,18 @@ document.addEventListener('DOMContentLoaded', () => {
             <article class="account-row" data-id="${account.id}">
                 <div>
                     <strong>${escapeHtml(account.nickname)}</strong>
-                    <span>${escapeHtml(account.email)}</span>
                 </div>
                 <div class="account-meta">
                     <span>${escapeHtml(account.role)}</span>
                     <span>${account.confirmed ? 'Potwierdzone' : 'Niepotwierdzone'}</span>
                     <span>Ostatnio: ${formatDate(account.lastSignInAt)}</span>
                 </div>
-                <button type="button" class="account-delete" data-delete="${account.id}" data-email="${escapeHtml(account.email)}">Usuń</button>
+                <button type="button" class="account-delete" data-delete="${account.id}" data-name="${escapeHtml(account.nickname)}">Usuń</button>
             </article>
         `).join('');
 
         els.list.querySelectorAll('[data-delete]').forEach(button => {
-            button.addEventListener('click', () => deleteAccount(button.dataset.delete, button.dataset.email));
+            button.addEventListener('click', () => deleteAccount(button.dataset.delete, button.dataset.name));
         });
     }
 
@@ -97,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setMessage(`Konta zsynchronizowane: ${(data.accounts || []).length}`, 'success');
     }
 
-    async function deleteAccount(id, email) {
-        if (!window.confirm(`Usunąć konto ${email}? Tej akcji nie da się łatwo cofnąć.`)) return;
+    async function deleteAccount(id, name) {
+        if (!window.confirm(`Usunąć konto ${name}? Tej akcji nie da się łatwo cofnąć.`)) return;
 
         setMessage('Usuwanie konta...');
         await api('/api/accounts/delete', { id });
@@ -108,18 +157,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     els.pinForm?.addEventListener('submit', async event => {
         event.preventDefault();
-        pin = els.adminPin.value.trim();
-        sessionStorage.setItem(PIN_KEY, pin);
+        await openWithPin();
+    });
 
-        try {
-            showWorkspace();
-            await loadAccounts();
-        } catch (error) {
-            els.workspace.hidden = true;
-            els.pinForm.hidden = false;
-            setMessage('');
-            window.alert(error.message);
-        }
+    els.pinDigits.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            input.value = input.value.replace(/\D/g, '').slice(0, 1);
+            input.classList.toggle('is-filled', Boolean(input.value));
+            updatePinFromDigits();
+
+            if (input.value && els.pinDigits[index + 1]) {
+                els.pinDigits[index + 1].focus();
+            }
+            if (pin.length === 4) {
+                openWithPin();
+            }
+        });
+
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Backspace' && !input.value && els.pinDigits[index - 1]) {
+                els.pinDigits[index - 1].focus();
+            }
+        });
+
+        input.addEventListener('paste', event => {
+            event.preventDefault();
+            fillPinDigits(event.clipboardData.getData('text'));
+            if (pin.length === 4) {
+                openWithPin();
+            } else {
+                focusFirstEmptyDigit();
+            }
+        });
     });
 
     els.accountForm?.addEventListener('submit', async event => {
@@ -129,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await api('/api/accounts/create', {
                 nickname: els.nickname.value,
-                email: els.email.value,
                 password: els.password.value,
                 role: els.role.value
             });
@@ -146,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadAccounts().catch(error => setMessage(error.message, 'error'));
     });
 
-    if (pin) {
-        els.adminPin.value = pin;
-    }
+    sessionStorage.removeItem(PIN_KEY);
+
+    focusFirstEmptyDigit();
 });

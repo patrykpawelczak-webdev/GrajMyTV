@@ -6,40 +6,42 @@
     <title>Konta testerów - GrajMyTV</title>
     <link rel="icon" type="image/png" href="/img/logo-favicon.png">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/secure-access.css">
 </head>
-<body class="accounts-page">
+<body class="accounts-page secure-access-page">
     <main class="accounts-shell">
         <section class="accounts-panel">
-            <div class="accounts-brand">
-                <a href="/" aria-label="GrajMyTV">
+            <form class="accounts-pin-card secure-access-card" id="pinForm">
+                <a href="/" class="accounts-access-logo secure-access-logo" aria-label="GrajMyTV">
                     <img src="/img/logo-ikona-biale.png" alt="">
                 </a>
-                <span>Panel kont</span>
-                <h1>Konta testerów</h1>
-                <p>Dodawaj i usuwaj konta, które mogą logować się na stronie i zapisywać wyniki w rankingu Rodziniady.</p>
-            </div>
-
-            <form class="accounts-pin-card" id="pinForm">
-                <label>
-                    <span>PIN admina</span>
-                    <input id="adminPin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN">
-                </label>
-                <button class="btn btn-primary" type="submit">Otwórz panel</button>
+                <h1 class="secure-access-title">Zarządzanie kontami</h1>
+                <p class="secure-access-subtitle">Panel do pełnej obsługi kont</p>
+                <input id="adminPin" type="hidden" autocomplete="off">
+                <div class="accounts-pin-digits secure-access-digits" aria-label="PIN admina">
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Pierwsza cyfra PIN" data-pin-digit>
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Druga cyfra PIN" data-pin-digit>
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Trzecia cyfra PIN" data-pin-digit>
+                    <input class="pin-digit secure-access-digit" type="password" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Czwarta cyfra PIN" data-pin-digit>
+                </div>
+                <button class="sr-only secure-access-submit" type="submit">Otwórz panel</button>
             </form>
 
             <div class="accounts-workspace" id="accountsWorkspace" hidden>
+                <div class="accounts-brand">
+                    <a href="/" aria-label="GrajMyTV">
+                        <img src="/img/logo-ikona-biale.png" alt="">
+                    </a>
+                </div>
+
                 <form class="account-create-card" id="accountForm">
                     <div>
                         <span class="accounts-kicker">Nowe konto</span>
-                        <h2>Dodaj testera</h2>
+                        <h2>Dodaj konto</h2>
                     </div>
                     <label>
                         <span>Nick</span>
                         <input id="accountNickname" type="text" maxlength="24" autocomplete="off" required>
-                    </label>
-                    <label>
-                        <span>E-mail</span>
-                        <input id="accountEmail" type="email" autocomplete="email" required>
                     </label>
                     <label>
                         <span>Hasło</span>

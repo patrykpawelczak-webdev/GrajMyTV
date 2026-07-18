@@ -37,6 +37,13 @@ create policy profiles_select_own
   to authenticated
   using (auth.uid() = id);
 
+drop policy if exists profiles_select_public_login on public.profiles;
+create policy profiles_select_public_login
+  on public.profiles
+  for select
+  to anon
+  using (true);
+
 drop policy if exists profiles_update_own on public.profiles;
 create policy profiles_update_own
   on public.profiles
@@ -48,4 +55,3 @@ create policy profiles_update_own
 -- Wyniki sa na razie czytane i zapisywane przez backend GrajMyTV
 -- z kluczem serwerowym Supabase. Nie dodajemy publicznych polityk
 -- do tabeli wynikow, zeby nikt nie wysylal wynikow bezposrednio z przegladarki.
-

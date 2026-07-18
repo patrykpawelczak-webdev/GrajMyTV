@@ -23,6 +23,24 @@
 
     clearProgressFromUrl();
 
+    function clearLocalAchievements() {
+        [STORAGE_KEY, ...LEGACY_STORAGE_KEYS].forEach(key => {
+            try {
+                const store = JSON.parse(localStorage.getItem(key) || '{}');
+                if (store?.results && Object.keys(store.results).length) {
+                    delete store.results;
+                    localStorage.setItem(key, JSON.stringify({
+                        progress: store.progress && typeof store.progress === 'object' ? store.progress : {}
+                    }));
+                }
+            } catch {
+                localStorage.removeItem(key);
+            }
+        });
+    }
+
+    clearLocalAchievements();
+
     const $ = id => document.getElementById(id);
     const els = {
         challengeNumber: $('challengeNumber'),
@@ -142,7 +160,7 @@
         try {
             const store = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
             return {
-                results: store.results && typeof store.results === 'object' ? store.results : {},
+                results: {},
                 progress: store.progress && typeof store.progress === 'object' ? store.progress : {}
             };
         } catch {
@@ -151,8 +169,9 @@
     }
 
     function writeStore(store) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-        state.lastResult = store.results[state.currentChallenge] || null;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            progress: store.progress && typeof store.progress === 'object' ? store.progress : {}
+        }));
     }
 
     function getPlayerId() {
@@ -417,13 +436,13 @@
 
     function renderRanking(entries = []) {
         if (els.rankingBadge) {
-            els.rankingBadge.textContent = 'Dzisiaj';
+            els.rankingBadge.textContent = 'Wszechczasów';
         }
         if (els.rankingSummary) {
             const authState = window.GrajMyTVAuth?.getState?.();
             els.rankingSummary.textContent = authState?.enabled && !authState.isLoggedIn
-                ? 'Ranking liczy tylko zalogowanych testerow.'
-                : 'Najlepsze wyniki dzisiejszego wyzwania.';
+                ? 'Do rankingu trafiaja tylko zalogowane konta testerow.'
+                : 'Suma punktow ze wszystkich wyzwan dnia.';
         }
         if (!els.rankingList) return;
 
@@ -439,11 +458,11 @@
         }).join('');
     }
 
-    async function loadRanking(key = state.currentChallenge) {
+    async function loadRanking() {
         if (!els.rankingList) return;
 
         try {
-            const response = await fetch(`/rodziniada/api/solo-ranking?date=${encodeURIComponent(key)}&limit=10`, {
+            const response = await fetch('/rodziniada/api/solo-ranking?limit=10', {
                 cache: 'no-store'
             });
             if (!response.ok) throw new Error('ranking');
@@ -464,9 +483,9 @@
         try {
             const authState = window.GrajMyTVAuth?.getState?.();
             const accessToken = await window.GrajMyTVAuth?.getAccessToken?.();
-            if (authState?.enabled && !accessToken) {
+            if (!authState?.enabled || !authState.isLoggedIn || !accessToken) {
                 if (els.rankingSummary) {
-                    els.rankingSummary.textContent = 'Zaloguj sie na stronie glownej, aby wynik trafil do rankingu.';
+                    els.rankingSummary.textContent = 'Do rankingu trafiaja tylko zalogowane konta testerow.';
                 }
                 return;
             }
@@ -492,10 +511,8 @@
             const data = await response.json();
             renderRanking(data.ranking || []);
             state.resultSynced = true;
-            const store = readStore();
-            if (store.results[state.currentChallenge]) {
-                store.results[state.currentChallenge].synced = true;
-                writeStore(store);
+            if (state.lastResult) {
+                state.lastResult.synced = true;
             }
         } catch {
             await loadRanking();
@@ -603,7 +620,7 @@
         if (state.currentChallenge === getTodayKey()) {
             state.archiveUnlocked = true;
         }
-        store.results[state.currentChallenge] = {
+        state.lastResult = {
             score: state.score,
             maxScore,
             misses: state.misses,
@@ -616,6 +633,7 @@
         writeStore(store);
         renderGame();
         showResult();
+        submitResultToServer();
         state.justRevealed = null;
     }
 
