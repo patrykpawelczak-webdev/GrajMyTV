@@ -40,6 +40,17 @@
                 <a href="#korzysci" class="nav-link">O platformie</a>
             </nav>
 
+            <div class="auth-widget" id="authWidget" hidden>
+                <button type="button" class="auth-login-btn" id="openLoginButton">
+                    <i data-lucide="log-in"></i>
+                    <span>Zaloguj się</span>
+                </button>
+                <div class="auth-user" id="authUser" hidden>
+                    <span id="authUserName">Tester</span>
+                    <button type="button" id="logoutButton">Wyloguj</button>
+                </div>
+            </div>
+
             <!-- Przycisk Hamburgera (Mobile) -->
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Otwórz menu nawigacyjne" aria-expanded="false">
                 <i data-lucide="menu" class="hamburger-icon"></i>
@@ -50,6 +61,25 @@
 
     <!-- Nakładka mobilna (backdrop) -->
     <div class="mobile-backdrop" id="mobileBackdrop"></div>
+
+    <dialog class="login-dialog" id="loginDialog">
+        <form class="login-card" id="loginForm">
+            <button type="button" class="login-close" id="loginCloseButton" aria-label="Zamknij">×</button>
+            <img src="img/logo-ikona-biale.png" alt="" class="login-logo">
+            <h2>Logowanie testerów</h2>
+            <p>Konta są tworzone ręcznie. Zalogowany wynik trafi do rankingu dnia.</p>
+            <label>
+                <span>E-mail</span>
+                <input type="email" id="loginEmail" autocomplete="email" required>
+            </label>
+            <label>
+                <span>Hasło</span>
+                <input type="password" id="loginPassword" autocomplete="current-password" required>
+            </label>
+            <p class="login-message" id="loginMessage" aria-live="polite"></p>
+            <button class="btn btn-primary btn-full" type="submit">Zaloguj się</button>
+        </form>
+    </dialog>
 
     <main>
         <!-- SEKCJA HERO -->
@@ -493,6 +523,7 @@
     </footer>
 
     <!-- Skrypt JS logiczny -->
+    <script src="js/auth-client.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

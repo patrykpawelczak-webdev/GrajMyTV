@@ -18,6 +18,11 @@ const io     = new Server(server, {
 
 const PORT = process.env.PORT || 3000;
 const IS_PROD = process.env.NODE_ENV === 'production';
+const EDITOR_PIN = process.env.EDITOR_PIN || '2509';
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_RESULTS_TABLE = process.env.SUPABASE_RESULTS_TABLE || 'rodziniada_solo_results';
 
 // ===== KOLORY TERMINALA =====
 const c = {
@@ -36,6 +41,91 @@ function logInfo(l,m)    { log(c.cyan,l,m); }
 function logSuccess(l,m) { log(c.green,l,m); }
 function logWarn(l,m)    { log(c.yellow,l,m); }
 function logError(l,m)   { log(c.red,l,m); }
+
+function readPin(req) {
+    return req.headers['x-pin'] || req.body?.pin || req.query?.pin;
+}
+
+function supabaseAdminEnabled() {
+    return Boolean(SUPABASE_URL && SUPABASE_SECRET_KEY);
+}
+
+function supabaseAdminHeaders(extra = {}) {
+    return {
+        apikey: SUPABASE_SECRET_KEY,
+        Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
+        ...extra
+    };
+}
+
+async function supabaseAuthAdminRequest(pathname, options = {}) {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/${pathname}`, {
+        ...options,
+        headers: supabaseAdminHeaders(options.headers || {})
+    });
+    const text = await response.text();
+
+    if (!response.ok) {
+        const error = new Error(`Supabase auth admin failed ${response.status}: ${text}`);
+        error.status = response.status;
+        error.body = text;
+        throw error;
+    }
+
+    return text ? JSON.parse(text) : null;
+}
+
+async function supabaseRestAdminRequest(pathname, options = {}) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${pathname}`, {
+        ...options,
+        headers: supabaseAdminHeaders(options.headers || {})
+    });
+    const text = await response.text();
+
+    if (!response.ok) {
+        const error = new Error(`Supabase rest admin failed ${response.status}: ${text}`);
+        error.status = response.status;
+        error.body = text;
+        throw error;
+    }
+
+    return text ? JSON.parse(text) : null;
+}
+
+function sanitizeAccountInput(data) {
+    const email = String(data.email || '').trim().toLowerCase();
+    const password = String(data.password || '');
+    const nickname = String(data.nickname || '')
+        .replace(/\s+/g, ' ')
+        .replace(/[<>]/g, '')
+        .trim()
+        .slice(0, 24);
+    const role = ['admin', 'tester', 'player'].includes(data.role) ? data.role : 'tester';
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return { error: 'Nieprawidlowy e-mail' };
+    }
+    if (password.length < 6) {
+        return { error: 'Haslo musi miec minimum 6 znakow' };
+    }
+    if (nickname.length < 2) {
+        return { error: 'Nick musi miec minimum 2 znaki' };
+    }
+
+    return { email, password, nickname, role };
+}
+
+function publicAccount(user, profile = {}) {
+    return {
+        id: user.id,
+        email: user.email,
+        nickname: profile.nickname || user.user_metadata?.nickname || String(user.email || '').split('@')[0],
+        role: profile.role || user.user_metadata?.role || 'tester',
+        confirmed: Boolean(user.email_confirmed_at || user.confirmed_at),
+        lastSignInAt: user.last_sign_in_at || null,
+        createdAt: user.created_at || null
+    };
+}
 
 // ===== MIDDLEWARE =====
 app.use(express.json({ limit: '10mb' }));
@@ -60,6 +150,130 @@ app.get('/polityka-prywatnosci', (req, res) => {
 
 app.get('/polityka-cookies', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'polityka-cookies.html'));
+});
+
+app.get('/konta', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'konta.html'));
+});
+
+app.get('/api/auth-config', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.json({
+        enabled: Boolean(SUPABASE_URL && SUPABASE_ANON_KEY),
+        supabaseUrl: SUPABASE_URL,
+        supabaseAnonKey: SUPABASE_ANON_KEY
+    });
+});
+
+app.post('/api/accounts/list', async (req, res) => {
+    if (readPin(req) !== EDITOR_PIN) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
+    }
+    if (!supabaseAdminEnabled()) {
+        return res.status(503).json({ error: 'Supabase nie jest skonfigurowany' });
+    }
+
+    try {
+        const authData = await supabaseAuthAdminRequest('admin/users?page=1&per_page=100');
+        const users = Array.isArray(authData)
+            ? authData
+            : authData.users || authData.data?.users || [];
+        let profiles = [];
+
+        try {
+            profiles = await supabaseRestAdminRequest('profiles?select=id,nickname,role');
+        } catch {
+            profiles = [];
+        }
+
+        const profileById = new Map(profiles.map(profile => [profile.id, profile]));
+        res.json({
+            ok: true,
+            accounts: users.map(user => publicAccount(user, profileById.get(user.id)))
+        });
+    } catch(e) {
+        res.status(500).json({ error: 'Nie udalo sie pobrac kont', details: e.body || e.message });
+    }
+});
+
+app.post('/api/accounts/create', async (req, res) => {
+    if (readPin(req) !== EDITOR_PIN) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
+    }
+    if (!supabaseAdminEnabled()) {
+        return res.status(503).json({ error: 'Supabase nie jest skonfigurowany' });
+    }
+
+    const input = sanitizeAccountInput(req.body || {});
+    if (input.error) {
+        return res.status(400).json({ error: input.error });
+    }
+
+    try {
+        const authData = await supabaseAuthAdminRequest('admin/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: input.email,
+                password: input.password,
+                email_confirm: true,
+                user_metadata: {
+                    nickname: input.nickname,
+                    role: input.role
+                }
+            })
+        });
+        const user = authData.user || authData.data?.user || authData;
+
+        await supabaseRestAdminRequest('profiles?on_conflict=id', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Prefer: 'resolution=merge-duplicates,return=minimal'
+            },
+            body: JSON.stringify({
+                id: user.id,
+                nickname: input.nickname,
+                role: input.role,
+                updated_at: new Date().toISOString()
+            })
+        });
+
+        res.json({ ok: true, account: publicAccount(user, input) });
+    } catch(e) {
+        res.status(500).json({ error: 'Nie udalo sie utworzyc konta', details: e.body || e.message });
+    }
+});
+
+app.post('/api/accounts/delete', async (req, res) => {
+    if (readPin(req) !== EDITOR_PIN) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
+    }
+    if (!supabaseAdminEnabled()) {
+        return res.status(503).json({ error: 'Supabase nie jest skonfigurowany' });
+    }
+
+    const userId = String(req.body?.id || '').trim();
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)) {
+        return res.status(400).json({ error: 'Nieprawidlowe ID konta' });
+    }
+
+    try {
+        await supabaseRestAdminRequest(`${SUPABASE_RESULTS_TABLE}?or=(user_id.eq.${encodeURIComponent(userId)},player_id.eq.${encodeURIComponent(userId)})`, {
+            method: 'DELETE',
+            headers: { Prefer: 'return=minimal' }
+        }).catch(() => null);
+
+        await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ should_soft_delete: false })
+        });
+
+        res.json({ ok: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Nie udalo sie usunac konta', details: e.body || e.message });
+    }
 });
 
 // ===== MONTOWANIE GIER =====

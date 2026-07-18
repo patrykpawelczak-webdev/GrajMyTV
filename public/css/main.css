@@ -359,6 +359,76 @@ main > section:nth-of-type(even)::before {
   gap: 1rem;
 }
 
+.auth-widget {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 8.5rem;
+}
+
+.auth-widget[hidden],
+.auth-login-btn[hidden],
+.auth-user[hidden] {
+  display: none;
+}
+
+.auth-login-btn,
+.auth-user button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.45rem;
+  padding: 0 0.95rem;
+  border: 1px solid rgba(139, 61, 255, 0.36);
+  border-radius: 999rem;
+  color: var(--text);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent),
+    rgba(11, 20, 48, 0.78);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.auth-login-btn:hover,
+.auth-user button:hover {
+  border-color: rgba(59, 130, 255, 0.58);
+  background: rgba(25, 36, 71, 0.92);
+  transform: translateY(-1px);
+}
+
+.auth-login-btn i {
+  width: 1rem;
+  height: 1rem;
+}
+
+.auth-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 18rem;
+}
+
+.auth-user span {
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-user button {
+  min-height: 2.2rem;
+  padding: 0 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
 /* Przyciski w panelu mobilnym — ukryte na desktopie */
 .nav-menu-actions {
   display: none;
@@ -1656,6 +1726,334 @@ main > section:nth-of-type(even)::before {
 /* ==========================================
    INTERAKTYWNY MODAL
    ========================================== */
+.login-dialog {
+  width: min(100% - 2rem, 27rem);
+  padding: 0;
+  border: 0;
+  color: var(--text);
+  background: transparent;
+}
+
+.login-dialog::backdrop {
+  background: rgba(4, 7, 20, 0.78);
+  backdrop-filter: blur(0.7rem);
+}
+
+.login-card {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px solid rgba(139, 61, 255, 0.34);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent),
+    var(--card);
+  box-shadow: var(--shadow-glow);
+}
+
+.login-logo {
+  width: 3.25rem;
+  height: 3.25rem;
+  object-fit: contain;
+  justify-self: center;
+}
+
+.login-card h2,
+.login-card p {
+  margin: 0;
+  text-align: center;
+}
+
+.login-card h2 {
+  font-size: clamp(1.65rem, 1.3rem + 1vw, 2.25rem);
+  font-weight: 900;
+}
+
+.login-card > p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.login-card label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--text-secondary);
+  font-weight: 800;
+}
+
+.login-card input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(59, 130, 255, 0.28);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  background: rgba(6, 11, 29, 0.68);
+  font: inherit;
+  font-weight: 700;
+  outline: none;
+}
+
+.login-card input:focus {
+  border-color: rgba(139, 61, 255, 0.78);
+  box-shadow: 0 0 0 0.2rem rgba(139, 61, 255, 0.16);
+}
+
+.login-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background: rgba(6, 11, 29, 0.48);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.login-message {
+  min-height: 1.25rem;
+  color: var(--danger);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.accounts-page {
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(139, 61, 255, 0.24), transparent 28rem),
+    radial-gradient(circle at 86% 10%, rgba(59, 130, 255, 0.2), transparent 30rem),
+    linear-gradient(180deg, var(--background) 0%, var(--background-secondary) 100%);
+}
+
+.accounts-shell {
+  width: min(72rem, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4.5rem) 1.25rem;
+}
+
+.accounts-panel {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.accounts-brand {
+  max-width: 44rem;
+}
+
+.accounts-brand img {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+  margin-bottom: 1.25rem;
+}
+
+.accounts-brand > span,
+.accounts-kicker {
+  display: inline-flex;
+  color: var(--secondary);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.accounts-brand h1 {
+  margin: 0.45rem 0 0.75rem;
+  font-size: clamp(2.25rem, 6vw, 4.75rem);
+  line-height: 1;
+}
+
+.accounts-brand p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1.08rem;
+  line-height: 1.6;
+}
+
+.accounts-pin-card,
+.account-create-card,
+.accounts-list-card {
+  border: 1px solid rgba(59, 130, 255, 0.2);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent),
+    rgba(20, 29, 58, 0.84);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.28);
+}
+
+.accounts-pin-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+  width: min(34rem, 100%);
+  padding: 1rem;
+}
+
+.accounts-pin-card label,
+.account-create-card label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--text-secondary);
+  font-weight: 800;
+}
+
+.accounts-pin-card input,
+.account-create-card input,
+.account-create-card select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0 0.95rem;
+  border: 1px solid rgba(59, 130, 255, 0.25);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  background: rgba(6, 11, 29, 0.68);
+  font: inherit;
+  font-weight: 750;
+  outline: none;
+}
+
+.accounts-pin-card input:focus,
+.account-create-card input:focus,
+.account-create-card select:focus {
+  border-color: rgba(139, 61, 255, 0.8);
+  box-shadow: 0 0 0 0.2rem rgba(139, 61, 255, 0.15);
+}
+
+.accounts-workspace {
+  display: grid;
+  grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.accounts-workspace[hidden],
+.accounts-pin-card[hidden] {
+  display: none;
+}
+
+.account-create-card,
+.accounts-list-card {
+  padding: clamp(1.25rem, 2.6vw, 1.75rem);
+}
+
+.account-create-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.account-create-card h2,
+.accounts-list-head h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.45rem;
+}
+
+.accounts-list-card {
+  min-width: 0;
+}
+
+.accounts-list-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.accounts-refresh,
+.account-delete {
+  min-height: 2.35rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(59, 130, 255, 0.28);
+  border-radius: 999rem;
+  color: var(--text);
+  background: rgba(11, 20, 48, 0.78);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.accounts-message {
+  min-height: 1.4rem;
+  margin: 0 0 0.85rem;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.accounts-message[data-type="success"] {
+  color: var(--success);
+}
+
+.accounts-message[data-type="error"] {
+  color: var(--danger);
+}
+
+.accounts-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.account-row,
+.account-empty {
+  border: 1px solid rgba(59, 130, 255, 0.16);
+  border-radius: var(--radius-lg);
+  background: rgba(6, 11, 29, 0.52);
+}
+
+.account-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.9rem;
+}
+
+.account-row strong,
+.account-row span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-row strong {
+  color: var(--text);
+}
+
+.account-row span,
+.account-meta {
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+}
+
+.account-meta {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.account-delete {
+  border-color: rgba(239, 68, 68, 0.28);
+  color: #fecaca;
+}
+
+.account-delete:hover {
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.account-empty {
+  padding: 1rem;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -2106,6 +2504,28 @@ main > section:nth-of-type(even)::before {
     display: none;
   }
 
+  .auth-widget {
+    margin-left: auto;
+    min-width: 0;
+  }
+
+  .auth-login-btn span {
+    display: none;
+  }
+
+  .auth-login-btn {
+    width: 2.55rem;
+    padding: 0;
+  }
+
+  .auth-user {
+    max-width: 9.5rem;
+  }
+
+  .auth-user span {
+    max-width: 5.25rem;
+  }
+
   /* Przyciski logowania przeniesione do panelu */
   .header-actions {
     display: none;
@@ -2136,6 +2556,30 @@ main > section:nth-of-type(even)::before {
 @media (max-width: 48rem) {
   .site-header {
     height: 4.375rem;
+  }
+
+  .accounts-workspace,
+  .account-row,
+  .accounts-pin-card {
+    grid-template-columns: 1fr;
+  }
+
+  .accounts-list-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .accounts-refresh,
+  .account-delete {
+    width: 100%;
+  }
+
+  .accounts-shell {
+    padding-top: 2rem;
+  }
+
+  .login-card {
+    padding: 1.5rem;
   }
 
   .hero-section {

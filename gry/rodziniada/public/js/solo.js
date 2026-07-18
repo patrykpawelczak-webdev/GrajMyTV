@@ -176,6 +176,9 @@
     }
 
     function getNickname() {
+        const authNickname = cleanNickname(window.GrajMyTVAuth?.getState?.().nickname);
+        if (authNickname.length >= 2) return authNickname;
+
         const savedNickname = cleanNickname(localStorage.getItem(NICKNAME_KEY));
         const typedNickname = cleanNickname(els.nicknameInput?.value);
         const nickname = typedNickname.length >= 2
@@ -417,7 +420,10 @@
             els.rankingBadge.textContent = 'Dzisiaj';
         }
         if (els.rankingSummary) {
-            els.rankingSummary.textContent = 'Najlepsze wyniki dzisiejszego wyzwania.';
+            const authState = window.GrajMyTVAuth?.getState?.();
+            els.rankingSummary.textContent = authState?.enabled && !authState.isLoggedIn
+                ? 'Ranking liczy tylko zalogowanych testerow.'
+                : 'Najlepsze wyniki dzisiejszego wyzwania.';
         }
         if (!els.rankingList) return;
 
@@ -456,9 +462,23 @@
         if (!state.finished || state.resultSynced) return;
 
         try {
+            const authState = window.GrajMyTVAuth?.getState?.();
+            const accessToken = await window.GrajMyTVAuth?.getAccessToken?.();
+            if (authState?.enabled && !accessToken) {
+                if (els.rankingSummary) {
+                    els.rankingSummary.textContent = 'Zaloguj sie na stronie glownej, aby wynik trafil do rankingu.';
+                }
+                return;
+            }
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (accessToken) {
+                headers.Authorization = `Bearer ${accessToken}`;
+            }
+
             const response = await fetch('/rodziniada/api/solo-results', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                     playerId: getPlayerId(),
                     nickname: getNickname(),
@@ -610,7 +630,7 @@
         els.resultAnswers.textContent = `${state.revealed.size}/${ANSWERS_COUNT}`;
         els.resultMisses.textContent = `${state.misses}/${MAX_MISSES}`;
         if (els.nicknameInput) {
-            els.nicknameInput.value = cleanNickname(localStorage.getItem(NICKNAME_KEY));
+            els.nicknameInput.value = getNickname() === 'Gracz' ? '' : getNickname();
         }
         if (typeof els.resultDialog.showModal === 'function') {
             els.resultDialog.showModal();
@@ -705,6 +725,16 @@
     }
 
     async function init() {
+        if (window.GrajMyTVAuth) {
+            await window.GrajMyTVAuth.init().catch(() => null);
+            window.GrajMyTVAuth.onChange(() => {
+                renderRanking([]);
+                if (state.finished && !state.resultSynced) {
+                    submitResultToServer();
+                }
+            });
+        }
+
         await loadQuestions();
         resetRunForChallenge(getTodayKey());
         startChallenge();

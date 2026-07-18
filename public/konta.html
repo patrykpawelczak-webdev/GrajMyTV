@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konta testerów - GrajMyTV</title>
+    <link rel="icon" type="image/png" href="/img/logo-favicon.png">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="accounts-page">
+    <main class="accounts-shell">
+        <section class="accounts-panel">
+            <div class="accounts-brand">
+                <a href="/" aria-label="GrajMyTV">
+                    <img src="/img/logo-ikona-biale.png" alt="">
+                </a>
+                <span>Panel kont</span>
+                <h1>Konta testerów</h1>
+                <p>Dodawaj i usuwaj konta, które mogą logować się na stronie i zapisywać wyniki w rankingu Rodziniady.</p>
+            </div>
+
+            <form class="accounts-pin-card" id="pinForm">
+                <label>
+                    <span>PIN admina</span>
+                    <input id="adminPin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN">
+                </label>
+                <button class="btn btn-primary" type="submit">Otwórz panel</button>
+            </form>
+
+            <div class="accounts-workspace" id="accountsWorkspace" hidden>
+                <form class="account-create-card" id="accountForm">
+                    <div>
+                        <span class="accounts-kicker">Nowe konto</span>
+                        <h2>Dodaj testera</h2>
+                    </div>
+                    <label>
+                        <span>Nick</span>
+                        <input id="accountNickname" type="text" maxlength="24" autocomplete="off" required>
+                    </label>
+                    <label>
+                        <span>E-mail</span>
+                        <input id="accountEmail" type="email" autocomplete="email" required>
+                    </label>
+                    <label>
+                        <span>Hasło</span>
+                        <input id="accountPassword" type="text" minlength="6" autocomplete="off" required>
+                    </label>
+                    <label>
+                        <span>Rola</span>
+                        <select id="accountRole">
+                            <option value="tester">Tester</option>
+                            <option value="admin">Admin</option>
+                            <option value="player">Gracz</option>
+                        </select>
+                    </label>
+                    <button class="btn btn-primary btn-full" type="submit">Dodaj konto</button>
+                </form>
+
+                <section class="accounts-list-card">
+                    <div class="accounts-list-head">
+                        <div>
+                            <span class="accounts-kicker">Supabase</span>
+                            <h2>Aktywne konta</h2>
+                        </div>
+                        <button class="accounts-refresh" id="refreshAccountsButton" type="button">Odśwież</button>
+                    </div>
+                    <p class="accounts-message" id="accountsMessage" aria-live="polite"></p>
+                    <div class="accounts-list" id="accountsList"></div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/accounts-admin.js"></script>
+</body>
+</html>

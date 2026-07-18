@@ -10,6 +10,7 @@ const CALENDAR_FILE  = path.join(__dirname, 'public', 'daily-challenges.json');
 const RESULTS_FILE   = process.env.RODZINIADA_SOLO_RESULTS_FILE || path.join(__dirname, 'data', 'solo-results.json');
 const EDITOR_PIN     = process.env.EDITOR_PIN || '2509';
 const SUPABASE_URL   = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const SUPABASE_KEY   = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const SUPABASE_RESULTS_TABLE = process.env.SUPABASE_RESULTS_TABLE || 'rodziniada_solo_results';
 const ANSWERS_COUNT  = 6;
@@ -65,6 +66,10 @@ function sanitizeNickname(value) {
 function sanitizePlayerId(value) {
     const playerId = String(value || '').trim();
     return /^[a-zA-Z0-9_-]{8,64}$/.test(playerId) ? playerId : null;
+}
+
+function nicknameFromEmail(email) {
+    return String(email || '').split('@')[0] || 'Tester';
 }
 
 function flattenQuestions(data) {
@@ -165,6 +170,40 @@ async function supabaseRequest(pathname, options = {}) {
     return text ? JSON.parse(text) : null;
 }
 
+async function getAuthenticatedSupabaseUser(req) {
+    const header = req.headers.authorization || '';
+    const token = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+    if (!token) return null;
+
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${token}`
+        }
+    });
+    const text = await response.text();
+
+    if (!response.ok) {
+        const error = new Error(`Supabase auth failed ${response.status}: ${text}`);
+        error.status = response.status;
+        error.body = text;
+        throw error;
+    }
+
+    return text ? JSON.parse(text) : null;
+}
+
+async function getSupabaseProfile(userId) {
+    const query = [
+        `id=eq.${encodeURIComponent(userId)}`,
+        'select=nickname,role',
+        'limit=1'
+    ].join('&');
+    const rows = await supabaseRequest(`profiles?${query}`);
+
+    return rows?.[0] || null;
+}
+
 function readPin(req) {
     return req.headers['x-pin'] || req.body?.pin || req.query?.pin;
 }
@@ -174,6 +213,7 @@ function resultToSupabaseRow(entry) {
         challenge_key: entry.challengeKey,
         challenge_number: entry.challengeNumber,
         player_id: entry.playerId,
+        user_id: entry.userId || null,
         nickname: entry.nickname,
         score: entry.score,
         max_score: entry.maxScore,
@@ -189,6 +229,7 @@ function supabaseRowToResult(row) {
         challengeKey: String(row.challenge_key).slice(0, 10),
         challengeNumber: row.challenge_number,
         playerId: row.player_id,
+        userId: row.user_id,
         nickname: row.nickname,
         score: row.score,
         maxScore: row.max_score,
@@ -455,6 +496,7 @@ router.post('/api/solo-storage-status', async (req, res) => {
         mode: supabaseEnabled() ? 'supabase' : 'file',
         supabase: {
             hasUrl: Boolean(SUPABASE_URL),
+            hasAnonKey: Boolean(SUPABASE_ANON_KEY),
             hasKey: Boolean(SUPABASE_KEY),
             table: SUPABASE_RESULTS_TABLE
         }
@@ -493,13 +535,32 @@ router.post('/api/solo-storage-status', async (req, res) => {
 
 router.post('/api/solo-results', async (req, res) => {
     const challengeKey = normalizeDateKey(req.body.challengeKey);
-    const playerId = sanitizePlayerId(req.body.playerId);
-    const nickname = sanitizeNickname(req.body.nickname);
+    let playerId = sanitizePlayerId(req.body.playerId);
+    let userId = null;
+    let nickname = sanitizeNickname(req.body.nickname);
     const misses = Number(req.body.misses);
     const revealed = Array.isArray(req.body.revealed)
         ? [...new Set(req.body.revealed.map(Number))]
             .filter(index => Number.isInteger(index) && index >= 0 && index < ANSWERS_COUNT)
         : [];
+
+    if (supabaseEnabled()) {
+        try {
+            const user = await getAuthenticatedSupabaseUser(req);
+            if (!user?.id) {
+                return res.status(401).json({ error: 'Zaloguj sie, aby zapisac wynik w rankingu' });
+            }
+
+            const profile = await getSupabaseProfile(user.id);
+            userId = user.id;
+            playerId = user.id;
+            nickname = sanitizeNickname(profile?.nickname)
+                || sanitizeNickname(req.body.nickname)
+                || sanitizeNickname(nicknameFromEmail(user.email));
+        } catch(e) {
+            return res.status(401).json({ error: 'Nieprawidlowa sesja logowania' });
+        }
+    }
 
     if (!challengeKey || !playerId || !nickname || !Number.isInteger(misses) || misses < 0 || misses > MAX_MISSES) {
         return res.status(400).json({ error: 'Nieprawidlowy wynik' });
@@ -524,6 +585,7 @@ router.post('/api/solo-results', async (req, res) => {
             challengeKey,
             challengeNumber: challengeNumber(challengeKey),
             playerId,
+            userId,
             nickname,
             score,
             maxScore,

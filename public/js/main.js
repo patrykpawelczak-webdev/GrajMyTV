@@ -21,6 +21,90 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // LOGOWANIE TESTEROW
+    // ==========================================
+    const authWidget = document.getElementById('authWidget');
+    const openLoginButton = document.getElementById('openLoginButton');
+    const authUser = document.getElementById('authUser');
+    const authUserName = document.getElementById('authUserName');
+    const logoutButton = document.getElementById('logoutButton');
+    const loginDialog = document.getElementById('loginDialog');
+    const loginForm = document.getElementById('loginForm');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const loginMessage = document.getElementById('loginMessage');
+    const loginCloseButton = document.getElementById('loginCloseButton');
+
+    function openLoginDialog() {
+        if (!loginDialog) return;
+        if (typeof loginDialog.showModal === 'function') {
+            loginDialog.showModal();
+        } else {
+            loginDialog.setAttribute('open', '');
+        }
+        loginEmail?.focus();
+    }
+
+    function closeLoginDialog() {
+        if (!loginDialog) return;
+        if (typeof loginDialog.close === 'function') {
+            loginDialog.close();
+        } else {
+            loginDialog.removeAttribute('open');
+        }
+    }
+
+    function renderAuth(state = {}) {
+        if (!authWidget) return;
+
+        authWidget.hidden = false;
+        const loggedIn = Boolean(state.isLoggedIn);
+        if (openLoginButton) openLoginButton.hidden = loggedIn;
+        if (authUser) authUser.hidden = !loggedIn;
+        if (authUserName) authUserName.textContent = state.nickname || 'Tester';
+    }
+
+    if (window.GrajMyTVAuth) {
+        window.GrajMyTVAuth.onChange(renderAuth);
+        window.GrajMyTVAuth.init().then(state => {
+            if (!state.enabled && authWidget) {
+                authWidget.hidden = true;
+            }
+        }).catch(() => {
+            if (authWidget) authWidget.hidden = true;
+        });
+    }
+
+    openLoginButton?.addEventListener('click', openLoginDialog);
+    loginCloseButton?.addEventListener('click', closeLoginDialog);
+    loginDialog?.addEventListener('click', event => {
+        if (event.target === loginDialog) closeLoginDialog();
+    });
+    logoutButton?.addEventListener('click', async () => {
+        await window.GrajMyTVAuth?.signOut();
+    });
+    loginForm?.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!window.GrajMyTVAuth) return;
+
+        if (loginMessage) loginMessage.textContent = '';
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
+
+        try {
+            await window.GrajMyTVAuth.signIn(loginEmail.value.trim(), loginPassword.value);
+            loginPassword.value = '';
+            closeLoginDialog();
+        } catch {
+            if (loginMessage) {
+                loginMessage.textContent = 'Nieprawidlowy e-mail lub haslo.';
+            }
+        } finally {
+            if (submitButton) submitButton.disabled = false;
+        }
+    });
+
+    // ==========================================
     // MENU MOBILNE (HAMBURGER MENU)
     // ==========================================
     const hamburgerBtn = document.getElementById('hamburgerBtn');
