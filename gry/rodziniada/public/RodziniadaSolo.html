@@ -6,11 +6,12 @@
     <title>Rodziniada - codzienne wyzwanie</title>
     <link rel="stylesheet" href="/rodziniada/css/solo.css">
     <link rel="icon" href="/img/logo-favicon.png" type="image/png">
+    <style>body.auth-pending { visibility: hidden; }</style>
 </head>
-<body>
+<body class="auth-pending">
     <main class="solo-app">
         <header class="game-topbar">
-            <a href="/#gry" class="back-button" aria-label="Powrót">Powrót</a>
+            <a href="/" class="back-button" aria-label="Powrót">Powrót</a>
 
             <div class="title-lockup">
                 <h1>Rodziniada</h1>
@@ -55,9 +56,13 @@
             <aside class="ranking-board" aria-label="Ranking graczy">
                 <div class="ranking-head">
                     <h2>Ranking</h2>
-                    <span>Dzisiaj</span>
                 </div>
-                <p>Najlepsze wyniki dzisiejszego wyzwania.</p>
+                <div class="ranking-tabs" role="tablist" aria-label="Zakres rankingu">
+                    <button type="button" data-ranking-scope="day" role="tab" aria-selected="true">Dzień</button>
+                    <button type="button" data-ranking-scope="week" role="tab">Tydzień</button>
+                    <button type="button" data-ranking-scope="month" role="tab">Miesiąc</button>
+                    <button type="button" data-ranking-scope="all" role="tab">Ogólny</button>
+                </div>
                 <ol id="rankingList">
                     <li><span>Ładowanie rankingu</span><strong>---</strong></li>
                 </ol>
@@ -109,10 +114,6 @@
                         <strong id="resultMisses">0/3</strong>
                     </div>
                 </div>
-                <label class="result-nickname">
-                    <span>Nick w rankingu</span>
-                    <input id="nicknameInput" type="text" maxlength="24" autocomplete="nickname" placeholder="Wpisz nick">
-                </label>
                 <div class="result-actions">
                     <button class="submit-button" id="resultShareButton" type="button">Udostępnij</button>
                     <button class="share-button" id="resultCloseButton" type="button">Zamknij</button>

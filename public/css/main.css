@@ -72,6 +72,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body.is-page-locked {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -138,20 +143,6 @@ img {
 main > section {
   position: relative;
   z-index: 2;
-}
-
-main > section:not(.hero-section)::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(11, 20, 48, 0.18), rgba(6, 11, 29, 0.06));
-  border-top: 1px solid rgba(255, 255, 255, 0.035);
-}
-
-main > section:nth-of-type(even)::before {
-  background: linear-gradient(180deg, rgba(20, 29, 58, 0.14), rgba(6, 11, 29, 0.04));
 }
 
 /* ==========================================
@@ -1793,7 +1784,7 @@ main > section:nth-of-type(even)::before {
   line-height: 1.06;
 }
 
-.login-card > p {
+.login-card > p:not(.login-message) {
   display: none;
 }
 
@@ -1816,6 +1807,42 @@ main > section:nth-of-type(even)::before {
   font: inherit;
   font-weight: 700;
   outline: none;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 3.25rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  width: 2.35rem;
+  height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(59, 130, 255, 0.22);
+  border-radius: 999rem;
+  color: var(--text-secondary);
+  background: rgba(11, 20, 48, 0.72);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: var(--text);
+  border-color: rgba(139, 61, 255, 0.48);
+}
+
+.password-toggle i {
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .login-card input:focus {
@@ -2151,6 +2178,38 @@ main > section:nth-of-type(even)::before {
 .account-meta {
   display: grid;
   gap: 0.15rem;
+}
+
+.account-secret {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.account-secret code {
+  min-width: 4.5rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid rgba(59, 130, 255, 0.18);
+  border-radius: 999rem;
+  color: var(--text);
+  background: rgba(6, 11, 29, 0.52);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.account-secret button {
+  border: 0;
+  color: var(--secondary);
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.account-secret button:hover {
+  color: var(--text);
 }
 
 .account-actions {

@@ -1,12 +1,10 @@
 (() => {
     const MAX_MISSES = 3;
     const ANSWERS_COUNT = 6;
-    const JULY_CHALLENGE_YEAR = 2026;
-    const JULY_CHALLENGE_MONTH = 6;
-    const JULY_CHALLENGE_DAYS = 31;
-    const START_CHALLENGE = new Date(JULY_CHALLENGE_YEAR, JULY_CHALLENGE_MONTH, 1);
-    const STORAGE_KEY = 'grajmytv:rodziniada-solo:v2';
-    const LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo'];
+    const START_CHALLENGE_KEY = '2026-07-19';
+    const START_CHALLENGE = dateFromKey(START_CHALLENGE_KEY);
+    const STORAGE_KEY = 'grajmytv:rodziniada-solo:v3';
+    const LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo:v2', 'grajmytv:rodziniada-solo'];
     const PLAYER_KEY = 'grajmytv:rodziniada-solo:player';
     const NICKNAME_KEY = 'grajmytv:rodziniada-solo:nickname';
 
@@ -65,13 +63,11 @@
         resultPoints: $('resultPoints'),
         resultAnswers: $('resultAnswers'),
         resultMisses: $('resultMisses'),
-        nicknameInput: $('nicknameInput'),
         resultShareButton: $('resultShareButton'),
         resultCloseButton: $('resultCloseButton'),
         rankingList: $('rankingList'),
         rankingBoard: document.querySelector('.ranking-board'),
-        rankingBadge: document.querySelector('.ranking-head span'),
-        rankingSummary: document.querySelector('.ranking-board p'),
+        rankingTabs: [...document.querySelectorAll('[data-ranking-scope]')],
         strikes: [$('strike1'), $('strike2'), $('strike3')]
     };
 
@@ -95,7 +91,7 @@
 
     const state = {
         questions: [],
-        calendar: { startDate: '2026-07-01', days: [] },
+        calendar: { startDate: START_CHALLENGE_KEY, days: [] },
         currentChallenge: getTodayKey(),
         challengeQuestion: null,
         started: false,
@@ -108,8 +104,64 @@
         guesses: [],
         justRevealed: null,
         resultSynced: false,
+        remoteStates: {},
+        rankingScope: 'day',
         message: ''
     };
+
+    const pageLocks = new Set();
+    let lockedScrollY = 0;
+
+    function setPageLocked(lockName, locked) {
+        if (locked) {
+            pageLocks.add(lockName);
+        } else {
+            pageLocks.delete(lockName);
+        }
+
+        if (pageLocks.size > 0 && !document.body.classList.contains('is-page-locked')) {
+            lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+            document.body.classList.add('is-page-locked');
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${lockedScrollY}px`;
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+
+        if (pageLocks.size === 0 && document.body.classList.contains('is-page-locked')) {
+            document.body.classList.remove('is-page-locked');
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            document.body.style.overflow = '';
+            window.scrollTo(0, lockedScrollY);
+        }
+    }
+
+    function openLockedDialog(dialog, lockName) {
+        if (!dialog) return;
+        if (typeof dialog.showModal === 'function') {
+            dialog.showModal();
+        } else {
+            dialog.setAttribute('open', '');
+        }
+        setPageLocked(lockName, true);
+    }
+
+    function closeLockedDialog(dialog, lockName) {
+        if (!dialog) return;
+        if (typeof dialog.close === 'function') {
+            dialog.close();
+        } else {
+            dialog.removeAttribute('open');
+        }
+        setPageLocked(lockName, false);
+    }
 
     function getTodayKey(date = new Date()) {
         const parts = new Intl.DateTimeFormat('pl-PL', {
@@ -148,12 +200,8 @@
         return dateFromKey(key) < START_CHALLENGE;
     }
 
-    function isJulyChallenge(key) {
-        const date = dateFromKey(key);
-        return date.getFullYear() === JULY_CHALLENGE_YEAR
-            && date.getMonth() === JULY_CHALLENGE_MONTH
-            && date.getDate() >= 1
-            && date.getDate() <= JULY_CHALLENGE_DAYS;
+    function challengeOffsetFromStart(startDate, key) {
+        return Math.floor((dateFromKey(key) - dateFromKey(startDate)) / 86400000);
     }
 
     function readStore() {
@@ -199,23 +247,109 @@
         if (authNickname.length >= 2) return authNickname;
 
         const savedNickname = cleanNickname(localStorage.getItem(NICKNAME_KEY));
-        const typedNickname = cleanNickname(els.nicknameInput?.value);
-        const nickname = typedNickname.length >= 2
-            ? typedNickname
-            : savedNickname.length >= 2
-                ? savedNickname
-                : 'Gracz';
+        const nickname = savedNickname.length >= 2 ? savedNickname : 'Gracz';
 
         localStorage.setItem(NICKNAME_KEY, nickname);
         return nickname;
     }
 
     function getStoredResult(key) {
+        const remoteState = state.remoteStates[key];
+        if (remoteState?.status === 'completed') return remoteState;
+
         return readStore().results[key] || null;
     }
 
     function getStoredProgress(key) {
+        const remoteState = state.remoteStates[key];
+        if (remoteState?.status === 'progress') return remoteState;
+
         return readStore().progress[key] || null;
+    }
+
+    async function getAuthToken() {
+        const authState = window.GrajMyTVAuth?.getState?.();
+        if (!authState?.enabled || !authState.isLoggedIn) return null;
+
+        return window.GrajMyTVAuth?.getAccessToken?.() || null;
+    }
+
+    async function loadRemoteState(key) {
+        const token = await getAuthToken();
+        if (!token) return null;
+
+        try {
+            const response = await fetch(`/rodziniada/api/solo-state?challengeKey=${encodeURIComponent(key)}`, {
+                cache: 'no-store',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (!response.ok) return null;
+
+            const data = await response.json();
+            state.remoteStates[key] = data.state || null;
+            return data.state || null;
+        } catch {
+            return null;
+        }
+    }
+
+    async function loadRemoteStates() {
+        const token = await getAuthToken();
+        if (!token) return {};
+
+        try {
+            const response = await fetch('/rodziniada/api/solo-state', {
+                cache: 'no-store',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (!response.ok) return {};
+
+            const data = await response.json();
+            state.remoteStates = data.states && typeof data.states === 'object' ? data.states : {};
+            return state.remoteStates;
+        } catch {
+            return {};
+        }
+    }
+
+    async function saveRemoteState(status = 'progress') {
+        const token = await getAuthToken();
+        if (!token || !state.challengeQuestion) return;
+
+        const body = {
+            challengeKey: state.currentChallenge,
+            status,
+            score: state.score,
+            maxScore: maxPossibleScore(),
+            misses: state.misses,
+            revealed: [...state.revealed],
+            guesses: state.guesses,
+            synced: Boolean(state.resultSynced),
+            completedAt: state.lastResult?.completedAt || null
+        };
+
+        try {
+            const response = await fetch('/rodziniada/api/solo-state', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(body)
+            });
+            if (!response.ok) return;
+
+            const data = await response.json();
+            if (data.state) {
+                state.remoteStates[state.currentChallenge] = data.state;
+            }
+        } catch {
+            // Lokalny postep nadal chroni rozgrywke, gdy zapis online chwilowo nie przejdzie.
+        }
     }
 
     function applyStoredState(savedState, finished = false) {
@@ -243,6 +377,7 @@
             updatedAt: new Date().toISOString()
         };
         writeStore(store);
+        saveRemoteState('progress');
     }
 
     function normalize(value) {
@@ -337,18 +472,18 @@
                 state.calendar = calendar;
             }
         } catch {
-            state.calendar = { startDate: '2026-07-01', days: [] };
+            state.calendar = { startDate: START_CHALLENGE_KEY, days: [] };
         }
     }
 
     function getQuestionForChallenge(key) {
-        if (isJulyChallenge(key)) {
-            const day = dateFromKey(key).getDate();
-            const questionId = state.calendar.days[day - 1];
+        const scheduledIndex = challengeOffsetFromStart(state.calendar.startDate || START_CHALLENGE_KEY, key);
+        if (scheduledIndex >= 0 && Array.isArray(state.calendar.days)) {
+            const questionId = state.calendar.days[scheduledIndex];
             const scheduledQuestion = questionId
                 ? state.questions.find(question => question.id === questionId)
                 : null;
-            return scheduledQuestion || state.questions[(day - 1) % state.questions.length];
+            return scheduledQuestion || state.questions[scheduledIndex % state.questions.length];
         }
 
         return seededItem(state.questions, `rodziniada-solo:${key}`);
@@ -434,45 +569,61 @@
         return element.innerHTML;
     }
 
-    function renderRanking(entries = []) {
-        if (els.rankingBadge) {
-            els.rankingBadge.textContent = 'Wszechczasów';
-        }
-        if (els.rankingSummary) {
-            const authState = window.GrajMyTVAuth?.getState?.();
-            els.rankingSummary.textContent = authState?.enabled && !authState.isLoggedIn
-                ? 'Do rankingu trafiaja tylko zalogowane konta testerow.'
-                : 'Suma punktow ze wszystkich wyzwan dnia.';
-        }
+    function rankingRow(entry, place, extraClass = '') {
+        const points = Number(entry?.score || 0);
+        const podiumClass = place === 1
+            ? ' is-podium is-gold'
+            : place === 2
+                ? ' is-podium is-silver'
+                : place === 3
+                    ? ' is-podium is-bronze'
+                    : '';
+        const emptyClass = entry ? '' : ' is-empty';
+
+        return `
+            <li class="ranking-entry${podiumClass}${emptyClass}${extraClass}">
+                <span class="ranking-player">
+                    <em>${place}</em>
+                    <b>${entry ? escapeHtml(entry.nickname) : '&nbsp;'}</b>
+                </span>
+                <strong>${entry ? `${points}<small> pkt</small>` : '&nbsp;'}</strong>
+            </li>
+        `;
+    }
+
+    function renderRanking(entries = [], viewerRank = null) {
+        els.rankingTabs.forEach(button => {
+            const active = button.dataset.rankingScope === state.rankingScope;
+            button.classList.toggle('is-active', active);
+            button.setAttribute('aria-selected', String(active));
+        });
         if (!els.rankingList) return;
 
-        if (!entries.length) {
-            els.rankingList.innerHTML = '<li><span>Brak wynikow</span><strong>---</strong></li>';
-            return;
-        }
-
-        els.rankingList.innerHTML = entries.map((entry, index) => {
-            const place = entry.place || index + 1;
-            const points = Number(entry.score || 0);
-            return `<li><span>${place}. ${escapeHtml(entry.nickname)}</span><strong>${points} pkt</strong></li>`;
-        }).join('');
+        const rows = Array.from({ length: 5 }, (_, index) => entries[index] || null);
+        const viewerRow = viewerRank ? rankingRow(viewerRank, viewerRank.place, ' is-viewer') : '';
+        els.rankingList.innerHTML = rows.map((entry, index) => rankingRow(entry, index + 1)).join('') + viewerRow;
     }
 
     async function loadRanking() {
         if (!els.rankingList) return;
 
         try {
-            const response = await fetch('/rodziniada/api/solo-ranking?limit=10', {
-                cache: 'no-store'
+            const params = new URLSearchParams({
+                limit: '5',
+                scope: state.rankingScope,
+                challengeKey: state.currentChallenge
+            });
+            const token = await getAuthToken();
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const response = await fetch(`/rodziniada/api/solo-ranking?${params.toString()}`, {
+                cache: 'no-store',
+                headers
             });
             if (!response.ok) throw new Error('ranking');
             const data = await response.json();
-            renderRanking(data.ranking || []);
+            renderRanking(data.ranking || [], data.viewerRank || null);
         } catch {
-            renderRanking([]);
-            if (els.rankingSummary) {
-                els.rankingSummary.textContent = 'Ranking jest chwilowo niedostepny.';
-            }
+            renderRanking([], null);
         }
     }
 
@@ -484,9 +635,6 @@
             const authState = window.GrajMyTVAuth?.getState?.();
             const accessToken = await window.GrajMyTVAuth?.getAccessToken?.();
             if (!authState?.enabled || !authState.isLoggedIn || !accessToken) {
-                if (els.rankingSummary) {
-                    els.rankingSummary.textContent = 'Do rankingu trafiaja tylko zalogowane konta testerow.';
-                }
                 return;
             }
 
@@ -503,17 +651,19 @@
                     nickname: getNickname(),
                     challengeKey: state.currentChallenge,
                     misses: state.misses,
-                    revealed: [...state.revealed]
+                    revealed: [...state.revealed],
+                    guesses: state.guesses
                 })
             });
 
             if (!response.ok) throw new Error('result');
-            const data = await response.json();
-            renderRanking(data.ranking || []);
+            await response.json();
             state.resultSynced = true;
             if (state.lastResult) {
                 state.lastResult.synced = true;
             }
+            await saveRemoteState('completed');
+            await loadRanking();
         } catch {
             await loadRanking();
         }
@@ -633,6 +783,7 @@
         writeStore(store);
         renderGame();
         showResult();
+        saveRemoteState('completed');
         submitResultToServer();
         state.justRevealed = null;
     }
@@ -647,12 +798,7 @@
         els.resultPoints.textContent = `${state.score}/${maxScore}`;
         els.resultAnswers.textContent = `${state.revealed.size}/${ANSWERS_COUNT}`;
         els.resultMisses.textContent = `${state.misses}/${MAX_MISSES}`;
-        if (els.nicknameInput) {
-            els.nicknameInput.value = getNickname() === 'Gracz' ? '' : getNickname();
-        }
-        if (typeof els.resultDialog.showModal === 'function') {
-            els.resultDialog.showModal();
-        }
+        openLockedDialog(els.resultDialog, 'result-dialog');
     }
 
     function startChallenge() {
@@ -698,18 +844,20 @@
 
         els.calendarGrid.innerHTML = cells.join('');
         els.calendarGrid.querySelectorAll('[data-challenge]').forEach(button => {
-            button.addEventListener('click', () => {
+            button.addEventListener('click', async () => {
+                await loadRemoteState(button.dataset.challenge);
                 resetRunForChallenge(button.dataset.challenge);
                 startChallenge();
                 renderGame();
-                els.calendarDialog.close();
+                closeLockedDialog(els.calendarDialog, 'calendar-dialog');
             });
         });
     }
 
-    function goToChallenge(offset) {
+    async function goToChallenge(offset) {
         const nextKey = getTodayKey(addDays(dateFromKey(state.currentChallenge), offset));
         if (!canOpenChallenge(nextKey)) return;
+        await loadRemoteState(nextKey);
         resetRunForChallenge(nextKey);
         startChallenge();
         renderGame();
@@ -743,17 +891,36 @@
     }
 
     async function init() {
-        if (window.GrajMyTVAuth) {
-            await window.GrajMyTVAuth.init().catch(() => null);
-            window.GrajMyTVAuth.onChange(() => {
+        if (!window.GrajMyTVAuth) {
+            window.location.replace('/?login=required');
+            return;
+        }
+
+        const authState = await window.GrajMyTVAuth.init().catch(() => null);
+        if (!authState?.enabled || !authState.isLoggedIn) {
+            window.location.replace('/?login=required');
+            return;
+        }
+
+        document.body.classList.remove('auth-pending');
+        window.GrajMyTVAuth.onChange(async nextAuthState => {
+                if (!nextAuthState.isLoggedIn) {
+                    window.location.replace('/?login=required');
+                    return;
+                }
+                if (!state.questions.length) return;
                 renderRanking([]);
+                await loadRemoteStates();
+                resetRunForChallenge(state.currentChallenge);
+                startChallenge();
+                renderGame();
                 if (state.finished && !state.resultSynced) {
                     submitResultToServer();
                 }
             });
-        }
 
         await loadQuestions();
+        await loadRemoteStates();
         resetRunForChallenge(getTodayKey());
         startChallenge();
 
@@ -762,9 +929,17 @@
         els.nextChallenge.addEventListener('click', () => goToChallenge(1));
         els.calendarButton.addEventListener('click', () => {
             renderCalendar();
-            els.calendarDialog.showModal();
+            openLockedDialog(els.calendarDialog, 'calendar-dialog');
         });
-        els.calendarCloseButton.addEventListener('click', () => els.calendarDialog.close());
+        els.calendarCloseButton.addEventListener('click', () => closeLockedDialog(els.calendarDialog, 'calendar-dialog'));
+        els.calendarDialog.addEventListener('close', () => setPageLocked('calendar-dialog', false));
+        els.rankingTabs.forEach(button => {
+            button.addEventListener('click', () => {
+                state.rankingScope = button.dataset.rankingScope || 'all';
+                renderRanking([]);
+                loadRanking();
+            });
+        });
         els.answerInput.addEventListener('keydown', event => {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -778,11 +953,12 @@
         });
         els.resultCloseButton.addEventListener('click', async () => {
             await submitResultToServer();
-            els.resultDialog.close();
+            closeLockedDialog(els.resultDialog, 'result-dialog');
         });
         els.resultDialog.addEventListener('cancel', () => {
             submitResultToServer();
         });
+        els.resultDialog.addEventListener('close', () => setPageLocked('result-dialog', false));
     }
 
     init().catch(() => {

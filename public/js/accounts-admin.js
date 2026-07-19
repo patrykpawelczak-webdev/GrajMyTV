@@ -123,6 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>${escapeHtml(account.role)}</span>
                     <span>${account.confirmed ? 'Potwierdzone' : 'Niepotwierdzone'}</span>
                     <span>Ostatnio: ${formatDate(account.lastSignInAt)}</span>
+                    <span class="account-secret">
+                        Hasło:
+                        ${account.password
+                            ? `<code data-secret="${encodeURIComponent(account.password)}">••••••</code><button type="button" data-reveal-secret>Pokaż</button>`
+                            : '<code>brak podglądu</code>'}
+                    </span>
                 </div>
                 <div class="account-actions">
                     <button type="button" class="account-password" data-password="${account.id}" data-name="${escapeHtml(account.nickname)}">Hasło</button>
@@ -133,6 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         els.list.querySelectorAll('[data-password]').forEach(button => {
             button.addEventListener('click', () => changeAccountPassword(button.dataset.password, button.dataset.name));
+        });
+
+        els.list.querySelectorAll('[data-reveal-secret]').forEach(button => {
+            button.addEventListener('click', () => togglePasswordPreview(button));
         });
 
         els.list.querySelectorAll('[data-delete]').forEach(button => {
@@ -177,6 +187,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             setMessage(error.message, 'error');
         }
+    }
+
+    function togglePasswordPreview(button) {
+        const secret = button.previousElementSibling;
+        if (!secret?.dataset.secret) return;
+
+        const visible = button.dataset.visible === 'true';
+        button.dataset.visible = String(!visible);
+        secret.textContent = visible ? '••••••' : decodeURIComponent(secret.dataset.secret);
+        button.textContent = visible ? 'Pokaż' : 'Ukryj';
     }
 
     els.pinForm?.addEventListener('submit', async event => {

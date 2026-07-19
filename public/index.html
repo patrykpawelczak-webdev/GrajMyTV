@@ -34,7 +34,7 @@
 
             <!-- Menu Nawigacyjne -->
             <nav class="nav-menu" id="navMenu" aria-label="Nawigacja główna">
-                <a href="#home" class="nav-link active">Strona główna</a>
+                <a href="/" class="nav-link active">Strona główna</a>
                 <a href="#gry" class="nav-link">Teleturnieje</a>
                 <a href="#jak-dziala" class="nav-link">Jak to działa</a>
                 <a href="#korzysci" class="nav-link">O platformie</a>
@@ -83,9 +83,14 @@
             </label>
             <label>
                 <span>Hasło</span>
-                <input type="password" id="loginPassword" autocomplete="current-password" required>
+                <span class="password-field">
+                    <input type="password" id="loginPassword" autocomplete="current-password" required>
+                    <button type="button" class="password-toggle" id="toggleLoginPassword" aria-label="Pokaż hasło" aria-pressed="false">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </span>
             </label>
-            <p class="login-message" id="loginMessage" aria-live="polite"></p>
+            <p class="login-message" id="loginMessage" role="alert" aria-live="polite"></p>
             <button class="btn btn-primary btn-full" type="submit">Zaloguj się</button>
         </form>
     </dialog>
@@ -104,8 +109,8 @@
                         <span class="daily-challenge-copy">
                             <span class="daily-challenge-kicker">Dzisiejsze wyzwanie</span>
                             <strong>Rodziniada - codzienne wyzwanie</strong>
-                            <span class="daily-challenge-question">6 odpowiedzi · 3 błędy · ranking dnia</span>
-                            <span class="daily-challenge-note">Rozegraj wyzwanie <span data-daily-challenge-number>#...</span> →</span>
+                            <span class="daily-challenge-question">6 odpowiedzi · 3 błędy · ranking</span>
+                            <span class="daily-challenge-note">Rozegraj wyzwanie <span data-daily-challenge-number>#1</span> →</span>
                         </span>
                     </a>
                 </div>

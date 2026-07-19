@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const RODZINIADA_SOLO_STORAGE_KEY = 'grajmytv:rodziniada-solo:v2';
-    const RODZINIADA_SOLO_LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo'];
+    const RODZINIADA_SOLO_STORAGE_KEY = 'grajmytv:rodziniada-solo:v3';
+    const RODZINIADA_SOLO_LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo:v2', 'grajmytv:rodziniada-solo'];
+
+    function redirectHashRoute() {
+        const hash = window.location.hash || '';
+        if (hash === '#/konta' || hash.endsWith('/konta')) {
+            window.location.replace('/konta');
+        }
+    }
+
+    redirectHashRoute();
 
     function clearRodziniadaSoloProgressFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -38,6 +47,40 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
 
+    const pageLocks = new Set();
+    let lockedScrollY = 0;
+
+    function setPageLocked(lockName, locked) {
+        if (locked) {
+            pageLocks.add(lockName);
+        } else {
+            pageLocks.delete(lockName);
+        }
+
+        if (pageLocks.size > 0 && !document.body.classList.contains('is-page-locked')) {
+            lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+            document.body.classList.add('is-page-locked');
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${lockedScrollY}px`;
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+
+        if (pageLocks.size === 0 && document.body.classList.contains('is-page-locked')) {
+            document.body.classList.remove('is-page-locked');
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            document.body.style.overflow = '';
+            window.scrollTo(0, lockedScrollY);
+        }
+    }
+
     // ==========================================
     // LOGOWANIE TESTEROW
     // ==========================================
@@ -57,6 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginPassword = document.getElementById('loginPassword');
     const loginMessage = document.getElementById('loginMessage');
     const loginCloseButton = document.getElementById('loginCloseButton');
+    const toggleLoginPassword = document.getElementById('toggleLoginPassword');
+    let loginRedirectToSolo = false;
 
     function openLoginDialog() {
         if (!loginDialog) return;
@@ -65,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             loginDialog.setAttribute('open', '');
         }
+        setPageLocked('login-dialog', true);
         loginUsername?.focus();
     }
 
@@ -75,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             loginDialog.removeAttribute('open');
         }
+        setPageLocked('login-dialog', false);
     }
 
     function renderAuth(state = {}) {
@@ -98,6 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!state.enabled && mobileAuthWidget) {
                 mobileAuthWidget.hidden = true;
             }
+            if (new URLSearchParams(window.location.search).get('login') === 'required' && !state.isLoggedIn) {
+                loginRedirectToSolo = true;
+                if (loginMessage) loginMessage.textContent = 'Zaloguj się, aby uruchomić Rodziniadę.';
+                openLoginDialog();
+            }
         }).catch(() => {
             if (authWidget) authWidget.hidden = true;
             if (mobileAuthWidget) mobileAuthWidget.hidden = true;
@@ -110,9 +162,21 @@ document.addEventListener('DOMContentLoaded', () => {
         openLoginDialog();
     });
     loginCloseButton?.addEventListener('click', closeLoginDialog);
+    toggleLoginPassword?.addEventListener('click', () => {
+        if (!loginPassword) return;
+        const isPassword = loginPassword.type === 'password';
+        loginPassword.type = isPassword ? 'text' : 'password';
+        toggleLoginPassword.setAttribute('aria-pressed', String(isPassword));
+        toggleLoginPassword.setAttribute('aria-label', isPassword ? 'Ukryj hasło' : 'Pokaż hasło');
+        toggleLoginPassword.innerHTML = `<i data-lucide="${isPassword ? 'eye-off' : 'eye'}"></i>`;
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
     loginDialog?.addEventListener('click', event => {
         if (event.target === loginDialog) closeLoginDialog();
     });
+    loginDialog?.addEventListener('close', () => setPageLocked('login-dialog', false));
     logoutButton?.addEventListener('click', async () => {
         await window.GrajMyTVAuth?.signOut();
     });
@@ -143,9 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (submitButton) submitButton.disabled = true;
 
         try {
+            if (loginMessage) loginMessage.textContent = 'Logowanie...';
             await window.GrajMyTVAuth.signIn(username, password);
             loginPassword.value = '';
+            if (loginMessage) loginMessage.textContent = '';
             closeLoginDialog();
+            if (loginRedirectToSolo) {
+                window.location.href = resolveAppUrl('/rodziniada/solo');
+            }
         } catch (error) {
             if (loginMessage) {
                 loginMessage.textContent = error.message || 'Nieprawidlowa nazwa uzytkownika lub haslo.';
@@ -173,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileBackdrop.classList.add('active');
         hamburgerIcon.classList.add('hidden');
         closeIcon.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        setPageLocked('mobile-menu', true);
         hamburgerBtn.setAttribute('aria-expanded', 'true');
     }
 
@@ -182,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileBackdrop.classList.remove('active');
         hamburgerIcon.classList.remove('hidden');
         closeIcon.classList.add('hidden');
-        document.body.style.overflow = '';
+        setPageLocked('mobile-menu', false);
         hamburgerBtn.setAttribute('aria-expanded', 'false');
     }
 
@@ -284,8 +353,24 @@ document.addEventListener('DOMContentLoaded', () => {
         link.href = resolveAppUrl(link.getAttribute('href'));
     });
 
+    function openSoloOrLogin(event) {
+        const authState = window.GrajMyTVAuth?.getState?.();
+        if (authState?.enabled && authState.isLoggedIn) return true;
+
+        event?.preventDefault();
+        loginRedirectToSolo = true;
+        if (loginMessage) loginMessage.textContent = 'Zaloguj się, aby uruchomić Rodziniadę.';
+        openLoginDialog();
+        return false;
+    }
+
+    document.querySelectorAll('a[href$="/rodziniada/solo"]').forEach(link => {
+        link.addEventListener('click', openSoloOrLogin);
+    });
+
     document.querySelectorAll('[data-card-href]').forEach(card => {
         const openCard = () => {
+            if (card.dataset.cardHref === '/rodziniada/solo' && !openSoloOrLogin()) return;
             window.location.href = resolveAppUrl(card.dataset.cardHref);
         };
 
@@ -308,6 +393,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dailyChallengeLink = document.querySelector('.daily-challenge-link');
     const dailyChallengeCopy = document.querySelector('.daily-challenge-copy');
     const challengeNumberEls = document.querySelectorAll('[data-daily-challenge-number]');
+    const dailyChallengeDefaultHtml = dailyChallengeCopy?.innerHTML || '';
+    const dailyChallengeDefaultLabel = dailyChallengeLink?.getAttribute('aria-label') || '';
+    let currentDailyChallengeNumber = 1;
 
     function dateFromKey(key) {
         const [year, month, day] = key.split('-').map(Number);
@@ -322,38 +410,61 @@ document.addEventListener('DOMContentLoaded', () => {
         ].join('-');
     }
 
-    function resolveChallengeNumber(startDate = '2026-07-01') {
+    function resolveChallengeNumber(startDate = '2026-07-19') {
         const diff = Math.floor((dateFromKey(getTodayKey()) - dateFromKey(startDate)) / 86400000) + 1;
         return Math.max(1, diff);
     }
 
     function setDailyChallengeNumber(number) {
+        currentDailyChallengeNumber = number;
         challengeNumberEls.forEach(el => {
             el.textContent = `#${number}`;
         });
     }
 
-    function getRodziniadaSoloStore() {
-        try {
-            return JSON.parse(localStorage.getItem(RODZINIADA_SOLO_STORAGE_KEY) || '{}');
-        } catch {
-            return {};
+    function renderCompletedDailyChallenge(completed = false) {
+        if (!dailyChallengeLink || !dailyChallengeCopy) return;
+
+        dailyChallengeLink.classList.toggle('is-completed', completed);
+        if (!completed) {
+            dailyChallengeLink.setAttribute('aria-label', dailyChallengeDefaultLabel);
+            dailyChallengeCopy.innerHTML = dailyChallengeDefaultHtml;
+            setDailyChallengeNumber(currentDailyChallengeNumber);
+            return;
         }
-    }
 
-    function isTodayChallengeCompleted() {
-        return false;
-    }
-
-    function renderCompletedDailyChallenge() {
-        if (!dailyChallengeLink || !dailyChallengeCopy || !isTodayChallengeCompleted()) return;
-
-        dailyChallengeLink.classList.add('is-completed');
         dailyChallengeLink.setAttribute('aria-label', 'Dzisiejsze wyzwanie Rodziniady jest wykonane');
         dailyChallengeCopy.innerHTML = `
             <span class="daily-challenge-completed-title">Wyzwanie wykonane</span>
             <span class="daily-challenge-completed-subtitle">Wróć jutro po więcej</span>
         `;
+    }
+
+    async function refreshDailyChallengeCompletion() {
+        const authState = window.GrajMyTVAuth?.getState?.();
+        const token = await window.GrajMyTVAuth?.getAccessToken?.();
+        if (!authState?.enabled || !authState.isLoggedIn || !token) {
+            renderCompletedDailyChallenge(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(resolveAppUrl(`/rodziniada/api/solo-state?challengeKey=${getTodayKey()}`), {
+                cache: 'no-store',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (!response.ok) {
+                renderCompletedDailyChallenge(false);
+                return;
+            }
+
+            const data = await response.json();
+            renderCompletedDailyChallenge(data.state?.status === 'completed');
+        } catch {
+            renderCompletedDailyChallenge(false);
+        }
     }
 
     async function loadDailyChallengeNumber() {
@@ -373,8 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadDailyChallengeNumber();
-    renderCompletedDailyChallenge();
-    window.addEventListener('pageshow', renderCompletedDailyChallenge);
+    refreshDailyChallengeCompletion();
+    window.GrajMyTVAuth?.onChange?.(() => refreshDailyChallengeCompletion());
+    window.addEventListener('pageshow', () => refreshDailyChallengeCompletion());
 
     // ==========================================
     // ANIMACJA PRZY PRZEWIJANIU (SCROLL REVEAL)

@@ -21,7 +21,7 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 const EDITOR_PIN = process.env.EDITOR_PIN || '2509';
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
-const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || '';
 const SUPABASE_RESULTS_TABLE = process.env.SUPABASE_RESULTS_TABLE || 'rodziniada_solo_results';
 
 // ===== KOLORY TERMINALA =====
@@ -145,11 +145,15 @@ function generatedAccountEmail(domain = 'grajmytv.pl') {
 }
 
 function publicAccount(user, profile = {}) {
+    const metadata = user.user_metadata || {};
+    const testerPassword = metadata.grajmytv?.testerPassword || metadata.testerPassword || null;
+
     return {
         id: user.id,
         email: user.email,
         nickname: profile.nickname || user.user_metadata?.nickname || String(user.email || '').split('@')[0],
         role: profile.role || user.user_metadata?.role || 'tester',
+        password: testerPassword,
         confirmed: Boolean(user.email_confirmed_at || user.confirmed_at),
         lastSignInAt: user.last_sign_in_at || null,
         createdAt: user.created_at || null
@@ -166,7 +170,10 @@ async function createSupabaseAccount(input, email = input.email) {
             email_confirm: true,
             user_metadata: {
                 nickname: input.nickname,
-                role: input.role
+                role: input.role,
+                grajmytv: {
+                    testerPassword: input.password
+                }
             }
         })
     });
@@ -448,10 +455,23 @@ app.post('/api/accounts/password', async (req, res) => {
     }
 
     try {
+        const userData = await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`);
+        const account = userData.user || userData.data?.user || userData;
+        const metadata = account.user_metadata || {};
+
         await supabaseAuthAdminRequest(`admin/users/${encodeURIComponent(userId)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password })
+            body: JSON.stringify({
+                password,
+                user_metadata: {
+                    ...metadata,
+                    grajmytv: {
+                        ...(metadata.grajmytv || {}),
+                        testerPassword: password
+                    }
+                }
+            })
         });
 
         res.json({ ok: true });

@@ -5,7 +5,8 @@
 Na tym etapie Supabase trzyma:
 
 - wyniki dzienne Rodziniady,
-- ranking dnia,
+- ranking wszechczasow Rodziniady,
+- status rozpoczętych i ukończonych wyzwań zalogowanych graczy,
 - recznie utworzone konta testowe w Supabase Auth.
 
 Nie wlaczamy jeszcze publicznej rejestracji na stronie.
@@ -66,9 +67,13 @@ Z poziomu panelu mozna:
 - zobaczyc konta z Supabase Auth,
 - dodac konto testera z potwierdzonym e-mailem,
 - zapisac nick i role w tabeli `profiles`,
+- podejrzec haslo kont utworzonych albo resetowanych przez panel,
+- ustawic nowe haslo dla istniejacego konta,
 - usunac konto oraz jego wyniki z rankingu Rodziniady.
 
 Logowanie na stronie glownej odbywa sie nazwa uzytkownika, czyli polem `nickname` z tabeli `profiles`, oraz haslem ustawionym przy tworzeniu konta.
+
+Supabase nie pozwala odczytac starego hasla konta. Podglad hasla dziala dla haseł zapisanych przez panel GrajMyTV: przy tworzeniu konta lub po uzyciu opcji zmiany hasla.
 
 ## Fallback lokalny
 

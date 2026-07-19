@@ -38,7 +38,7 @@
     const state = {
         pin: '',
         data: { categories: [] },
-        calendar: { startDate: '2026-07-01', days: [] },
+        calendar: { startDate: '2026-07-19', days: [] },
         selectedDay: 1,
         activeCategoryId: null,
         activeQuestionId: null,
