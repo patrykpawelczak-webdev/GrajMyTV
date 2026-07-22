@@ -591,17 +591,10 @@
 
     function rankingRow(entry, place, extraClass = '') {
         const points = Number(entry?.score || 0);
-        const podiumClass = place === 1
-            ? ' is-podium is-gold'
-            : place === 2
-                ? ' is-podium is-silver'
-                : place === 3
-                    ? ' is-podium is-bronze'
-                    : '';
         const emptyClass = entry ? '' : ' is-empty';
 
         return `
-            <li class="ranking-entry${podiumClass}${emptyClass}${extraClass}" data-ranking-place="${place}">
+            <li class="ranking-entry${emptyClass}${extraClass}" data-ranking-place="${place}">
                 <span class="ranking-player">
                     <em>${place}</em>
                     <b>${entry ? escapeHtml(entry.nickname) : '&nbsp;'}</b>
@@ -623,18 +616,21 @@
         const previousOffset = Number(viewerRow.dataset.viewerOffset || 0);
         const naturalTop = rowRect.top - previousOffset;
         const naturalBottom = rowRect.bottom - previousOffset;
+        const edgeGap = Math.max(6, Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5);
         let offset = 0;
 
-        if (naturalTop < listRect.top) {
-            offset = listRect.top - naturalTop;
-        } else if (naturalBottom > listRect.bottom) {
-            offset = listRect.bottom - naturalBottom;
+        if (naturalTop < listRect.top + edgeGap) {
+            offset = listRect.top + edgeGap - naturalTop;
+        } else if (naturalBottom > listRect.bottom - edgeGap) {
+            offset = listRect.bottom - edgeGap - naturalBottom;
         }
 
         const nextOffset = Number(offset.toFixed(2));
         viewerRow.dataset.viewerOffset = String(nextOffset);
         viewerRow.style.setProperty('--viewer-row-offset', `${nextOffset}px`);
         viewerRow.classList.toggle('is-viewer-floating', Math.abs(nextOffset) > 0.1);
+        viewerRow.classList.toggle('is-viewer-floating-top', nextOffset > 0.1);
+        viewerRow.classList.toggle('is-viewer-floating-bottom', nextOffset < -0.1);
     }
 
     function requestViewerRankingPositionUpdate() {

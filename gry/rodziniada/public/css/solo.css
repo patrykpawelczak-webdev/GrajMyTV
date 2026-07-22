@@ -128,10 +128,11 @@ button {
   z-index: 1;
   width: 100%;
   min-height: 100vh;
+  min-height: 100svh;
   margin: 0 auto;
   padding: clamp(0.75rem, 1.8vw, 1.375rem) clamp(0.75rem, 2.2vw, 1.75rem) clamp(0.875rem, 2vw, 1.5rem);
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: clamp(0.625rem, 1.2vw, 0.875rem);
 }
 
@@ -663,28 +664,6 @@ button {
   font-weight: 800;
 }
 
-.ranking-board li.is-podium {
-  border-color: rgba(var(--podium-color, var(--led-rgb)), 0.36);
-  background:
-    linear-gradient(90deg, rgba(var(--podium-color, var(--led-rgb)), 0.16), rgba(var(--podium-color, var(--led-rgb)), 0.035)),
-    var(--board-row);
-  box-shadow:
-    inset 0 0 0 1px rgba(var(--white-rgb), 0.025),
-    0 0 0.95rem rgba(var(--podium-color, var(--led-rgb)), 0.07);
-}
-
-.ranking-board li.is-gold {
-  --podium-color: 255, 212, 74;
-}
-
-.ranking-board li.is-silver {
-  --podium-color: 203, 213, 225;
-}
-
-.ranking-board li.is-bronze {
-  --podium-color: 205, 127, 50;
-}
-
 .ranking-board li.is-empty {
   border-color: rgba(var(--led-rgb), 0.1);
   background:
@@ -692,13 +671,6 @@ button {
     rgba(var(--ink-rgb), 0.1);
   box-shadow: none;
   opacity: 0.58;
-}
-
-.ranking-board li.is-podium.is-empty {
-  border-color: rgba(var(--podium-color), 0.18);
-  background:
-    linear-gradient(90deg, rgba(var(--podium-color), 0.07), transparent),
-    rgba(var(--ink-rgb), 0.1);
 }
 
 .ranking-board li.is-viewer {
@@ -715,6 +687,7 @@ button {
   position: relative;
   z-index: 3;
   transform: translateY(var(--viewer-row-offset, 0));
+  isolation: isolate;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -726,7 +699,46 @@ button {
 }
 
 .ranking-board li.is-viewer-source.is-viewer-floating {
-  z-index: 4;
+  z-index: 8;
+  border-color: rgba(var(--led-rgb), 0.56);
+  background:
+    linear-gradient(90deg, rgba(var(--led-rgb), 0.22), rgba(var(--led-rgb), 0.08)),
+    linear-gradient(180deg, rgba(var(--white-rgb), 0.055), transparent),
+    var(--board-row);
+}
+
+.ranking-board li.is-viewer-source.is-viewer-floating::after {
+  content: "";
+  position: absolute;
+  left: -0.08rem;
+  right: -0.08rem;
+  height: 0.9rem;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ranking-board li.is-viewer-source.is-viewer-floating-top {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--white-rgb), 0.035),
+    0 0.72rem 1rem rgba(var(--ink-rgb), 0.5),
+    0 0 1.1rem rgba(var(--led-rgb), 0.16);
+}
+
+.ranking-board li.is-viewer-source.is-viewer-floating-top::after {
+  bottom: -0.72rem;
+  background: linear-gradient(180deg, rgba(var(--ink-rgb), 0.54), transparent);
+}
+
+.ranking-board li.is-viewer-source.is-viewer-floating-bottom {
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--white-rgb), 0.035),
+    0 -0.72rem 1rem rgba(var(--ink-rgb), 0.5),
+    0 0 1.1rem rgba(var(--led-rgb), 0.16);
+}
+
+.ranking-board li.is-viewer-source.is-viewer-floating-bottom::after {
+  top: -0.72rem;
+  background: linear-gradient(0deg, rgba(var(--ink-rgb), 0.54), transparent);
 }
 
 .ranking-board.is-disabled li {
@@ -759,14 +771,6 @@ button {
   font-weight: 900;
 }
 
-.ranking-board li.is-podium .ranking-player em {
-  border-color: rgba(var(--podium-color), 0.48);
-  color: rgb(var(--podium-color));
-  background:
-    radial-gradient(circle at 45% 35%, rgba(var(--podium-color), 0.26), rgba(var(--podium-color), 0.08));
-  box-shadow: 0 0 0.75rem rgba(var(--podium-color), 0.14);
-}
-
 .ranking-player b {
   min-width: 0;
   overflow: hidden;
@@ -774,11 +778,6 @@ button {
   font-size: 0.95rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.ranking-board li.is-podium .ranking-player b,
-.ranking-board li.is-podium strong {
-  color: rgb(var(--podium-color));
 }
 
 .ranking-board strong {
@@ -888,7 +887,7 @@ button {
 
 .solo-footer {
   width: min(75rem, 100%);
-  margin: 0 auto;
+  margin: auto auto 0;
   padding: 2rem 1.5rem 0;
   border-top: 1px solid rgba(var(--led-rgb), 0.16);
   color: var(--muted);
@@ -1380,7 +1379,7 @@ button {
   }
 
   .solo-footer {
-    margin-top: 0;
+    margin-top: auto;
     padding: 2rem 1.5rem 0;
   }
 

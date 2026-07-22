@@ -577,7 +577,7 @@ async function getRankingEntries(limit, scope = 'day', challengeKey = todayKey()
         const viewerIndex = viewerUserId
             ? fullRanking.findIndex(entry => entry.userId === viewerUserId)
             : -1;
-        const viewerEntry = viewerIndex >= 5
+        const viewerEntry = viewerIndex >= 0
             ? fullRanking[viewerIndex]
             : null;
 
