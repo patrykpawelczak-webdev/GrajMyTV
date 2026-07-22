@@ -647,15 +647,17 @@
         if (!els.rankingList) return;
 
         const rows = entries.length ? entries : [null];
-        const viewerPlace = viewerRank?.place || 0;
-        const viewerUserId = viewerRank?.userId || '';
+        const authUserId = window.GrajMyTVAuth?.getState?.().user?.id;
+        const viewerUserId = String(authUserId || viewerRank?.userId || '').trim();
         els.rankingList.innerHTML = rows.map((entry, index) => {
             const place = Number(entry?.place || index + 1);
-            const viewerClass = entry && viewerUserId && entry.userId === viewerUserId && viewerPlace === place
+            const entryUserId = String(entry?.userId || '').trim();
+            const viewerClass = entry && viewerUserId && entryUserId === viewerUserId
                 ? ' is-viewer is-viewer-source'
                 : '';
             return rankingRow(entry, place, viewerClass);
         }).join('');
+        els.rankingList.scrollTop = 0;
         requestViewerRankingPositionUpdate();
     }
 
