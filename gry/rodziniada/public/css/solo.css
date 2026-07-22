@@ -621,6 +621,7 @@ button {
 }
 
 .ranking-board ol {
+  position: relative;
   flex: 1 1 auto;
   display: grid;
   gap: 0.48rem;

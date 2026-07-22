@@ -262,6 +262,10 @@
             .slice(0, 24);
     }
 
+    function comparableNickname(value) {
+        return cleanNickname(value).toLocaleLowerCase('pl-PL');
+    }
+
     function getNickname() {
         const authNickname = cleanNickname(window.GrajMyTVAuth?.getState?.().nickname);
         if (authNickname.length >= 2) return authNickname;
@@ -611,22 +615,23 @@
         const viewerRow = els.rankingList.querySelector('.is-viewer-source');
         if (!viewerRow) return;
 
-        const listRect = els.rankingList.getBoundingClientRect();
-        const rowRect = viewerRow.getBoundingClientRect();
-        const previousOffset = Number(viewerRow.dataset.viewerOffset || 0);
-        const naturalTop = rowRect.top - previousOffset;
-        const naturalBottom = rowRect.bottom - previousOffset;
+        const rowTop = viewerRow.offsetParent === els.rankingList
+            ? viewerRow.offsetTop
+            : viewerRow.offsetTop - els.rankingList.offsetTop;
+        const naturalTop = rowTop - els.rankingList.scrollTop;
+        const naturalBottom = naturalTop + viewerRow.offsetHeight;
+        const listTop = 0;
+        const listBottom = els.rankingList.clientHeight;
         const edgeGap = Math.max(6, Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5);
         let offset = 0;
 
-        if (naturalTop < listRect.top + edgeGap) {
-            offset = listRect.top + edgeGap - naturalTop;
-        } else if (naturalBottom > listRect.bottom - edgeGap) {
-            offset = listRect.bottom - edgeGap - naturalBottom;
+        if (naturalTop < listTop) {
+            offset = listTop + edgeGap - naturalTop;
+        } else if (naturalBottom > listBottom) {
+            offset = listBottom - edgeGap - naturalBottom;
         }
 
         const nextOffset = Number(offset.toFixed(2));
-        viewerRow.dataset.viewerOffset = String(nextOffset);
         viewerRow.style.setProperty('--viewer-row-offset', `${nextOffset}px`);
         viewerRow.classList.toggle('is-viewer-floating', Math.abs(nextOffset) > 0.1);
         viewerRow.classList.toggle('is-viewer-floating-top', nextOffset > 0.1);
@@ -647,17 +652,31 @@
         if (!els.rankingList) return;
 
         const rows = entries.length ? entries : [null];
-        const authUserId = window.GrajMyTVAuth?.getState?.().user?.id;
+        const authState = window.GrajMyTVAuth?.getState?.();
+        const authUserId = authState?.user?.id;
+        const authNickname = comparableNickname(authState?.nickname);
+        const viewerNickname = comparableNickname(viewerRank?.nickname);
         const viewerUserId = String(authUserId || viewerRank?.userId || '').trim();
+        let viewerIndex = -1;
+        if (viewerUserId) {
+            viewerIndex = rows.findIndex(entry => String(entry?.userId || '').trim() === viewerUserId);
+        }
+        if (viewerIndex < 0 && authNickname) {
+            viewerIndex = rows.findIndex(entry => comparableNickname(entry?.nickname) === authNickname);
+        }
+        if (viewerIndex < 0 && viewerNickname) {
+            viewerIndex = rows.findIndex(entry => comparableNickname(entry?.nickname) === viewerNickname);
+        }
+
         els.rankingList.innerHTML = rows.map((entry, index) => {
             const place = Number(entry?.place || index + 1);
-            const entryUserId = String(entry?.userId || '').trim();
-            const viewerClass = entry && viewerUserId && entryUserId === viewerUserId
+            const viewerClass = entry && index === viewerIndex
                 ? ' is-viewer is-viewer-source'
                 : '';
             return rankingRow(entry, place, viewerClass);
         }).join('');
         els.rankingList.scrollTop = 0;
+        els.rankingList.querySelector('.is-viewer-source')?.removeAttribute('data-viewer-offset');
         requestViewerRankingPositionUpdate();
     }
 
