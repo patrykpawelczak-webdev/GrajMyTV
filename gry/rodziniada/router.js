@@ -132,6 +132,7 @@ async function getSoloQuestionForDate(key) {
 function publicRankingEntry(entry, place) {
     return {
         place,
+        userId: entry.userId,
         nickname: entry.nickname,
         score: entry.score,
         maxScore: entry.maxScore,
@@ -145,6 +146,21 @@ function sortRanking(entries) {
     return entries.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return String(a.submittedAt).localeCompare(String(b.submittedAt));
+    });
+}
+
+function withCompetitionPlaces(entries) {
+    let currentPlace = 0;
+    let previousScore = null;
+
+    return entries.map((entry, index) => {
+        const score = Number(entry.score || 0);
+        if (previousScore === null || score !== previousScore) {
+            currentPlace = index + 1;
+            previousScore = score;
+        }
+
+        return { ...entry, place: currentPlace };
     });
 }
 
@@ -305,6 +321,36 @@ async function supabaseAuthAdminRequest(pathname, options = {}) {
     }
 
     return text ? JSON.parse(text) : null;
+}
+
+async function supabaseRequestPages(pathname, pageSize = 1000, maxRows = 50000) {
+    const rows = [];
+    const separator = pathname.includes('?') ? '&' : '?';
+
+    for (let offset = 0; offset < maxRows; offset += pageSize) {
+        const page = await supabaseRequest(`${pathname}${separator}limit=${pageSize}&offset=${offset}`);
+        if (!Array.isArray(page) || !page.length) break;
+
+        rows.push(...page);
+        if (page.length < pageSize) break;
+    }
+
+    return rows;
+}
+
+async function supabaseAuthUsersPages(pageSize = 1000, maxPages = 10) {
+    const users = [];
+
+    for (let page = 1; page <= maxPages; page += 1) {
+        const data = await supabaseAuthAdminRequest(`admin/users?page=${page}&per_page=${pageSize}`);
+        const pageUsers = Array.isArray(data?.users) ? data.users : [];
+        if (!pageUsers.length) break;
+
+        users.push(...pageUsers);
+        if (pageUsers.length < pageSize) break;
+    }
+
+    return users;
 }
 
 async function getAuthenticatedSupabaseUser(req) {
@@ -505,17 +551,16 @@ async function getRankingEntries(limit, scope = 'day', challengeKey = todayKey()
             'select=nickname,player_id,user_id,score,max_score,misses,revealed,submitted_at,updated_at,challenge_key',
             'user_id=not.is.null',
             `submitted_at=gte.${encodeURIComponent(RESULTS_EPOCH_ISO)}`,
-            'limit=1000'
+            'order=challenge_key.asc,user_id.asc,submitted_at.asc'
         ];
         if (range.from) filters.push(`challenge_key=gte.${encodeURIComponent(range.from)}`);
         if (range.to) filters.push(`challenge_key=lte.${encodeURIComponent(range.to)}`);
 
-        const [rows, profiles, authUsersData] = await Promise.all([
-            supabaseRequest(`${SUPABASE_RESULTS_TABLE}?${filters.join('&')}`),
-            supabaseRequest('profiles?select=id,nickname,role'),
-            supabaseAuthAdminRequest('admin/users?page=1&per_page=1000')
+        const [rows, profiles, authUsers] = await Promise.all([
+            supabaseRequestPages(`${SUPABASE_RESULTS_TABLE}?${filters.join('&')}`),
+            supabaseRequestPages('profiles?select=id,nickname,role'),
+            supabaseAuthUsersPages()
         ]);
-        const authUsers = Array.isArray(authUsersData?.users) ? authUsersData.users : [];
         const profilesFromTable = new Map((profiles || []).map(profile => [profile.id, profile]));
         const profilesById = new Map();
 
@@ -528,12 +573,12 @@ async function getRankingEntries(limit, scope = 'day', challengeKey = todayKey()
             }
         });
 
-        const fullRanking = aggregateAllTimeRanking((rows || []).map(supabaseRowToResult), profilesById);
+        const fullRanking = withCompetitionPlaces(aggregateAllTimeRanking((rows || []).map(supabaseRowToResult), profilesById));
         const viewerIndex = viewerUserId
             ? fullRanking.findIndex(entry => entry.userId === viewerUserId)
             : -1;
-        const viewerEntry = viewerIndex >= limit
-            ? { ...fullRanking[viewerIndex], place: viewerIndex + 1 }
+        const viewerEntry = viewerIndex >= 5
+            ? fullRanking[viewerIndex]
             : null;
 
         return {
@@ -772,7 +817,7 @@ router.post('/api/solo-calendar', async (req, res) => {
 router.get('/api/solo-ranking', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
-    const limit = Math.min(Math.max(Number(req.query.limit) || 5, 1), 50);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 1000, 1), 1000);
     const scope = ['day', 'week', 'month', 'all'].includes(req.query.scope) ? req.query.scope : 'day';
     const challengeKey = normalizeDateKey(req.query.challengeKey) || todayKey();
 
@@ -790,7 +835,7 @@ router.get('/api/solo-ranking', async (req, res) => {
 
         const rankingData = await getRankingEntries(limit, scope, challengeKey, viewerUserId);
         const ranking = rankingData.entries
-            .map((entry, index) => publicRankingEntry(entry, index + 1));
+            .map(entry => publicRankingEntry(entry, entry.place));
         const viewerRank = rankingData.viewerEntry
             ? publicRankingEntry(rankingData.viewerEntry, rankingData.viewerEntry.place)
             : null;
@@ -964,9 +1009,9 @@ router.post('/api/solo-results', async (req, res) => {
             completedAt: entry.submittedAt,
             updatedAt: entry.updatedAt
         }).catch(() => null);
-        const rankingData = await getRankingEntries(5, 'day', entry.challengeKey, userId);
+        const rankingData = await getRankingEntries(1000, 'day', entry.challengeKey, userId);
         const ranking = rankingData.entries
-            .map((result, index) => publicRankingEntry(result, index + 1));
+            .map(result => publicRankingEntry(result, result.place));
         const viewerRank = rankingData.viewerEntry
             ? publicRankingEntry(rankingData.viewerEntry, rankingData.viewerEntry.place)
             : null;

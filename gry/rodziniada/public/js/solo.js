@@ -47,6 +47,7 @@
         calendarButton: $('calendarButton'),
         archiveNote: $('archiveNote'),
         questionText: $('questionText'),
+        answerBoard: $('answerBoard'),
         answersBoard: $('answersBoard'),
         answerForm: $('answerForm'),
         answerInput: $('answerInput'),
@@ -111,6 +112,25 @@
 
     const pageLocks = new Set();
     let lockedScrollY = 0;
+    let rankingHeightObserver = null;
+    let rankingViewerFrame = 0;
+
+    function syncRankingHeight() {
+        if (!els.answerBoard || !els.rankingBoard) return;
+        const height = Math.ceil(els.answerBoard.getBoundingClientRect().height);
+        if (height > 0) {
+            els.rankingBoard.style.setProperty('--ranking-board-height', `${height}px`);
+        }
+    }
+
+    function observeRankingHeight() {
+        syncRankingHeight();
+        window.addEventListener('resize', syncRankingHeight);
+
+        if (typeof ResizeObserver === 'undefined' || !els.answerBoard) return;
+        rankingHeightObserver = new ResizeObserver(syncRankingHeight);
+        rankingHeightObserver.observe(els.answerBoard);
+    }
 
     function setPageLocked(lockName, locked) {
         if (locked) {
@@ -581,14 +601,45 @@
         const emptyClass = entry ? '' : ' is-empty';
 
         return `
-            <li class="ranking-entry${podiumClass}${emptyClass}${extraClass}">
+            <li class="ranking-entry${podiumClass}${emptyClass}${extraClass}" data-ranking-place="${place}">
                 <span class="ranking-player">
                     <em>${place}</em>
                     <b>${entry ? escapeHtml(entry.nickname) : '&nbsp;'}</b>
                 </span>
-                <strong>${entry ? `${points}<small> pkt</small>` : '&nbsp;'}</strong>
+                <strong title="${entry ? `${points} pkt` : ''}">${entry ? `${points.toLocaleString('pl-PL')}<small> pkt</small>` : '&nbsp;'}</strong>
             </li>
         `;
+    }
+
+    function updateViewerRankingPosition() {
+        rankingViewerFrame = 0;
+        if (!els.rankingList) return;
+
+        const viewerRow = els.rankingList.querySelector('.is-viewer-source');
+        if (!viewerRow) return;
+
+        const listRect = els.rankingList.getBoundingClientRect();
+        const rowRect = viewerRow.getBoundingClientRect();
+        const previousOffset = Number(viewerRow.dataset.viewerOffset || 0);
+        const naturalTop = rowRect.top - previousOffset;
+        const naturalBottom = rowRect.bottom - previousOffset;
+        let offset = 0;
+
+        if (naturalTop < listRect.top) {
+            offset = listRect.top - naturalTop;
+        } else if (naturalBottom > listRect.bottom) {
+            offset = listRect.bottom - naturalBottom;
+        }
+
+        const nextOffset = Number(offset.toFixed(2));
+        viewerRow.dataset.viewerOffset = String(nextOffset);
+        viewerRow.style.setProperty('--viewer-row-offset', `${nextOffset}px`);
+        viewerRow.classList.toggle('is-viewer-floating', Math.abs(nextOffset) > 0.1);
+    }
+
+    function requestViewerRankingPositionUpdate() {
+        if (rankingViewerFrame) return;
+        rankingViewerFrame = requestAnimationFrame(updateViewerRankingPosition);
     }
 
     function renderRanking(entries = [], viewerRank = null) {
@@ -599,9 +650,17 @@
         });
         if (!els.rankingList) return;
 
-        const rows = Array.from({ length: 5 }, (_, index) => entries[index] || null);
-        const viewerRow = viewerRank ? rankingRow(viewerRank, viewerRank.place, ' is-viewer') : '';
-        els.rankingList.innerHTML = rows.map((entry, index) => rankingRow(entry, index + 1)).join('') + viewerRow;
+        const rows = entries.length ? entries : [null];
+        const viewerPlace = viewerRank?.place || 0;
+        const viewerUserId = viewerRank?.userId || '';
+        els.rankingList.innerHTML = rows.map((entry, index) => {
+            const place = Number(entry?.place || index + 1);
+            const viewerClass = entry && viewerUserId && entry.userId === viewerUserId && viewerPlace === place
+                ? ' is-viewer is-viewer-source'
+                : '';
+            return rankingRow(entry, place, viewerClass);
+        }).join('');
+        requestViewerRankingPositionUpdate();
     }
 
     async function loadRanking() {
@@ -609,7 +668,7 @@
 
         try {
             const params = new URLSearchParams({
-                limit: '5',
+                limit: '1000',
                 scope: state.rankingScope,
                 challengeKey: state.currentChallenge
             });
@@ -940,6 +999,8 @@
                 loadRanking();
             });
         });
+        els.rankingList.addEventListener('scroll', requestViewerRankingPositionUpdate, { passive: true });
+        window.addEventListener('resize', requestViewerRankingPositionUpdate);
         els.answerInput.addEventListener('keydown', event => {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -959,6 +1020,7 @@
             submitResultToServer();
         });
         els.resultDialog.addEventListener('close', () => setPageLocked('result-dialog', false));
+        observeRankingHeight();
     }
 
     init().catch(() => {

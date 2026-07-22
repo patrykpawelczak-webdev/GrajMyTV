@@ -392,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const dailyChallengeLink = document.querySelector('.daily-challenge-link');
     const dailyChallengeCopy = document.querySelector('.daily-challenge-copy');
-    const challengeNumberEls = document.querySelectorAll('[data-daily-challenge-number]');
     const dailyChallengeDefaultHtml = dailyChallengeCopy?.innerHTML || '';
     const dailyChallengeDefaultLabel = dailyChallengeLink?.getAttribute('aria-label') || '';
     let currentDailyChallengeNumber = 1;
@@ -417,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setDailyChallengeNumber(number) {
         currentDailyChallengeNumber = number;
-        challengeNumberEls.forEach(el => {
+        document.querySelectorAll('[data-daily-challenge-number]').forEach(el => {
             el.textContent = `#${number}`;
         });
     }
@@ -468,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadDailyChallengeNumber() {
-        if (!challengeNumberEls.length) return;
+        if (!document.querySelector('[data-daily-challenge-number]')) return;
 
         setDailyChallengeNumber(resolveChallengeNumber());
 
