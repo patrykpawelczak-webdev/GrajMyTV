@@ -57,6 +57,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
   font-size: clamp(0.875rem, 0.72rem + 0.45vw, 1rem);
   background-color: #040816;
   overflow-x: hidden;
@@ -143,6 +144,7 @@ img {
 main > section {
   position: relative;
   z-index: 2;
+  scroll-margin-top: 5rem;
 }
 
 /* ==========================================
@@ -2756,6 +2758,14 @@ main > section {
 }
 
 @media (max-width: 48rem) {
+  html {
+    scroll-padding-top: 4.375rem;
+  }
+
+  main > section {
+    scroll-margin-top: 4.375rem;
+  }
+
   .site-header {
     height: 4.375rem;
   }

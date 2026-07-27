@@ -283,13 +283,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Zamknij menu po kliknięciu w link nawigacyjny
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
+    function headerScrollOffset() {
+        const header = document.querySelector('.site-header');
+        const headerHeight = header ? header.getBoundingClientRect().height : 0;
+        return Math.ceil(headerHeight);
+    }
+
+    function scrollToSection(targetId) {
+        if (!targetId || targetId === 'home') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+            return;
+        }
+
+        const target = document.getElementById(targetId);
+        if (!target) return;
+
+        const top = Math.max(0, target.getBoundingClientRect().top + window.pageYOffset - headerScrollOffset());
+        window.scrollTo({ top, behavior: 'smooth' });
+        history.replaceState(null, '', `#${targetId}`);
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', event => {
+            const targetId = link.getAttribute('href')?.slice(1);
+            if (!targetId) return;
+
+            event.preventDefault();
             if (navMenu.classList.contains('active')) {
                 closeMenu();
             }
             navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+            if (link.classList.contains('nav-link')) {
+                link.classList.add('active');
+            }
+            scrollToSection(targetId);
         });
     });
 
