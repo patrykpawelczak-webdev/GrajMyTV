@@ -43,8 +43,15 @@
                 <div class="answer-board" id="answerBoard" aria-label="Tablica odpowiedzi">
                     <div class="board-question">
                         <h2 id="questionText">Ładowanie pytania...</h2>
+                        <div class="question-score" aria-label="Aktualny wynik">
+                            <span>Punkty</span>
+                            <strong id="currentScore">0</strong>
+                        </div>
                     </div>
                     <div class="answer-rows" id="answersBoard"></div>
+                    <button class="board-start-button" id="startChallengeButton" type="button" aria-label="Rozpocznij wyzwanie">
+                        <span></span>
+                    </button>
                 </div>
             </div>
 
@@ -56,6 +63,10 @@
             <aside class="ranking-board" aria-label="Ranking graczy">
                 <div class="ranking-head">
                     <h2>Ranking</h2>
+                </div>
+                <div class="ranking-audience" aria-label="Typ rankingu">
+                    <button type="button" class="is-active" aria-pressed="true">Świat</button>
+                    <button type="button" aria-pressed="false" disabled>Znajomi</button>
                 </div>
                 <div class="ranking-tabs" role="tablist" aria-label="Zakres rankingu">
                     <button type="button" data-ranking-scope="day" role="tab" aria-selected="true">Dzień</button>
@@ -81,18 +92,21 @@
                 <div class="dialog-head">
                     <div>
                         <span>Kalendarz wyzwań</span>
-                        <h2 id="calendarTitle">Lipiec 2026</h2>
+                        <div class="calendar-month-nav">
+                            <button type="button" class="calendar-month-button" id="calendarPrevMonth" aria-label="Poprzedni miesiąc">‹</button>
+                            <h2 id="calendarTitle">Lipiec 2026</h2>
+                            <button type="button" class="calendar-month-button" id="calendarNextMonth" aria-label="Następny miesiąc">›</button>
+                        </div>
                     </div>
                     <button type="button" class="dialog-close" id="calendarCloseButton" aria-label="Zamknij">×</button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
                 <div class="calendar-legend" aria-label="Legenda kalendarza">
                     <span class="legend-item-current"><i class="legend-dot current"></i> Aktywne</span>
-                    <span><i class="legend-dot progress"></i> Rozpoczęte</span>
                     <span><i class="legend-dot done"></i> Ukończone</span>
                     <span><i class="legend-dot locked"></i> Zablokowane</span>
                 </div>
-                <p class="calendar-hint" id="calendarHint">Poprzednie dni będą dostępne po ukończeniu dzisiejszego wyzwania.</p>
+                <p class="calendar-hint" id="calendarHint" hidden>Poprzednie dni będą dostępne po ukończeniu dzisiejszego wyzwania.</p>
             </div>
         </dialog>
 

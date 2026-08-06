@@ -1,3 +1,16 @@
+.secure-access-page,
+.secure-access-page *,
+.secure-access-page *::before,
+.secure-access-page *::after {
+  box-sizing: border-box;
+}
+
+.secure-access-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 .secure-access-page {
   min-height: 100vh;
   color: var(--text);
@@ -21,6 +34,8 @@
 
 .secure-access-shell {
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   display: grid;
   place-items: center;
   padding: clamp(1rem, 3vw, 2.5rem);
@@ -31,6 +46,8 @@
   display: grid;
   justify-items: center;
   width: min(24.5rem, 100%);
+  max-width: 100%;
+  min-width: 0;
   padding: clamp(1.45rem, 4vw, 2.15rem) clamp(1.1rem, 3.6vw, 1.8rem);
   overflow: hidden;
   border: 1px solid rgba(80, 103, 180, 0.48);
@@ -57,6 +74,8 @@
 .secure-access-card > * {
   position: relative;
   z-index: 1;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .secure-access-brand {
@@ -95,9 +114,11 @@
 
 .secure-access-digits {
   display: grid;
-  grid-template-columns: repeat(4, clamp(2.65rem, 8.5vw, 3.25rem));
+  grid-template-columns: repeat(4, minmax(0, clamp(2.65rem, 8.5vw, 3.25rem)));
   gap: clamp(0.55rem, 1.8vw, 0.75rem);
   margin-top: clamp(1rem, 2.6vw, 1.35rem);
+  width: fit-content;
+  max-width: 100%;
 }
 
 .secure-access-card .secure-access-digit {
@@ -170,5 +191,11 @@
   .secure-access-digits {
     grid-template-columns: repeat(4, minmax(2.55rem, 1fr));
     width: min(15rem, 100%);
+  }
+}
+
+@supports not (overflow: clip) {
+  .secure-access-page {
+    overflow-x: hidden;
   }
 }

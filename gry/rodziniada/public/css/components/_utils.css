@@ -19,8 +19,20 @@
     --glass-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: clamp(0.875rem, 0.72rem + 0.45vw, 1rem); }
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    font-size: clamp(0.875rem, 0.72rem + 0.45vw, 1rem);
+}
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -38,7 +50,41 @@ body {
         radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 1.75rem 1.75rem;
     color: var(--white);
+    width: 100%;
+    max-width: 100%;
     min-height: 100vh;
+    overflow-x: clip;
+}
+
+img,
+svg,
+canvas,
+video,
+iframe,
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+.lobby-screen,
+.lobby-content,
+.setup-screen,
+.setup-content,
+.game-screen,
+.game-container,
+.modal,
+.modal-content {
+    max-width: 100%;
+    min-width: 0;
 }
 
 .hidden { display: none !important; }
+
+@supports not (overflow: clip) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+}

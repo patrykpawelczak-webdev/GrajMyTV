@@ -7,6 +7,7 @@
     const LEGACY_STORAGE_KEYS = ['grajmytv:rodziniada-solo:v2', 'grajmytv:rodziniada-solo'];
     const PLAYER_KEY = 'grajmytv:rodziniada-solo:player';
     const NICKNAME_KEY = 'grajmytv:rodziniada-solo:nickname';
+    const RANKING_REFRESH_MS = 5000;
 
     function clearProgressFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -47,17 +48,21 @@
         calendarButton: $('calendarButton'),
         archiveNote: $('archiveNote'),
         questionText: $('questionText'),
+        currentScore: $('currentScore'),
         answerBoard: $('answerBoard'),
         answersBoard: $('answersBoard'),
         answerForm: $('answerForm'),
         answerInput: $('answerInput'),
         submitButton: $('submitButton'),
+        startChallengeButton: $('startChallengeButton'),
         roundMessage: $('roundMessage'),
         shareButton: $('shareButton'),
         calendarDialog: $('calendarDialog'),
         calendarTitle: $('calendarTitle'),
         calendarGrid: $('calendarGrid'),
         calendarHint: $('calendarHint'),
+        calendarPrevMonth: $('calendarPrevMonth'),
+        calendarNextMonth: $('calendarNextMonth'),
         calendarCloseButton: $('calendarCloseButton'),
         resultDialog: $('resultDialog'),
         resultScore: $('resultScore'),
@@ -107,6 +112,7 @@
         resultSynced: false,
         remoteStates: {},
         rankingScope: 'day',
+        calendarViewDate: dateFromKey(getTodayKey()),
         message: ''
     };
 
@@ -114,6 +120,9 @@
     let lockedScrollY = 0;
     let rankingHeightObserver = null;
     let rankingViewerFrame = 0;
+    let rankingRefreshTimer = null;
+    let rankingSignature = '';
+    let rankingRequestId = 0;
 
     function syncRankingHeight() {
         if (!els.answerBoard || !els.rankingBoard) return;
@@ -524,10 +533,24 @@
         return todayCompleted();
     }
 
+    function isRunLocked() {
+        return state.started && !state.finished;
+    }
+
+    function canLeaveCurrentChallenge() {
+        return !isRunLocked();
+    }
+
+    function setBlockedSwitchMessage() {
+        state.message = 'Dokończ rozpoczęte wyzwanie, zanim wybierzesz inny dzień.';
+        renderGame();
+    }
+
     function resetRunForChallenge(key = getTodayKey()) {
         if (!canOpenChallenge(key)) return;
 
         state.currentChallenge = key;
+        state.calendarViewDate = dateFromKey(key);
         state.challengeQuestion = getQuestionForChallenge(key);
         const storedResult = getStoredResult(key);
         const storedProgress = getStoredProgress(key);
@@ -548,7 +571,7 @@
             applyStoredState(storedProgress, false);
         }
 
-        loadRanking(key);
+        loadRanking();
         if (storedResult && key === getTodayKey() && !state.resultSynced) {
             submitResultToServer();
         }
@@ -585,6 +608,7 @@
                 </div>
             `;
         }).join('');
+        els.answerBoard?.classList.toggle('is-covered', !state.started && !state.finished);
     }
 
     function escapeHtml(value) {
@@ -643,7 +667,7 @@
         rankingViewerFrame = requestAnimationFrame(updateViewerRankingPosition);
     }
 
-    function renderRanking(entries = [], viewerRank = null) {
+    function renderRanking(entries = [], viewerRank = null, options = {}) {
         els.rankingTabs.forEach(button => {
             const active = button.dataset.rankingScope === state.rankingScope;
             button.classList.toggle('is-active', active);
@@ -651,6 +675,7 @@
         });
         if (!els.rankingList) return;
 
+        const previousScrollTop = els.rankingList.scrollTop;
         const rows = entries.length ? entries : [null];
         const authState = window.GrajMyTVAuth?.getState?.();
         const authUserId = authState?.user?.id;
@@ -675,13 +700,15 @@
                 : '';
             return rankingRow(entry, place, viewerClass);
         }).join('');
-        els.rankingList.scrollTop = 0;
+        els.rankingList.scrollTop = options.preserveScroll ? previousScrollTop : 0;
         els.rankingList.querySelector('.is-viewer-source')?.removeAttribute('data-viewer-offset');
         requestViewerRankingPositionUpdate();
     }
 
-    async function loadRanking() {
+    async function loadRanking(options = {}) {
         if (!els.rankingList) return;
+        const requestId = rankingRequestId + 1;
+        rankingRequestId = requestId;
 
         try {
             const params = new URLSearchParams({
@@ -697,10 +724,42 @@
             });
             if (!response.ok) throw new Error('ranking');
             const data = await response.json();
-            renderRanking(data.ranking || [], data.viewerRank || null);
+            if (requestId !== rankingRequestId) return;
+            const nextRanking = data.ranking || [];
+            const nextViewerRank = data.viewerRank || null;
+            const nextSignature = JSON.stringify({
+                scope: state.rankingScope,
+                challenge: state.currentChallenge,
+                ranking: nextRanking,
+                viewerRank: nextViewerRank
+            });
+            if (options.preserveScroll && nextSignature === rankingSignature) {
+                requestViewerRankingPositionUpdate();
+                return;
+            }
+            rankingSignature = nextSignature;
+            renderRanking(nextRanking, nextViewerRank, options);
         } catch {
-            renderRanking([], null);
+            if (requestId !== rankingRequestId) return;
+            if (!options.preserveScroll) {
+                rankingSignature = '';
+                renderRanking([], null);
+            }
         }
+    }
+
+    function refreshRankingLive() {
+        if (document.hidden) return;
+        loadRanking({ preserveScroll: true });
+    }
+
+    function startRankingLiveRefresh() {
+        if (rankingRefreshTimer) return;
+        rankingRefreshTimer = window.setInterval(refreshRankingLive, RANKING_REFRESH_MS);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) refreshRankingLive();
+        });
+        window.addEventListener('focus', refreshRankingLive);
     }
 
     async function submitResultToServer() {
@@ -757,12 +816,18 @@
         els.challengeNumber.textContent = `#${challengeNumber()}`;
         els.questionText.textContent = state.started || result
             ? state.challengeQuestion.text
-            : '\u0141adowanie pytania...';
+            : '?';
+        if (els.currentScore) {
+            els.currentScore.textContent = Number(state.score || 0).toLocaleString('pl-PL');
+        }
 
-        els.prevChallenge.disabled = !canOpenChallenge(prevKey);
-        els.nextChallenge.disabled = !canOpenChallenge(nextKey);
+        els.prevChallenge.disabled = !canOpenChallenge(prevKey) || !canLeaveCurrentChallenge();
+        els.nextChallenge.disabled = !canOpenChallenge(nextKey) || !canLeaveCurrentChallenge();
         els.answerInput.disabled = !state.started || state.finished || !canPlayCurrent;
         els.submitButton.disabled = els.answerInput.disabled;
+        if (els.startChallengeButton) {
+            els.startChallengeButton.hidden = state.started || state.finished || !canPlayCurrent;
+        }
         els.shareButton.disabled = !(isToday && state.finished);
         if (archiveUnlocked) {
             els.archiveNote.textContent = 'Archiwum jest odblokowane. Do klasyfikacji liczy si\u0119 tylko dzisiejsze wyzwanie.';
@@ -781,7 +846,7 @@
         } else if (state.started) {
             els.roundMessage.textContent = state.message || 'Wpisz odpowied\u017a i sprawd\u017a, czy jest na tablicy.';
         } else {
-            els.roundMessage.textContent = 'Jedno pytanie dziennie. Trzy b\u0142\u0119dy ko\u0144cz\u0105 gr\u0119.';
+            els.roundMessage.textContent = state.message || 'Naciśnij play, aby odkryć tablicę i rozpocząć wyzwanie.';
         }
 
         renderStrikes();
@@ -885,6 +950,8 @@
         }
 
         state.started = true;
+        state.message = '';
+        saveProgress();
         els.answerInput.disabled = false;
         els.submitButton.disabled = false;
         els.answerInput.focus();
@@ -892,13 +959,23 @@
     }
 
     function renderCalendar() {
-        const currentDate = dateFromKey(state.currentChallenge);
+        const currentDate = state.calendarViewDate || dateFromKey(state.currentChallenge);
+        const todayDate = dateFromKey(getTodayKey());
         const first = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const last = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
         const startOffset = (first.getDay() + 6) % 7;
         const cells = [];
 
         els.calendarTitle.textContent = monthName(currentDate);
+        if (els.calendarPrevMonth) {
+            const previousMonthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+            els.calendarPrevMonth.disabled = previousMonthEnd < START_CHALLENGE || !canLeaveCurrentChallenge();
+        }
+        if (els.calendarNextMonth) {
+            const nextMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+            const todayMonthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
+            els.calendarNextMonth.disabled = nextMonthStart > todayMonthStart || !canLeaveCurrentChallenge();
+        }
         els.calendarHint.textContent = todayCompleted()
             ? 'Wybierz poprzednie wyzwanie. Dzisiejsze pozostaje jedynym liczonym do klasyfikacji.'
             : 'Poprzednie dni b\u0119d\u0105 dost\u0119pne po uko\u0144czeniu dzisiejszego wyzwania.';
@@ -911,32 +988,47 @@
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
             const key = getTodayKey(date);
             const result = Boolean(getStoredResult(key));
-            const progress = !result && Boolean(getStoredProgress(key));
             const isCurrent = key === state.currentChallenge;
-            const disabled = !canOpenChallenge(key);
-            const className = ['calendar-day', result ? 'done' : '', progress ? 'in-progress' : '', isCurrent ? 'current' : '', disabled ? 'locked' : ''].filter(Boolean).join(' ');
+            const disabled = !canOpenChallenge(key) || (key !== state.currentChallenge && !canLeaveCurrentChallenge());
+            const className = ['calendar-day', result ? 'done' : '', isCurrent ? 'current' : '', disabled ? 'locked' : ''].filter(Boolean).join(' ');
             cells.push(`<button type="button" class="${className}" data-challenge="${key}" ${disabled ? 'disabled' : ''}>${day}</button>`);
         }
 
         els.calendarGrid.innerHTML = cells.join('');
         els.calendarGrid.querySelectorAll('[data-challenge]').forEach(button => {
             button.addEventListener('click', async () => {
+                if (button.dataset.challenge !== state.currentChallenge && !canLeaveCurrentChallenge()) {
+                    setBlockedSwitchMessage();
+                    return;
+                }
                 await loadRemoteState(button.dataset.challenge);
                 resetRunForChallenge(button.dataset.challenge);
-                startChallenge();
                 renderGame();
-                closeLockedDialog(els.calendarDialog, 'calendar-dialog');
             });
         });
     }
 
     async function goToChallenge(offset) {
+        if (!canLeaveCurrentChallenge()) {
+            setBlockedSwitchMessage();
+            return;
+        }
         const nextKey = getTodayKey(addDays(dateFromKey(state.currentChallenge), offset));
         if (!canOpenChallenge(nextKey)) return;
         await loadRemoteState(nextKey);
         resetRunForChallenge(nextKey);
-        startChallenge();
         renderGame();
+    }
+
+    function changeCalendarMonth(offset) {
+        if (!canLeaveCurrentChallenge()) {
+            setBlockedSwitchMessage();
+            return;
+        }
+
+        const currentDate = state.calendarViewDate || dateFromKey(state.currentChallenge);
+        state.calendarViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
+        renderCalendar();
     }
 
     function buildShareText() {
@@ -988,7 +1080,6 @@
                 renderRanking([]);
                 await loadRemoteStates();
                 resetRunForChallenge(state.currentChallenge);
-                startChallenge();
                 renderGame();
                 if (state.finished && !state.resultSynced) {
                     submitResultToServer();
@@ -998,15 +1089,18 @@
         await loadQuestions();
         await loadRemoteStates();
         resetRunForChallenge(getTodayKey());
-        startChallenge();
+        renderGame();
 
         els.answerForm.addEventListener('submit', submitAnswer);
+        els.startChallengeButton?.addEventListener('click', startChallenge);
         els.prevChallenge.addEventListener('click', () => goToChallenge(-1));
         els.nextChallenge.addEventListener('click', () => goToChallenge(1));
         els.calendarButton.addEventListener('click', () => {
             renderCalendar();
             openLockedDialog(els.calendarDialog, 'calendar-dialog');
         });
+        els.calendarPrevMonth?.addEventListener('click', () => changeCalendarMonth(-1));
+        els.calendarNextMonth?.addEventListener('click', () => changeCalendarMonth(1));
         els.calendarCloseButton.addEventListener('click', () => closeLockedDialog(els.calendarDialog, 'calendar-dialog'));
         els.calendarDialog.addEventListener('close', () => setPageLocked('calendar-dialog', false));
         els.rankingTabs.forEach(button => {
@@ -1038,6 +1132,7 @@
         });
         els.resultDialog.addEventListener('close', () => setPageLocked('result-dialog', false));
         observeRankingHeight();
+        startRankingLiveRefresh();
     }
 
     init().catch(() => {

@@ -333,8 +333,7 @@ body {
 /* ================== OVERLAYE ================== */
 .tv-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    inset: 0;
     background: rgba(2, 6, 23, 0.6);
     backdrop-filter: blur(0.75rem);
     display: flex;
@@ -651,4 +650,4 @@ body {
     button[onclick="enterFullscreen()"] {
         display: none !important;
     }
-}
+}
