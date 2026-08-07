@@ -1,5 +1,6 @@
 (() => {
     const JULY_DAYS = 31;
+    const SOLO_QUESTIONS_DRAFT_KEY = 'grajmytv:rodziniada-solo:questions-draft';
     const $ = id => document.getElementById(id);
 
     const els = {
@@ -75,6 +76,26 @@
         els.saveState.style.color = 'var(--success)';
     }
 
+    function readSoloQuestionsDraft() {
+        try {
+            const rawDraft = localStorage.getItem(SOLO_QUESTIONS_DRAFT_KEY);
+            if (!rawDraft) return null;
+            const draft = JSON.parse(rawDraft);
+            return Array.isArray(draft?.categories) ? draft : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function saveSoloQuestionsDraft() {
+        try {
+            localStorage.setItem(SOLO_QUESTIONS_DRAFT_KEY, JSON.stringify(state.soloQuestionsData));
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     function flattenQuestions() {
         return state.data.categories.flatMap(category => {
             return (category.questions || []).map(question => ({
@@ -104,6 +125,18 @@
         }
 
         return null;
+    }
+
+    function moveSoloQuestionToCategory(questionId, targetCategoryId) {
+        const source = findSoloQuestion(questionId);
+        const targetCategory = (state.soloQuestionsData.categories || []).find(category => category.id === targetCategoryId);
+        if (!source || !targetCategory || source.category.id === targetCategory.id) return source;
+
+        source.category.questions = (source.category.questions || []).filter(question => question.id !== questionId);
+        if (!Array.isArray(targetCategory.questions)) targetCategory.questions = [];
+        targetCategory.questions.push(source.question);
+
+        return { category: targetCategory, question: source.question };
     }
 
     function currentCategory() {
@@ -136,6 +169,12 @@
             }
         }
 
+        const localDraft = readSoloQuestionsDraft();
+        const hasLocalDraft = Boolean(localDraft);
+        if (localDraft) {
+            state.soloQuestionsData = localDraft;
+        }
+
         if (!Array.isArray(state.data.categories)) state.data.categories = [];
         if (!Array.isArray(state.soloQuestionsData.categories)) state.soloQuestionsData.categories = [];
         if (!Array.isArray(state.calendar.days)) state.calendar.days = [];
@@ -157,8 +196,13 @@
         state.activeQuestionId = currentCategory()?.questions?.[0]?.id || null;
         renderAll();
         renderAllQuestionsPanel();
-        markSaved();
-        setStatus('Dane załadowane.');
+        if (hasLocalDraft) {
+            markDirty();
+            setStatus('Wczytano lokalny szkic pytań z przeglądarki.');
+        } else {
+            markSaved();
+            setStatus('Dane załadowane.');
+        }
     }
 
     async function saveAll() {
@@ -196,6 +240,7 @@
             return;
         }
 
+        localStorage.removeItem(SOLO_QUESTIONS_DRAFT_KEY);
         markSaved();
         setStatus('Zapisano panel admina.');
     }
@@ -221,8 +266,8 @@
         if (!questions.length) {
             els.adminContentPanel.innerHTML = `
                 <div class="admin-empty-content">
-                    <strong>Brak pytań</strong>
-                    <span>Nowa baza pytań jest jeszcze pusta.</span>
+                    <strong class="admin-text-title">Brak pytań</strong>
+                    <span class="admin-text-meta">Nowa baza pytań jest jeszcze pusta.</span>
                 </div>
             `;
             return;
@@ -232,12 +277,12 @@
             <div class="admin-question-list">
                 ${questions.map((question, index) => `
                     <button class="admin-question-card" type="button" data-solo-question-id="${escapeHtml(question.id)}">
-                        <div class="admin-question-number">#${index + 1}</div>
+                        <div class="admin-text-meta admin-question-number">#${index + 1}</div>
                         <div class="admin-question-main">
-                            <span class="admin-question-category">${escapeHtml(question.categoryName || 'Bez kategorii')}</span>
-                            <strong>${escapeHtml(question.text || 'Pytanie bez treści')}</strong>
+                            <span class="admin-text-kicker admin-question-category">${escapeHtml(question.categoryName || 'Bez kategorii')}</span>
+                            <strong class="admin-text-title">${escapeHtml(question.text || 'Pytanie bez treści')}</strong>
                         </div>
-                        <div class="admin-question-meta">${(question.answers || []).length} odp.</div>
+                        <div class="admin-text-meta admin-question-meta">${(question.answers || []).length} odp.</div>
                     </button>
                 `).join('')}
             </div>
@@ -256,21 +301,36 @@
         state.activeSoloQuestionId = questionId;
         const { category, question } = entry;
         const answers = Array.isArray(question.answers) ? question.answers : [];
+        const categories = state.soloQuestionsData.categories || [];
 
         els.adminContentPanel.innerHTML = `
             <form class="admin-question-editor" id="soloQuestionEditor">
                 <div class="admin-editor-head">
-                    <span>${escapeHtml(category.name || 'Bez kategorii')}</span>
+                    <div class="admin-category-picker" data-category-picker>
+                        <input type="hidden" name="categoryId" value="${escapeHtml(category.id)}">
+                        <button class="admin-text-control admin-category-picker-button" type="button" data-category-picker-button aria-expanded="false">
+                            <span>${escapeHtml(category.name || 'Bez kategorii')}</span>
+                            <span class="admin-category-picker-arrow" aria-hidden="true"></span>
+                        </button>
+                        <div class="admin-category-picker-menu" data-category-picker-menu hidden>
+                            ${categories.map(item => `
+                                <button class="admin-text-control admin-category-picker-option ${item.id === category.id ? 'is-selected' : ''}" type="button" data-category-id="${escapeHtml(item.id)}">
+                                    ${escapeHtml(item.name || 'Bez kategorii')}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <button class="admin-text-control admin-question-save" type="button" id="saveSoloQuestionButton">Zapisz pytanie</button>
                 </div>
                 <label class="admin-editor-field">
-                    <input type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off">
+                    <input class="admin-text-control" type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off">
                 </label>
                 <div class="admin-editor-answers">
                     ${answers.map((answer, index) => `
                         <div class="admin-editor-answer" data-answer-index="${index}">
-                            <span>${index + 1}</span>
-                            <input type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off">
-                            <input type="number" name="answerPoints" value="${Number(answer.points || 0)}" min="0" max="100" inputmode="numeric">
+                            <span class="admin-text-meta">${index + 1}</span>
+                            <input class="admin-text-control" type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off">
+                            <input class="admin-text-control" type="number" name="answerPoints" value="${Number(answer.points || 0)}" min="0" max="100" inputmode="numeric">
                         </div>
                     `).join('')}
                 </div>
@@ -279,8 +339,13 @@
     }
 
     function applySoloQuestionEditor() {
-        const entry = findSoloQuestion(state.activeSoloQuestionId);
         const form = document.getElementById('soloQuestionEditor');
+        if (!form) return;
+
+        const selectedCategoryId = form.elements.categoryId?.value;
+        const entry = selectedCategoryId
+            ? moveSoloQuestionToCategory(state.activeSoloQuestionId, selectedCategoryId)
+            : findSoloQuestion(state.activeSoloQuestionId);
         if (!entry || !form) return;
 
         entry.question.text = form.elements.questionText.value.trim();
@@ -289,6 +354,15 @@
             if (!answer) return;
             answer.text = row.querySelector('[name="answerText"]').value.trim();
             answer.points = Number(row.querySelector('[name="answerPoints"]').value || 0);
+        });
+    }
+
+    function closeCategoryPickers() {
+        document.querySelectorAll('[data-category-picker]').forEach(picker => {
+            picker.classList.remove('is-open');
+            picker.querySelector('[data-category-picker-button]')?.setAttribute('aria-expanded', 'false');
+            const menu = picker.querySelector('[data-category-picker-menu]');
+            if (menu) menu.hidden = true;
         });
     }
 
@@ -568,6 +642,36 @@
         renderAllQuestionsPanel();
     });
     els.adminContentPanel?.addEventListener('click', event => {
+        const pickerButton = event.target.closest('[data-category-picker-button]');
+        if (pickerButton) {
+            const picker = pickerButton.closest('[data-category-picker]');
+            const menu = picker?.querySelector('[data-category-picker-menu]');
+            const willOpen = !picker?.classList.contains('is-open');
+            closeCategoryPickers();
+            if (picker && menu && willOpen) {
+                picker.classList.add('is-open');
+                pickerButton.setAttribute('aria-expanded', 'true');
+                menu.hidden = false;
+            }
+            return;
+        }
+
+        const pickerOption = event.target.closest('[data-category-id]');
+        if (pickerOption) {
+            const picker = pickerOption.closest('[data-category-picker]');
+            const input = picker?.querySelector('[name="categoryId"]');
+            const label = picker?.querySelector('[data-category-picker-button] span:first-child');
+            if (input) input.value = pickerOption.dataset.categoryId;
+            if (label) label.textContent = pickerOption.textContent.trim();
+            picker?.querySelectorAll('[data-category-id]').forEach(option => {
+                option.classList.toggle('is-selected', option === pickerOption);
+            });
+            closeCategoryPickers();
+            applySoloQuestionEditor();
+            markDirty();
+            return;
+        }
+
         const questionButton = event.target.closest('[data-solo-question-id]');
         if (questionButton) {
             renderSoloQuestionEditor(questionButton.dataset.soloQuestionId);
@@ -579,8 +683,25 @@
             state.activeSoloQuestionId = null;
             renderAllQuestionsPanel();
         }
+
+        if (event.target.closest('#saveSoloQuestionButton')) {
+            applySoloQuestionEditor();
+            if (saveSoloQuestionsDraft()) {
+                markDirty();
+                state.activeSoloQuestionId = null;
+                renderAllQuestionsPanel();
+                setStatus('Pytanie zapisane lokalnie w przeglądarce.');
+            } else {
+                setStatus('Nie udało się zapisać pytania lokalnie w przeglądarce.', 'error');
+            }
+        }
     });
     els.adminContentPanel?.addEventListener('input', event => {
+        if (!event.target.closest('#soloQuestionEditor')) return;
+        applySoloQuestionEditor();
+        markDirty();
+    });
+    els.adminContentPanel?.addEventListener('change', event => {
         if (!event.target.closest('#soloQuestionEditor')) return;
         applySoloQuestionEditor();
         markDirty();
@@ -613,5 +734,10 @@
         if (!state.dirty) return;
         event.preventDefault();
         event.returnValue = '';
+    });
+
+    document.addEventListener('click', event => {
+        if (event.target.closest('[data-category-picker]')) return;
+        closeCategoryPickers();
     });
 })();

@@ -283,6 +283,7 @@ button {
   position: relative;
   display: grid;
   grid-template-rows: minmax(0, 1fr);
+  --admin-panel-text: var(--text);
   width: clamp(38rem, 62vw, 64rem);
   max-width: calc(100vw - 2.5rem);
   min-height: min(80vh, 48rem);
@@ -298,6 +299,13 @@ button {
   box-shadow:
     0 1.25rem 3.5rem rgba(0, 0, 0, 0.24),
     0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  color: var(--admin-panel-text);
+  font-family: inherit;
+}
+
+.admin-workspace :where(button, input, select, textarea, option) {
+  color: var(--admin-panel-text);
+  font-family: inherit;
 }
 
 .admin-empty-view {
@@ -332,7 +340,7 @@ button {
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 0 0.95rem;
-  color: var(--text-secondary);
+  color: var(--admin-panel-text);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 70%),
     rgba(11, 20, 48, 0.72);
@@ -343,7 +351,7 @@ button {
 
 .admin-action-button:hover,
 .admin-action-button.is-active {
-  color: var(--text);
+  color: var(--admin-panel-text);
   border-color: rgba(139, 61, 255, 0.55);
   background:
     radial-gradient(circle at 50% 0%, rgba(139, 61, 255, 0.16), transparent 62%),
@@ -353,7 +361,7 @@ button {
 .admin-action-button.is-primary {
   margin-left: auto;
   justify-self: end;
-  color: var(--text);
+  color: var(--admin-panel-text);
   border-color: transparent;
   background: var(--gradient);
   box-shadow: 0 0.75rem 1.75rem rgba(139, 61, 255, 0.18);
@@ -367,6 +375,9 @@ button {
   min-height: 0;
   max-height: none;
   overflow: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(74, 107, 190, 0.88) rgba(7, 16, 37, 0.66);
   padding: 0.875rem;
   border: 1px solid var(--border);
   border-radius: 0.875rem;
@@ -375,9 +386,62 @@ button {
     rgba(11, 20, 48, 0.46);
 }
 
+.admin-content-panel::-webkit-scrollbar {
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+.admin-content-panel::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(7, 16, 37, 0.72);
+}
+
+.admin-content-panel::-webkit-scrollbar-thumb {
+  min-height: 3rem;
+  border: 0.12rem solid rgba(7, 16, 37, 0.72);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(139, 61, 255, 0.82), rgba(59, 130, 255, 0.82));
+}
+
+.admin-content-panel::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, rgba(139, 61, 255, 0.98), rgba(59, 130, 255, 0.98));
+}
+
+.admin-content-panel::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 .admin-question-list {
   display: grid;
   gap: 0.625rem;
+}
+
+.admin-text-kicker {
+  color: var(--admin-panel-text);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-text-title {
+  color: var(--admin-panel-text);
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.admin-text-meta {
+  color: var(--admin-panel-text);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.admin-text-control {
+  color: var(--admin-panel-text);
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .admin-question-card {
@@ -406,8 +470,6 @@ button {
 
 .admin-question-number,
 .admin-question-meta {
-  color: var(--text-muted);
-  font-weight: 900;
   white-space: nowrap;
 }
 
@@ -419,18 +481,8 @@ button {
 
 .admin-question-main strong {
   overflow: hidden;
-  color: var(--text);
-  font-size: 0.98rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.admin-question-category {
-  color: var(--secondary);
-  font-size: 0.76rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .admin-empty-content {
@@ -438,12 +490,7 @@ button {
   display: grid;
   place-items: center;
   gap: 0.35rem;
-  color: var(--text-muted);
   text-align: center;
-}
-
-.admin-empty-content strong {
-  color: var(--text);
 }
 
 .admin-question-editor {
@@ -452,41 +499,112 @@ button {
 }
 
 .admin-editor-head {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(12rem, 18rem) auto;
   gap: 0.75rem;
   align-items: center;
 }
 
-.admin-editor-head span {
-  color: var(--secondary);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
+.admin-category-picker-button,
+.admin-question-save,
 .admin-editor-back {
   min-height: 2.25rem;
   border: 1px solid var(--border);
   border-radius: 0.7rem;
   padding: 0 0.85rem;
-  color: var(--text);
   background: rgba(11, 20, 48, 0.72);
-  font-size: 0.82rem;
-  font-weight: 900;
+}
+
+.admin-category-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.admin-category-picker-button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  background: rgba(6, 11, 29, 0.72);
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.admin-category-picker-arrow {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-0.12rem) rotate(45deg);
+  opacity: 0.9;
+}
+
+.admin-category-picker.is-open .admin-category-picker-arrow {
+  transform: translateY(0.12rem) rotate(225deg);
+}
+
+.admin-category-picker-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  max-height: 15rem;
+  overflow: auto;
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: #071126;
+  box-shadow: 0 1rem 2.25rem rgba(0, 0, 0, 0.34);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(74, 107, 190, 0.88) rgba(7, 16, 37, 0.66);
+}
+
+.admin-category-picker-menu::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+.admin-category-picker-menu::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(7, 16, 37, 0.72);
+}
+
+.admin-category-picker-menu::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(74, 107, 190, 0.88);
+}
+
+.admin-category-picker-option {
+  width: 100%;
+  min-height: 2.2rem;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0 0.65rem;
+  background: transparent;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.admin-category-picker-option:hover,
+.admin-category-picker-option:focus,
+.admin-category-picker-option.is-selected {
+  background-color: #142143;
+}
+
+.admin-question-save {
+  justify-self: end;
+  border-color: transparent;
+  padding: 0 1rem;
+  background: var(--gradient);
+  box-shadow: 0 0.75rem 1.5rem rgba(139, 61, 255, 0.18);
 }
 
 .admin-editor-field,
 .admin-editor-answers {
   display: grid;
   gap: 0.55rem;
-}
-
-.admin-editor-field span {
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  font-weight: 900;
 }
 
 .admin-editor-field input,
@@ -496,10 +614,7 @@ button {
   border: 1px solid var(--border);
   border-radius: 0.7rem;
   padding: 0 0.85rem;
-  color: var(--text);
   background: rgba(6, 11, 29, 0.72);
-  font: inherit;
-  font-weight: 800;
 }
 
 .admin-editor-answer {
@@ -515,9 +630,7 @@ button {
   min-height: 2.75rem;
   border: 1px solid var(--border);
   border-radius: 0.7rem;
-  color: var(--text-muted);
   background: rgba(11, 20, 48, 0.56);
-  font-weight: 900;
 }
 
 .admin-header,
@@ -586,7 +699,7 @@ button {
   border-top-color: var(--border);
   border-bottom-color: var(--border);
   border-radius: 0;
-  color: var(--text-muted);
+  color: var(--admin-panel-text);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 70%),
     rgba(11, 20, 48, 0.72);
@@ -611,7 +724,7 @@ button {
 
 .admin-panel .admin-main-tab.is-active {
   z-index: 2;
-  color: var(--text);
+  color: var(--admin-panel-text);
   border-color: var(--border);
   border-bottom-color: transparent;
   background:
@@ -628,6 +741,27 @@ button {
 .admin-panel .admin-main-tab:last-child.is-active {
   border-radius: 0 0.875rem 0 0;
   border-right-color: var(--border);
+}
+
+.admin-workspace :where(
+  .admin-main-tab,
+  .admin-action-button,
+  .admin-question-card,
+  .admin-question-number,
+  .admin-question-category,
+  .admin-question-meta,
+  .admin-empty-content,
+  .admin-category-picker-button,
+  .admin-category-picker-option,
+  .admin-question-save,
+  .admin-editor-back,
+  .admin-editor-answer > span,
+  input,
+  select,
+  button
+) {
+  color: var(--admin-panel-text);
+  font-family: inherit;
 }
 
 .admin-actions {
