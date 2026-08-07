@@ -3,16 +3,16 @@
     const $ = id => document.getElementById(id);
 
     const els = {
-        pinScreen: $('pinScreen'),
+        accessCheck: $('accessCheck'),
         adminPanel: $('adminPanel'),
-        pinForm: $('pinForm'),
-        pinInput: $('pinInput'),
-        pinError: $('pinError'),
         statusText: $('statusText'),
         saveState: $('saveState'),
         questionsTotal: $('questionsTotal'),
         calendarTotal: $('calendarTotal'),
+        allQuestionsButton: $('allQuestionsButton'),
+        adminContentPanel: $('adminContentPanel'),
         saveAllButton: $('saveAllButton'),
+        visibleSaveAllButton: $('visibleSaveAllButton'),
         dayList: $('dayList'),
         calendarQuestionSelect: $('calendarQuestionSelect'),
         calendarPreview: $('calendarPreview'),
@@ -33,20 +33,29 @@
         deleteQuestionButton: $('deleteQuestionButton')
     };
 
-    const pinDigits = [...document.querySelectorAll('.pin-digit')];
-
     const state = {
-        pin: '',
+        accessToken: '',
         data: { categories: [] },
+        soloQuestionsData: { categories: [] },
         calendar: { startDate: '2026-07-19', days: [] },
         selectedDay: 1,
         activeCategoryId: null,
         activeQuestionId: null,
+        activeSoloQuestionId: null,
         dirty: false
     };
 
     function generateId(prefix = 'id') {
         return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     function setStatus(message, type = 'info') {
@@ -76,6 +85,27 @@
         });
     }
 
+    function flattenSoloQuestions() {
+        return (state.soloQuestionsData.categories || []).flatMap(category => {
+            return (category.questions || []).map(question => ({
+                ...question,
+                categoryId: category.id,
+                categoryName: category.name
+            }));
+        });
+    }
+
+    function findSoloQuestion(questionId) {
+        for (const category of state.soloQuestionsData.categories || []) {
+            const question = (category.questions || []).find(item => item.id === questionId);
+            if (question) {
+                return { category, question };
+            }
+        }
+
+        return null;
+    }
+
     function currentCategory() {
         return state.data.categories.find(category => category.id === state.activeCategoryId) || null;
     }
@@ -86,25 +116,28 @@
         return (category.questions || []).find(question => question.id === state.activeQuestionId) || null;
     }
 
-    async function verifyPin(pin) {
-        const response = await fetch('/rodziniada/api/verify-pin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pin })
-        });
-        return response.json();
-    }
-
     async function loadData() {
-        const [questionsResponse, calendarResponse] = await Promise.all([
+        const [questionsResponse, calendarResponse, soloQuestionsResponse] = await Promise.all([
             fetch('/rodziniada/api/questions', { cache: 'no-store' }),
-            fetch('/rodziniada/api/solo-calendar', { cache: 'no-store' })
+            fetch('/rodziniada/api/solo-calendar', { cache: 'no-store' }),
+            fetch('/rodziniada/api/solo-questions', { cache: 'no-store' })
         ]);
 
         state.data = await questionsResponse.json();
         state.calendar = await calendarResponse.json();
+        state.soloQuestionsData = soloQuestionsResponse.ok
+            ? await soloQuestionsResponse.json()
+            : { categories: [] };
+
+        if (!Array.isArray(state.soloQuestionsData.categories) || !state.soloQuestionsData.categories.length) {
+            const fallbackResponse = await fetch('/rodziniada/rodziniada-solo-questions.json', { cache: 'no-store' }).catch(() => null);
+            if (fallbackResponse?.ok) {
+                state.soloQuestionsData = await fallbackResponse.json();
+            }
+        }
 
         if (!Array.isArray(state.data.categories)) state.data.categories = [];
+        if (!Array.isArray(state.soloQuestionsData.categories)) state.soloQuestionsData.categories = [];
         if (!Array.isArray(state.calendar.days)) state.calendar.days = [];
         while (state.calendar.days.length < JULY_DAYS) state.calendar.days.push('');
 
@@ -123,31 +156,43 @@
         state.activeCategoryId = state.data.categories[0]?.id || null;
         state.activeQuestionId = currentCategory()?.questions?.[0]?.id || null;
         renderAll();
+        renderAllQuestionsPanel();
         markSaved();
         setStatus('Dane załadowane.');
     }
 
     async function saveAll() {
         applyQuestionForm(false);
+        applySoloQuestionEditor();
+        const authHeaders = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${state.accessToken}`
+        };
 
-        const [questionsResponse, calendarResponse] = await Promise.all([
+        const [questionsResponse, calendarResponse, soloQuestionsResponse] = await Promise.all([
             fetch('/rodziniada/api/questions', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-PIN': state.pin },
+                headers: authHeaders,
                 body: JSON.stringify(state.data)
             }),
             fetch('/rodziniada/api/solo-calendar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-PIN': state.pin },
+                headers: authHeaders,
                 body: JSON.stringify(state.calendar)
+            }),
+            fetch('/rodziniada/api/solo-questions', {
+                method: 'POST',
+                headers: authHeaders,
+                body: JSON.stringify(state.soloQuestionsData)
             })
         ]);
 
         const questionsResult = await questionsResponse.json();
         const calendarResult = await calendarResponse.json();
+        const soloQuestionsResult = await soloQuestionsResponse.json();
 
-        if (!questionsResult.ok || !calendarResult.ok) {
-            setStatus(questionsResult.error || calendarResult.error || 'Nie udało się zapisać danych.', 'error');
+        if (!questionsResult.ok || !calendarResult.ok || !soloQuestionsResult.ok) {
+            setStatus(questionsResult.error || calendarResult.error || soloQuestionsResult.error || 'Nie udało się zapisać danych.', 'error');
             return;
         }
 
@@ -167,6 +212,84 @@
     function renderStats() {
         els.questionsTotal.textContent = flattenQuestions().length;
         els.calendarTotal.textContent = state.calendar.days.filter(Boolean).length;
+    }
+
+    function renderAllQuestionsPanel() {
+        if (!els.adminContentPanel) return;
+
+        const questions = flattenSoloQuestions();
+        if (!questions.length) {
+            els.adminContentPanel.innerHTML = `
+                <div class="admin-empty-content">
+                    <strong>Brak pytań</strong>
+                    <span>Nowa baza pytań jest jeszcze pusta.</span>
+                </div>
+            `;
+            return;
+        }
+
+        els.adminContentPanel.innerHTML = `
+            <div class="admin-question-list">
+                ${questions.map((question, index) => `
+                    <button class="admin-question-card" type="button" data-solo-question-id="${escapeHtml(question.id)}">
+                        <div class="admin-question-number">#${index + 1}</div>
+                        <div class="admin-question-main">
+                            <span class="admin-question-category">${escapeHtml(question.categoryName || 'Bez kategorii')}</span>
+                            <strong>${escapeHtml(question.text || 'Pytanie bez treści')}</strong>
+                        </div>
+                        <div class="admin-question-meta">${(question.answers || []).length} odp.</div>
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderSoloQuestionEditor(questionId) {
+        if (!els.adminContentPanel) return;
+
+        const entry = findSoloQuestion(questionId);
+        if (!entry) {
+            renderAllQuestionsPanel();
+            return;
+        }
+
+        state.activeSoloQuestionId = questionId;
+        const { category, question } = entry;
+        const answers = Array.isArray(question.answers) ? question.answers : [];
+
+        els.adminContentPanel.innerHTML = `
+            <form class="admin-question-editor" id="soloQuestionEditor">
+                <div class="admin-editor-head">
+                    <span>${escapeHtml(category.name || 'Bez kategorii')}</span>
+                </div>
+                <label class="admin-editor-field">
+                    <input type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off">
+                </label>
+                <div class="admin-editor-answers">
+                    ${answers.map((answer, index) => `
+                        <div class="admin-editor-answer" data-answer-index="${index}">
+                            <span>${index + 1}</span>
+                            <input type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off">
+                            <input type="number" name="answerPoints" value="${Number(answer.points || 0)}" min="0" max="100" inputmode="numeric">
+                        </div>
+                    `).join('')}
+                </div>
+            </form>
+        `;
+    }
+
+    function applySoloQuestionEditor() {
+        const entry = findSoloQuestion(state.activeSoloQuestionId);
+        const form = document.getElementById('soloQuestionEditor');
+        if (!entry || !form) return;
+
+        entry.question.text = form.elements.questionText.value.trim();
+        [...form.querySelectorAll('.admin-editor-answer')].forEach(row => {
+            const answer = entry.question.answers[Number(row.dataset.answerIndex)];
+            if (!answer) return;
+            answer.text = row.querySelector('[name="answerText"]').value.trim();
+            answer.points = Number(row.querySelector('[name="answerPoints"]').value || 0);
+        });
     }
 
     function renderTabs() {
@@ -381,76 +504,44 @@
         setStatus('Uzupełniono puste dni pierwszymi dostępnymi pytaniami.');
     }
 
-    function clearPinDigits() {
-        pinDigits.forEach(input => {
-            input.value = '';
-            input.classList.remove('is-filled');
-        });
-        els.pinInput.value = '';
-    }
-
-    els.pinForm.addEventListener('submit', async event => {
-        event.preventDefault();
-        const pin = pinDigits.map(input => input.value).join('');
-        els.pinInput.value = pin;
-        if (pin.length !== 4) {
-            els.pinError.textContent = 'Wpisz 4 cyfry PIN-u.';
-            return;
-        }
-
-        const result = await verifyPin(pin);
-        if (!result.ok) {
-            els.pinError.textContent = 'Nieprawidłowy PIN.';
-            return;
-        }
-
-        state.pin = pin;
-        clearPinDigits();
-        els.pinScreen.classList.add('is-hidden');
+    async function openAdminPanel(accessToken = '') {
+        state.accessToken = accessToken;
+        els.accessCheck?.classList.add('is-hidden');
         els.adminPanel.classList.remove('is-hidden');
         await loadData();
-    });
+    }
 
-    pinDigits.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            input.value = input.value.replace(/\D/g, '').slice(-1);
-            input.classList.toggle('is-filled', Boolean(input.value));
-            els.pinError.textContent = '';
+    function returnToPreviousPage() {
+        window.location.replace('/rodziniada/solo');
+    }
 
-            if (input.value && index < pinDigits.length - 1) {
-                pinDigits[index + 1].focus();
-            }
+    async function authorizeAdminFromAccount() {
+        if (!window.GrajMyTVAuth?.init) {
+            returnToPreviousPage();
+            return;
+        }
 
-            if (pinDigits.every(item => item.value)) {
-                els.pinForm.requestSubmit();
-            }
-        });
+        const authState = await window.GrajMyTVAuth.init().catch(() => null);
+        if (!authState?.enabled || !authState.isLoggedIn) {
+            returnToPreviousPage();
+            return;
+        }
 
-        input.addEventListener('keydown', event => {
-            if (event.key === 'Backspace' && !input.value && index > 0) {
-                pinDigits[index - 1].focus();
-                pinDigits[index - 1].value = '';
-                pinDigits[index - 1].classList.remove('is-filled');
-            }
-        });
+        if (authState.profile?.role !== 'admin') {
+            returnToPreviousPage();
+            return;
+        }
 
-        input.addEventListener('paste', event => {
-            event.preventDefault();
-            const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
-            pinDigits.forEach((digit, digitIndex) => {
-                digit.value = pasted[digitIndex] || '';
-                digit.classList.toggle('is-filled', Boolean(digit.value));
-            });
+        const accessToken = await window.GrajMyTVAuth.getAccessToken().catch(() => '');
+        if (!accessToken) {
+            returnToPreviousPage();
+            return;
+        }
 
-            const nextEmpty = pinDigits.find(inputItem => !inputItem.value);
-            (nextEmpty || pinDigits[pinDigits.length - 1]).focus();
-            if (pinDigits.every(item => item.value)) {
-                els.pinForm.requestSubmit();
-            }
-        });
-    });
+        await openAdminPanel(accessToken);
+    }
 
-    pinDigits[0]?.focus();
+    authorizeAdminFromAccount();
 
     document.querySelectorAll('.admin-tab').forEach(button => {
         button.addEventListener('click', () => {
@@ -468,6 +559,39 @@
     });
 
     els.saveAllButton.addEventListener('click', saveAll);
+    els.allQuestionsButton?.addEventListener('click', () => {
+        applySoloQuestionEditor();
+        state.activeSoloQuestionId = null;
+        document.querySelectorAll('.admin-action-button').forEach(button => {
+            button.classList.toggle('is-active', button === els.allQuestionsButton);
+        });
+        renderAllQuestionsPanel();
+    });
+    els.adminContentPanel?.addEventListener('click', event => {
+        const questionButton = event.target.closest('[data-solo-question-id]');
+        if (questionButton) {
+            renderSoloQuestionEditor(questionButton.dataset.soloQuestionId);
+            return;
+        }
+
+        if (event.target.closest('#backToQuestionsButton')) {
+            applySoloQuestionEditor();
+            state.activeSoloQuestionId = null;
+            renderAllQuestionsPanel();
+        }
+    });
+    els.adminContentPanel?.addEventListener('input', event => {
+        if (!event.target.closest('#soloQuestionEditor')) return;
+        applySoloQuestionEditor();
+        markDirty();
+    });
+    els.adminContentPanel?.addEventListener('submit', event => {
+        if (!event.target.closest('#soloQuestionEditor')) return;
+        event.preventDefault();
+        applySoloQuestionEditor();
+        markDirty();
+    });
+    els.visibleSaveAllButton?.addEventListener('click', saveAll);
     els.fillCalendarButton.addEventListener('click', fillCalendar);
     els.addCategoryButton.addEventListener('click', addCategory);
     els.addQuestionButton.addEventListener('click', addQuestion);

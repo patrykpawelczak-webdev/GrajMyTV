@@ -31,6 +31,9 @@
   --border: rgba(var(--ink-rgb), 0.18);
   --surface-shine: rgba(var(--white-rgb), 0.05);
   --surface-shine-strong: rgba(var(--white-rgb), 0.08);
+  --game-panel-surface:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 50%, rgba(var(--white-rgb), 0.035)),
+    rgba(var(--stage-center-rgb), 0.58);
   --shadow-soft: rgba(var(--ink-rgb), 0.16);
   --shadow-medium: rgba(var(--ink-rgb), 0.22);
   --shadow-strong: rgba(var(--ink-rgb), 0.32);
@@ -305,10 +308,10 @@ iframe {
   text-shadow:
     0 2px 0 rgba(var(--ink-rgb), 0.42),
     0 0.25rem 0 rgba(var(--ink-rgb), 0.68),
-    0 0 0.5rem rgba(var(--led-rgb), 0.4),
-    0 0 0.875rem rgba(var(--led-rgb), 0.44),
-    0 1rem 1.875rem rgba(var(--ink-rgb), 0.24);
-  filter: drop-shadow(0 1px 0 rgba(var(--white-rgb), 0.32));
+    0 0 0.35rem rgba(var(--led-rgb), 0.24),
+    0 0 0.65rem rgba(var(--led-rgb), 0.22),
+    0 1rem 1.875rem rgba(var(--ink-rgb), 0.28);
+  filter: drop-shadow(0 1px 0 rgba(var(--white-rgb), 0.22));
 }
 
 .challenge-nav {
@@ -368,9 +371,8 @@ iframe {
   padding: 0.75rem;
   border: 0.375rem solid var(--board-border);
   border-radius: 1.125rem;
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 50%, rgba(var(--white-rgb), 0.04)),
-    var(--board);
+  background: var(--game-panel-surface);
+  backdrop-filter: blur(0.125rem);
   box-shadow:
     0 0 0 1px rgba(var(--ink-rgb), 0.2),
     0 1.125rem 2.625rem rgba(var(--ink-rgb), 0.26);
@@ -387,7 +389,7 @@ iframe {
   border-radius: 0.375rem;
   background:
     radial-gradient(circle, rgba(var(--led-rgb), 0.06), transparent 62%),
-    var(--board-row);
+    rgba(var(--stage-center-rgb), 0.54);
   color: var(--led);
   text-align: center;
   text-shadow: 0 0 0.5rem rgba(var(--led-rgb), 0.36);
@@ -419,22 +421,11 @@ iframe {
   background:
     radial-gradient(circle at 50% 16%, rgba(var(--led-rgb), 0.07), transparent 58%),
     linear-gradient(180deg, rgba(var(--white-rgb), 0.03), transparent),
-    var(--board-row);
+    rgba(var(--stage-center-rgb), 0.52);
   color: var(--led);
   box-shadow:
     inset 0 0 0 1px rgba(var(--white-rgb), 0.03),
     inset 0 0 0.875rem rgba(var(--led-rgb), 0.035);
-}
-
-.question-score::before {
-  content: '';
-  position: absolute;
-  inset: 0.25rem;
-  z-index: -1;
-  border-radius: 0.28rem;
-  border: 1px solid rgba(var(--led-rgb), 0.08);
-  background:
-    linear-gradient(90deg, rgba(var(--ink-rgb), 0.08), transparent 48%, rgba(var(--led-rgb), 0.025));
 }
 
 .question-score span {
@@ -481,7 +472,7 @@ iframe {
   border-radius: 0.25rem;
   background:
     linear-gradient(180deg, rgba(var(--white-rgb), 0.03), transparent),
-    var(--board-row);
+    rgba(var(--stage-center-rgb), 0.54);
   color: var(--led-dim);
   font-family: 'Courier New', ui-monospace, monospace;
   font-size: clamp(1rem, 2.1vw, 1.32rem);
@@ -507,7 +498,7 @@ iframe {
   color: var(--led);
   background:
     radial-gradient(circle, rgba(var(--led-rgb), 0.08), transparent 62%),
-    var(--board-row);
+    rgba(var(--stage-center-rgb), 0.58);
   text-shadow: 0 0 0.5rem rgba(var(--led-rgb), 0.4);
 }
 
@@ -543,7 +534,7 @@ iframe {
 .answer-row.missed .answer-points {
   border-color: rgba(var(--led-rgb), 0.22);
   color: rgba(var(--led-rgb), 0.72);
-  background: var(--board-row);
+  background: rgba(var(--stage-center-rgb), 0.54);
   text-shadow: none;
 }
 
@@ -616,10 +607,7 @@ iframe {
 .ranking-board {
   --ranking-padding: clamp(0.9rem, 1.35vw, 1.15rem);
   --ranking-row-gap: 0.56rem;
-  --ranking-surface:
-    radial-gradient(ellipse 92% 42% at 50% 0%, rgba(var(--led-rgb), 0.12), transparent 66%),
-    linear-gradient(180deg, rgba(var(--stage-center-rgb), 0.96) 0%, rgba(var(--stage-center-rgb), 0.9) 42%, rgba(8, 13, 16, 0.98) 100%),
-    linear-gradient(145deg, rgba(var(--stage-center-rgb), 0.99), rgba(8, 13, 16, 0.98));
+  --ranking-surface: var(--game-panel-surface);
   grid-column: 2;
   grid-row: 1;
   align-self: start;
@@ -631,27 +619,18 @@ iframe {
   padding: var(--ranking-padding);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(var(--led-rgb), 0.38);
-  border-radius: 0.95rem;
+  border: 0.25rem solid var(--board-border);
+  border-radius: 1.125rem;
   background:
     var(--ranking-surface);
+  backdrop-filter: blur(0.125rem);
   box-shadow:
-    0 1.1rem 2.3rem rgba(var(--ink-rgb), 0.24),
-    0 0 1.6rem rgba(var(--led-rgb), 0.08),
-    inset 0 0 0 1px rgba(var(--white-rgb), 0.035),
-    inset 0 1.1rem 2.2rem rgba(var(--led-rgb), 0.035),
-    inset 0 -2rem 2.7rem rgba(var(--ink-rgb), 0.18);
+    0 0 0 1px rgba(var(--ink-rgb), 0.2),
+    0 1.125rem 2.625rem rgba(var(--ink-rgb), 0.26);
 }
 
 .ranking-board::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 4.75rem;
-  background:
-    linear-gradient(180deg, transparent, rgba(8, 13, 16, 0.44)),
-    radial-gradient(ellipse 90% 60% at 50% 100%, rgba(var(--led-rgb), 0.045), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 
 .ranking-board.is-disabled {
@@ -666,12 +645,12 @@ iframe {
 .ranking-board h2 {
   margin: 0;
   color: var(--led);
-  font-size: clamp(0.9rem, 1.35vw, 1.05rem);
+  font-size: clamp(0.95rem, 1.35vw, 1.08rem);
   font-weight: 900;
   letter-spacing: 0.16em;
   text-align: center;
   text-transform: uppercase;
-  text-shadow: 0 0 0.5rem rgba(var(--led-rgb), 0.32);
+  text-shadow: 0 0 0.5rem rgba(var(--led-rgb), 0.36);
 }
 
 .ranking-audience {
@@ -681,7 +660,7 @@ iframe {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
   width: auto;
-  margin: 0 calc(var(--ranking-padding) * -1) 0.9rem;
+  margin: 0 calc(var(--ranking-padding) * -1) 0.95rem;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -702,22 +681,24 @@ iframe {
 .ranking-audience button {
   position: relative;
   min-width: 0;
-  min-height: 2.45rem;
+  min-height: 2.65rem;
   margin-bottom: -1px;
-  border: 1px solid rgba(var(--led-rgb), 0.18);
-  border-bottom: 1px solid rgba(var(--led-rgb), 0.18);
+  border: 1px solid rgba(var(--led-rgb), 0.24);
+  border-bottom: 1px solid rgba(var(--led-rgb), 0.24);
   border-radius: 0.7rem 0.7rem 0 0;
-  color: rgba(var(--led-rgb), 0.7);
+  color: rgba(var(--led-rgb), 0.78);
   background:
-    linear-gradient(180deg, rgba(var(--white-rgb), 0.025), transparent 68%),
-    rgba(8, 13, 16, 0.14);
+    linear-gradient(180deg, rgba(var(--white-rgb), 0.04), transparent 70%),
+    rgba(var(--stage-center-rgb), 0.62);
   font: inherit;
   font-size: clamp(0.74rem, 0.9vw, 0.86rem);
   font-weight: 900;
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: border-color 160ms ease, color 160ms ease, background 160ms ease, box-shadow 160ms ease;
-  box-shadow: inset 0 1px 0 rgba(var(--white-rgb), 0.026);
+  box-shadow:
+    inset 0 1px 0 rgba(var(--white-rgb), 0.035),
+    inset 0 -0.55rem 1rem rgba(var(--ink-rgb), 0.16);
 }
 
 .ranking-audience button:last-child {
@@ -726,14 +707,15 @@ iframe {
 
 .ranking-audience button.is-active {
   z-index: 2;
-  border-color: rgba(var(--led-rgb), 0.38);
+  border-color: rgba(var(--led-rgb), 0.54);
   border-bottom-color: transparent;
   color: var(--led);
-  background: transparent;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--led-rgb), 0.12), transparent 62%),
+    rgba(var(--stage-center-rgb), 0.7);
   box-shadow:
-    inset 0 1px 0 rgba(var(--white-rgb), 0.04),
-    inset 0 0.65rem 0.85rem rgba(var(--led-rgb), 0.025),
-    0 -0.16rem 0.55rem rgba(var(--led-rgb), 0.055);
+    inset 0 1px 0 rgba(var(--white-rgb), 0.045),
+    0 -0.16rem 0.8rem rgba(var(--led-rgb), 0.12);
 }
 
 .ranking-audience button.is-active::after {
@@ -839,15 +821,19 @@ iframe {
   align-items: center;
   min-height: 2.45rem;
   padding: 0.38rem 0.68rem;
-  border: 1px solid rgba(var(--led-rgb), 0.16);
-  border-radius: 0.66rem;
+  border: 1px solid rgba(var(--led-rgb), 0.18);
+  border-radius: 0.25rem;
   background:
-    linear-gradient(180deg, rgba(var(--white-rgb), 0.036), transparent 72%),
-    linear-gradient(90deg, rgba(var(--led-rgb), 0.055), transparent 40%),
-    rgba(var(--stage-center-rgb), 0.74);
-  color: rgba(var(--led-rgb), 0.76);
-  font-weight: 800;
-  box-shadow: inset 0 1px 0 rgba(var(--white-rgb), 0.024);
+    linear-gradient(180deg, rgba(var(--white-rgb), 0.03), transparent),
+    rgba(var(--stage-center-rgb), 0.6);
+  color: rgba(var(--led-rgb), 0.84);
+  font-family: 'Courier New', ui-monospace, monospace;
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--white-rgb), 0.03),
+    inset 0 0 0.875rem rgba(var(--led-rgb), 0.035);
 }
 
 .answer-board.is-covered .answer-rows {
@@ -917,29 +903,41 @@ iframe {
 }
 
 .ranking-board li.is-empty {
-  border-color: rgba(var(--led-rgb), 0.1);
+  border-color: rgba(var(--led-rgb), 0.12);
   background:
-    linear-gradient(180deg, rgba(var(--white-rgb), 0.02), transparent),
-    rgba(var(--ink-rgb), 0.1);
+    linear-gradient(180deg, rgba(var(--white-rgb), 0.03), transparent),
+    rgba(var(--stage-center-rgb), 0.42);
   box-shadow: none;
   opacity: 0.58;
 }
 
 .ranking-board li.is-viewer {
-  border-color: rgba(var(--led-rgb), 0.38);
+  border-color: rgba(var(--led-rgb), 0.42);
   background:
-    linear-gradient(90deg, rgba(var(--led-rgb), 0.16), rgba(var(--led-rgb), 0.04)),
-    var(--board-row);
+    radial-gradient(circle, rgba(var(--led-rgb), 0.08), transparent 62%),
+    rgba(var(--stage-center-rgb), 0.58);
+  color: var(--led);
+  text-shadow: 0 0 0.5rem rgba(var(--led-rgb), 0.4);
   box-shadow:
     inset 0 0 0 1px rgba(var(--white-rgb), 0.025),
     0 0 1rem rgba(var(--led-rgb), 0.11);
 }
 
 .ranking-board li.is-viewer-source {
-  position: relative;
-  z-index: 3;
-  transform: translateY(var(--viewer-row-offset, 0));
+  position: sticky;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 20;
+  transform: none;
   isolation: isolate;
+  border-color: rgba(var(--led-rgb), 0.42);
+  background:
+    radial-gradient(circle, rgba(var(--led-rgb), 0.08), transparent 62%),
+    linear-gradient(180deg, rgba(var(--white-rgb), 0.04), rgba(var(--white-rgb), 0)),
+    #182020;
+  background-clip: padding-box;
+  color: var(--led);
+  text-shadow: 0 0 0.5rem rgba(var(--led-rgb), 0.4);
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -951,20 +949,24 @@ iframe {
 }
 
 .ranking-board li.is-viewer-source.is-viewer-floating {
-  z-index: 8;
+  z-index: 30;
   border-color: rgba(var(--led-rgb), 0.56);
   background:
-    linear-gradient(90deg, rgba(var(--led-rgb), 0.22), rgba(var(--led-rgb), 0.08)),
-    linear-gradient(180deg, rgba(var(--white-rgb), 0.055), transparent),
-    var(--board-row);
+    radial-gradient(circle, rgba(var(--led-rgb), 0.12), transparent 62%),
+    linear-gradient(180deg, rgba(var(--white-rgb), 0.045), rgba(var(--white-rgb), 0)),
+    #182020;
+  box-shadow:
+    inset 0 0 0 1px rgba(var(--white-rgb), 0.035),
+    0 0 0 0.18rem rgba(var(--stage-center-rgb), 0.92),
+    0 0 1.1rem rgba(var(--led-rgb), 0.16);
 }
 
 .ranking-board li.is-viewer-source.is-viewer-floating::after {
   content: "";
   position: absolute;
-  left: -0.08rem;
-  right: -0.08rem;
-  height: 0.9rem;
+  left: -0.2rem;
+  right: -0.2rem;
+  height: calc(var(--ranking-row-gap) + 1.6rem);
   pointer-events: none;
   z-index: -1;
 }
@@ -972,25 +974,27 @@ iframe {
 .ranking-board li.is-viewer-source.is-viewer-floating-top {
   box-shadow:
     inset 0 0 0 1px rgba(var(--white-rgb), 0.035),
-    0 0.72rem 1rem rgba(var(--ink-rgb), 0.5),
+    0 0 0 0.18rem rgba(var(--stage-center-rgb), 0.92),
+    0 0.72rem 1rem rgba(var(--ink-rgb), 0.54),
     0 0 1.1rem rgba(var(--led-rgb), 0.16);
 }
 
 .ranking-board li.is-viewer-source.is-viewer-floating-top::after {
-  bottom: -0.72rem;
-  background: linear-gradient(180deg, rgba(var(--ink-rgb), 0.54), transparent);
+  bottom: calc((var(--ranking-row-gap) + 1.45rem) * -1);
+  background: #182020;
 }
 
 .ranking-board li.is-viewer-source.is-viewer-floating-bottom {
   box-shadow:
     inset 0 0 0 1px rgba(var(--white-rgb), 0.035),
-    0 -0.72rem 1rem rgba(var(--ink-rgb), 0.5),
+    0 0 0 0.18rem rgba(var(--stage-center-rgb), 0.92),
+    0 -0.72rem 1rem rgba(var(--ink-rgb), 0.54),
     0 0 1.1rem rgba(var(--led-rgb), 0.16);
 }
 
 .ranking-board li.is-viewer-source.is-viewer-floating-bottom::after {
-  top: -0.72rem;
-  background: linear-gradient(0deg, rgba(var(--ink-rgb), 0.54), transparent);
+  top: calc((var(--ranking-row-gap) + 1.45rem) * -1);
+  background: #182020;
 }
 
 .ranking-board.is-disabled li {
@@ -1008,16 +1012,15 @@ iframe {
   min-width: 1.58rem;
   width: auto;
   height: 1.58rem;
-  padding: 0 0.34rem;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  border: 1px solid rgba(var(--led-rgb), 0.26);
-  border-radius: 50%;
-  color: var(--led);
-  background:
-    radial-gradient(circle at 45% 35%, rgba(var(--led-rgb), 0.18), rgba(var(--led-rgb), 0.07));
+  border: 0;
+  border-radius: 0;
+  color: currentColor;
+  background: transparent;
   font-style: normal;
   font-size: 0.72rem;
   font-weight: 900;
@@ -1026,7 +1029,7 @@ iframe {
 .ranking-player b {
   min-width: 0;
   overflow: hidden;
-  color: rgba(var(--led-rgb), 0.92);
+  color: inherit;
   font-size: 0.95rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1034,7 +1037,8 @@ iframe {
 
 .ranking-board strong {
   min-width: 0;
-  color: var(--led);
+  color: inherit;
+  font-family: 'Courier New', ui-monospace, monospace;
   font-size: clamp(0.78rem, 1.02vw, 0.98rem);
   font-weight: 900;
   justify-self: end;
@@ -1045,7 +1049,7 @@ iframe {
 }
 
 .ranking-board small {
-  color: rgba(var(--led-rgb), 0.62);
+  color: currentColor;
   font-size: 0.66rem;
 }
 
@@ -1568,10 +1572,10 @@ iframe {
     text-shadow:
       0 2px 0 rgba(var(--ink-rgb), 0.42),
       0 0.1875rem 0 rgba(var(--ink-rgb), 0.62),
-      -0.4375rem 0 1rem rgba(var(--stage-red-rgb), 0.26),
-      0.4375rem 0 1rem rgba(var(--stage-blue-rgb), 0.26),
-      0 0 0.6875rem rgba(var(--led-rgb), 0.5),
-      0 0.625rem 1.375rem rgba(var(--ink-rgb), 0.2);
+      -0.375rem 0 0.85rem rgba(var(--stage-red-rgb), 0.18),
+      0.375rem 0 0.85rem rgba(var(--stage-blue-rgb), 0.18),
+      0 0 0.5rem rgba(var(--led-rgb), 0.28),
+      0 0.625rem 1.375rem rgba(var(--ink-rgb), 0.24);
   }
 
   .challenge-nav {

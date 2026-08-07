@@ -5,6 +5,7 @@ const fsp     = require('fs').promises;
 const router  = express.Router();
 
 const QUESTIONS_FILE = path.join(__dirname, 'public', 'pytania.json');
+const SOLO_QUESTIONS_FILE = path.join(__dirname, 'public', 'rodziniada-solo-questions.json');
 const JOKES_FILE     = path.join(__dirname, 'public', 'zarty.json');
 const CALENDAR_FILE  = path.join(__dirname, 'public', 'daily-challenges.json');
 const RESULTS_FILE   = process.env.RODZINIADA_SOLO_RESULTS_FILE || path.join(__dirname, 'data', 'solo-results.json');
@@ -395,6 +396,20 @@ function isAllowedResultProfile(profile) {
     );
 }
 
+function isAdminProfile(profile) {
+    return Boolean(profile && profile.role === 'admin');
+}
+
+async function isAuthorizedEditorRequest(req) {
+    try {
+        const user = await getAuthenticatedSupabaseUser(req);
+        const profile = user?.id ? await getSupabaseProfile(user.id) : null;
+        return isAdminProfile(profile);
+    } catch {
+        return false;
+    }
+}
+
 function rankingProfileFromAuthUser(user, profile = {}) {
     const metadata = readUserMetadata(user);
     const metadataRole = ['admin', 'tester', 'player'].includes(metadata.role) ? metadata.role : null;
@@ -748,10 +763,9 @@ router.get('/api/questions', async (req, res) => {
 
 router.post('/api/questions', async (req, res) => {
     const data = req.body;
-    const providedPin = req.headers['x-pin'];
-    
-    if (providedPin !== EDITOR_PIN) {
-        return res.status(401).json({ error: 'Brak autoryzacji (nieprawidłowy PIN)' });
+
+    if (!await isAuthorizedEditorRequest(req)) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
     }
     
     if (!data || !Array.isArray(data.categories)) {
@@ -772,6 +786,44 @@ router.post('/api/questions', async (req, res) => {
     }
 });
 
+router.get('/api/solo-questions', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+
+    try {
+        if (!fs.existsSync(SOLO_QUESTIONS_FILE)) {
+            return res.json({ categories: [] });
+        }
+
+        const fileData = await fsp.readFile(SOLO_QUESTIONS_FILE, 'utf8');
+        res.json(JSON.parse(fileData));
+    } catch(e) {
+        res.status(500).json({ error: 'Blad odczytu bazy pytan solo' });
+    }
+});
+
+router.post('/api/solo-questions', async (req, res) => {
+    const data = req.body;
+
+    if (!await isAuthorizedEditorRequest(req)) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
+    }
+
+    if (!data || !Array.isArray(data.categories)) {
+        return res.status(400).json({ error: 'Nieprawidlowy format bazy pytan solo' });
+    }
+
+    try {
+        if (fs.existsSync(SOLO_QUESTIONS_FILE)) {
+            await fsp.copyFile(SOLO_QUESTIONS_FILE, SOLO_QUESTIONS_FILE + '.backup');
+        }
+
+        await writeJsonFile(SOLO_QUESTIONS_FILE, data);
+        res.json({ ok: true });
+    } catch(e) {
+        res.status(500).json({ error: 'Blad zapisu bazy pytan solo' });
+    }
+});
+
 // ===== API KALENDARZA SOLO =====
 router.get('/api/solo-calendar', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -788,10 +840,9 @@ router.get('/api/solo-calendar', async (req, res) => {
 
 router.post('/api/solo-calendar', async (req, res) => {
     const data = req.body;
-    const providedPin = req.headers['x-pin'];
 
-    if (providedPin !== EDITOR_PIN) {
-        return res.status(401).json({ error: 'Brak autoryzacji (nieprawidlowy PIN)' });
+    if (!await isAuthorizedEditorRequest(req)) {
+        return res.status(401).json({ error: 'Brak autoryzacji' });
     }
 
     if (!data || typeof data.startDate !== 'string' || !Array.isArray(data.days)) {

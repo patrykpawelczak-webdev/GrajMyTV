@@ -646,20 +646,13 @@
         const naturalBottom = naturalTop + viewerRow.offsetHeight;
         const listTop = 0;
         const listBottom = els.rankingList.clientHeight;
-        const edgeGap = Math.max(6, Number.parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.5);
-        let offset = 0;
+        const sticksToTop = naturalTop <= listTop;
+        const sticksToBottom = naturalBottom >= listBottom;
 
-        if (naturalTop < listTop) {
-            offset = listTop + edgeGap - naturalTop;
-        } else if (naturalBottom > listBottom) {
-            offset = listBottom - edgeGap - naturalBottom;
-        }
-
-        const nextOffset = Number(offset.toFixed(2));
-        viewerRow.style.setProperty('--viewer-row-offset', `${nextOffset}px`);
-        viewerRow.classList.toggle('is-viewer-floating', Math.abs(nextOffset) > 0.1);
-        viewerRow.classList.toggle('is-viewer-floating-top', nextOffset > 0.1);
-        viewerRow.classList.toggle('is-viewer-floating-bottom', nextOffset < -0.1);
+        viewerRow.style.removeProperty('--viewer-row-offset');
+        viewerRow.classList.toggle('is-viewer-floating', sticksToTop || sticksToBottom);
+        viewerRow.classList.toggle('is-viewer-floating-top', sticksToTop);
+        viewerRow.classList.toggle('is-viewer-floating-bottom', sticksToBottom);
     }
 
     function requestViewerRankingPositionUpdate() {
