@@ -639,6 +639,8 @@
         const viewerRow = els.rankingList.querySelector('.is-viewer-source');
         if (!viewerRow) return;
 
+        viewerRow.classList.remove('is-viewer-floating', 'is-viewer-floating-top', 'is-viewer-floating-bottom');
+
         const rowTop = viewerRow.offsetParent === els.rankingList
             ? viewerRow.offsetTop
             : viewerRow.offsetTop - els.rankingList.offsetTop;
@@ -646,8 +648,12 @@
         const naturalBottom = naturalTop + viewerRow.offsetHeight;
         const listTop = 0;
         const listBottom = els.rankingList.clientHeight;
-        const sticksToTop = naturalTop <= listTop;
-        const sticksToBottom = naturalBottom >= listBottom;
+        const edgeTolerance = 4;
+        const maxScrollTop = Math.max(0, els.rankingList.scrollHeight - els.rankingList.clientHeight);
+        const canStickToTop = els.rankingList.scrollTop > edgeTolerance;
+        const canStickToBottom = els.rankingList.scrollTop < maxScrollTop - edgeTolerance;
+        const sticksToTop = canStickToTop && naturalTop <= listTop + edgeTolerance;
+        const sticksToBottom = canStickToBottom && naturalBottom >= listBottom - edgeTolerance;
 
         viewerRow.style.removeProperty('--viewer-row-offset');
         viewerRow.classList.toggle('is-viewer-floating', sticksToTop || sticksToBottom);
@@ -658,6 +664,24 @@
     function requestViewerRankingPositionUpdate() {
         if (rankingViewerFrame) return;
         rankingViewerFrame = requestAnimationFrame(updateViewerRankingPosition);
+    }
+
+    function ensureViewerRankingVisible() {
+        if (!els.rankingList) return;
+
+        const viewerRow = els.rankingList.querySelector('.is-viewer-source');
+        if (!viewerRow) return;
+
+        viewerRow.classList.remove('is-viewer-floating', 'is-viewer-floating-top', 'is-viewer-floating-bottom');
+
+        const list = els.rankingList;
+        const listRect = list.getBoundingClientRect();
+        const rowRect = viewerRow.getBoundingClientRect();
+        const maxScrollTop = Math.max(0, list.scrollHeight - list.clientHeight);
+        const targetScrollTop = list.scrollTop + (rowRect.top - listRect.top) - ((list.clientHeight / 2) - (rowRect.height / 2));
+
+        list.scrollTop = Math.max(0, Math.min(targetScrollTop, maxScrollTop));
+        requestViewerRankingPositionUpdate();
     }
 
     function renderRanking(entries = [], viewerRank = null, options = {}) {
@@ -693,8 +717,14 @@
                 : '';
             return rankingRow(entry, place, viewerClass);
         }).join('');
-        els.rankingList.scrollTop = options.preserveScroll ? previousScrollTop : 0;
         els.rankingList.querySelector('.is-viewer-source')?.removeAttribute('data-viewer-offset');
+
+        if (els.rankingList.querySelector('.is-viewer-source')) {
+            ensureViewerRankingVisible();
+            return;
+        }
+
+        els.rankingList.scrollTop = options.preserveScroll ? previousScrollTop : 0;
         requestViewerRankingPositionUpdate();
     }
 
@@ -727,7 +757,11 @@
                 viewerRank: nextViewerRank
             });
             if (options.preserveScroll && nextSignature === rankingSignature) {
-                requestViewerRankingPositionUpdate();
+                if (els.rankingList.querySelector('.is-viewer-source')) {
+                    ensureViewerRankingVisible();
+                } else {
+                    requestViewerRankingPositionUpdate();
+                }
                 return;
             }
             rankingSignature = nextSignature;
