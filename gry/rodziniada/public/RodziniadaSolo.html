@@ -11,26 +11,24 @@
 <body class="auth-pending">
     <main class="solo-app">
         <header class="game-topbar">
-            <a href="/" class="back-button" aria-label="Powrót">Powrót</a>
+            <div class="game-topbar-shell">
+                <a href="/" class="back-button" aria-label="Powrót">Powrót</a>
 
-            <div class="title-lockup">
-                <h1>Rodziniada</h1>
-                <div class="challenge-nav" aria-label="Nawigacja po wyzwaniach">
-                    <button type="button" class="nav-day" id="prevChallenge" aria-label="Poprzednie wyzwanie">‹</button>
-                    <strong id="challengeNumber">#1</strong>
-                    <button type="button" class="nav-day" id="nextChallenge" aria-label="Następne wyzwanie">›</button>
+                <div class="title-lockup">
+                    <h1>Rodziniada</h1>
+                    <div class="challenge-nav" aria-label="Nawigacja po wyzwaniach">
+                        <button type="button" class="nav-day" id="prevChallenge" aria-label="Poprzednie wyzwanie">‹</button>
+                        <strong id="challengeNumber">#1</strong>
+                        <button type="button" class="nav-day" id="nextChallenge" aria-label="Następne wyzwanie">›</button>
+                    </div>
                 </div>
+
+                <button type="button" class="calendar-button" id="calendarButton" aria-label="Kalendarz wyzwań">
+                    <span class="calendar-glyph" aria-hidden="true"></span>
+                    <span class="calendar-label">Kalendarz</span>
+                </button>
             </div>
-
-            <button type="button" class="calendar-button" id="calendarButton" aria-label="Kalendarz wyzwań">
-                <span class="calendar-glyph" aria-hidden="true"></span>
-                <span class="calendar-label">Kalendarz</span>
-            </button>
         </header>
-
-        <p class="archive-note" id="archiveNote">
-            Archiwum odblokuje się po ukończeniu dzisiejszego wyzwania.
-        </p>
 
         <section class="game-shell" aria-label="Plansza gry">
             <div class="play-area">

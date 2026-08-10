@@ -123,6 +123,8 @@
     let rankingRefreshTimer = null;
     let rankingSignature = '';
     let rankingRequestId = 0;
+    let rankingScrollProgrammatic = false;
+    let rankingAutoFocusLocked = false;
 
     function syncRankingHeight() {
         if (!els.answerBoard || !els.rankingBoard) return;
@@ -680,8 +682,12 @@
         const maxScrollTop = Math.max(0, list.scrollHeight - list.clientHeight);
         const targetScrollTop = list.scrollTop + (rowRect.top - listRect.top) - ((list.clientHeight / 2) - (rowRect.height / 2));
 
+        rankingScrollProgrammatic = true;
         list.scrollTop = Math.max(0, Math.min(targetScrollTop, maxScrollTop));
-        requestViewerRankingPositionUpdate();
+        window.requestAnimationFrame(() => {
+            rankingScrollProgrammatic = false;
+            requestViewerRankingPositionUpdate();
+        });
     }
 
     function renderRanking(entries = [], viewerRank = null, options = {}) {
@@ -719,8 +725,13 @@
         }).join('');
         els.rankingList.querySelector('.is-viewer-source')?.removeAttribute('data-viewer-offset');
 
-        if (els.rankingList.querySelector('.is-viewer-source')) {
-            ensureViewerRankingVisible();
+        const viewerRow = els.rankingList.querySelector('.is-viewer-source');
+        if (viewerRow) {
+            if (options.focusViewer !== false && !rankingAutoFocusLocked) {
+                ensureViewerRankingVisible();
+                return;
+            }
+            requestViewerRankingPositionUpdate();
             return;
         }
 
@@ -757,7 +768,7 @@
                 viewerRank: nextViewerRank
             });
             if (options.preserveScroll && nextSignature === rankingSignature) {
-                if (els.rankingList.querySelector('.is-viewer-source')) {
+                if (options.focusViewer !== false && els.rankingList.querySelector('.is-viewer-source')) {
                     ensureViewerRankingVisible();
                 } else {
                     requestViewerRankingPositionUpdate();
@@ -777,7 +788,7 @@
 
     function refreshRankingLive() {
         if (document.hidden) return;
-        loadRanking({ preserveScroll: true });
+        loadRanking({ preserveScroll: true, focusViewer: false });
     }
 
     function startRankingLiveRefresh() {
@@ -856,10 +867,12 @@
             els.startChallengeButton.hidden = state.started || state.finished || !canPlayCurrent;
         }
         els.shareButton.disabled = !(isToday && state.finished);
-        if (archiveUnlocked) {
-            els.archiveNote.textContent = 'Archiwum jest odblokowane. Do klasyfikacji liczy si\u0119 tylko dzisiejsze wyzwanie.';
-        } else {
-            els.archiveNote.textContent = 'Archiwum odblokuje si\u0119 po uko\u0144czeniu dzisiejszego wyzwania.';
+        if (els.archiveNote) {
+            if (archiveUnlocked) {
+                els.archiveNote.textContent = 'Archiwum jest odblokowane. Do klasyfikacji liczy si\u0119 tylko dzisiejsze wyzwanie.';
+            } else {
+                els.archiveNote.textContent = 'Archiwum odblokuje si\u0119 po uko\u0144czeniu dzisiejszego wyzwania.';
+            }
         }
 
         if (state.finished) {
@@ -1133,11 +1146,19 @@
         els.rankingTabs.forEach(button => {
             button.addEventListener('click', () => {
                 state.rankingScope = button.dataset.rankingScope || 'all';
+                rankingAutoFocusLocked = false;
                 renderRanking([]);
                 loadRanking();
             });
         });
-        els.rankingList.addEventListener('scroll', requestViewerRankingPositionUpdate, { passive: true });
+        els.rankingList.addEventListener('scroll', () => {
+            if (rankingScrollProgrammatic) {
+                requestViewerRankingPositionUpdate();
+                return;
+            }
+            rankingAutoFocusLocked = true;
+            requestViewerRankingPositionUpdate();
+        }, { passive: true });
         window.addEventListener('resize', requestViewerRankingPositionUpdate);
         els.answerInput.addEventListener('keydown', event => {
             if (event.key === 'Enter') {
