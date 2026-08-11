@@ -9,7 +9,7 @@
   --border: #28345F;
 
   --text: #FFFFFF;
-  --text-secondary: #C5CAE2;
+  --text-secondary: #D8DDEF;
   --text-muted: #8A93B8;
 
   --primary: #8B3DFF;
@@ -194,7 +194,7 @@ footer,
 main > section {
   position: relative;
   z-index: 2;
-  scroll-margin-top: 5rem;
+  scroll-margin-top: 4rem;
 }
 
 /* ==========================================
@@ -758,7 +758,7 @@ main > section {
   font-weight: 900;
   line-height: 1.12;
   letter-spacing: 0.02em;
-  text-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.28);
+  text-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.35);
   margin-bottom: 0.5rem;
 }
 
@@ -1072,7 +1072,7 @@ main > section {
    SEKCJA TELETURNIEJÓW
    ========================================== */
 .games-section {
-  padding: 5rem 0;
+  padding: 3rem 0 5rem;
   position: relative;
 }
 
@@ -1181,9 +1181,11 @@ main > section {
 }
 
 .game-card:hover {
-  transform: translateY(-0.5rem);
+  transform: translateY(-0.5rem) scale(1.025);
   border-color: var(--secondary);
-  box-shadow: var(--shadow-glow);
+  box-shadow:
+    var(--shadow-glow),
+    0 1.25rem 2.5rem rgba(0, 0, 0, 0.3);
 }
 
 .game-card.hidden-by-mode {
@@ -1400,7 +1402,7 @@ main > section {
    SEKCJA „JAK TO DZIAŁA”
    ========================================== */
 .how-it-works-section {
-  padding: 5rem 0;
+  padding: 3rem 0 5rem;
   background: transparent;
   position: relative;
 }
@@ -1566,7 +1568,7 @@ main > section {
    SEKCJA KORZYŚCI
    ========================================== */
 .benefits-section {
-  padding: 5rem 0;
+  padding: 3rem 0 5rem;
   background: transparent;
   position: relative;
 }
@@ -2987,4 +2989,19 @@ main > section {
     opacity: 1 !important;
     transition: none !important;
   }
+}
+
+/* ==========================================
+   ACCESSIBLE FOCUS STATES
+   ========================================== */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.btn:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(139, 61, 255, 0.4),
+    0 0.25rem 1rem rgba(139, 61, 255, 0.25);
 }
