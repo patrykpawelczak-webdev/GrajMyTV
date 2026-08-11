@@ -274,22 +274,21 @@ button {
 
 .admin-panel {
   min-height: 100vh;
-  padding: 1.25rem;
-  display: grid;
-  place-items: center;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-workspace {
   position: relative;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   --admin-panel-text: var(--text);
-  width: clamp(38rem, 62vw, 64rem);
-  max-width: calc(100vw - 2.5rem);
-  min-height: min(80vh, 48rem);
-  height: 80vh;
-  margin: 0 auto;
-  padding-top: 3.15rem;
+  width: 100%;
+  max-width: 64rem;
+  height: 90vh;
+  max-height: 55rem;
+  margin: auto;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 0.875rem;
@@ -346,6 +345,8 @@ button {
     rgba(11, 20, 48, 0.72);
   font-size: 0.86rem;
   font-weight: 900;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease, transform 0.16s ease;
 }
 
@@ -446,7 +447,7 @@ button {
 
 .admin-question-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   gap: 0.75rem;
   align-items: center;
   min-height: 4rem;
@@ -676,28 +677,23 @@ button {
 }
 
 .admin-panel .admin-main-tabs {
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  right: -1px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  width: auto;
+  display: flex;
+  width: 100%;
   padding: 0;
   border: 0;
+  border-bottom: 1px solid var(--border);
   border-radius: 0;
   background: transparent;
-  isolation: isolate;
 }
 
 .admin-panel .admin-main-tab {
+  flex: 1;
   min-height: 3.25rem;
   margin: 0;
   padding: 0 1.35rem;
-  border: 1px solid var(--border);
-  border-top-color: var(--border);
-  border-bottom-color: var(--border);
+  border: 0;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
   border-radius: 0;
   color: var(--admin-panel-text);
   background:
@@ -1023,4 +1019,254 @@ button {
     width: 100%;
     flex-wrap: wrap;
   }
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 9999;
+}
+
+.toast-message {
+  background: var(--card);
+  color: var(--text);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Kategorie UI */
+.admin-category-group {
+  margin-bottom: 2rem;
+}
+
+.admin-category-heading {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(139, 61, 255, 0.3);
+}
+
+.admin-categories-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-category-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.admin-category-card:hover {
+  border-color: rgba(139, 61, 255, 0.4);
+}
+
+.admin-category-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.5rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.admin-category-input:focus {
+  outline: none;
+  border-bottom-color: var(--primary);
+}
+
+.admin-category-stats {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  min-width: 5rem;
+  text-align: center;
+}
+
+.admin-btn-delete {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-btn-delete:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.admin-btn-delete.is-confirming {
+  background: var(--danger);
+  color: #fff;
+  animation: pulseWarning 1s infinite;
+}
+
+@keyframes pulseWarning {
+  0% { box-shadow: 0 0 0 0 rgba(255, 59, 92, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(255, 59, 92, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 59, 92, 0); }
+}
+
+.admin-add-category-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(139, 61, 255, 0.1);
+  color: var(--primary);
+  border: 1px dashed var(--primary);
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-add-category-btn:hover {
+  background: rgba(139, 61, 255, 0.2);
+}
+
+/* Modal UI */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.7);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.admin-modal-overlay.is-hidden {
+  display: none;
+}
+
+.admin-modal {
+  background: linear-gradient(145deg, #0a1128, #050a1a);
+  border: 1px solid rgba(139, 61, 255, 0.3);
+  border-radius: 1.25rem;
+  width: 100%;
+  max-width: 32rem;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes modalScaleIn {
+  from { transform: scale(0.95) translateY(15px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.admin-modal-header {
+  padding: 1.5rem;
+  background: rgba(139, 61, 255, 0.05);
+  border-bottom: 1px solid rgba(139, 61, 255, 0.15);
+}
+
+.admin-modal-header .admin-text-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.admin-modal-body {
+  padding: 2rem 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+#addCategoryNameInput {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.9rem 1.2rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  font-size: 1.05rem;
+  transition: all 0.2s ease;
+}
+
+#addCategoryNameInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 61, 255, 0.2);
+  outline: none;
+}
+
+.admin-modal-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-modal-question-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-modal-question-item:hover {
+  background: rgba(139, 61, 255, 0.08);
+  border-color: rgba(139, 61, 255, 0.3);
+}
+
+.admin-modal-question-item input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.admin-modal-question-item label {
+  cursor: pointer;
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--text);
+  user-select: none;
+  font-weight: 500;
+}
+
+.admin-modal-footer {
+  padding: 1.25rem 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }

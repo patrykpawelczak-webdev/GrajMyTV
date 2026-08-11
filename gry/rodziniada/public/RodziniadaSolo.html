@@ -11,8 +11,11 @@
 <body class="auth-pending">
     <main class="solo-app">
         <header class="game-topbar">
-            <div class="game-topbar-shell">
-                <a href="/" class="back-button" aria-label="Powrót">Powrót</a>
+            <nav class="game-topbar-shell" aria-label="Nawigacja główna gry">
+                <a href="/" class="back-button" aria-label="Powrót">
+                    <span class="back-glyph"></span>
+                    <span class="back-label">Powrót</span>
+                </a>
 
                 <div class="title-lockup">
                     <h1>Rodziniada</h1>
@@ -22,16 +25,18 @@
                     <span class="calendar-glyph" aria-hidden="true"></span>
                     <span class="calendar-label">Kalendarz</span>
                 </button>
-            </div>
+            </nav>
         </header>
 
-        <div class="challenge-strip" aria-label="Nawigacja po wyzwaniach">
-            <button type="button" class="nav-day" id="prevChallenge" aria-label="Poprzednie wyzwanie">‹</button>
-            <strong id="challengeNumber">#1</strong>
-            <button type="button" class="nav-day" id="nextChallenge" aria-label="Następne wyzwanie">›</button>
-        </div>
+
 
         <section class="game-shell" aria-label="Plansza gry">
+            <div class="challenge-strip" aria-label="Nawigacja po wyzwaniach">
+                <button type="button" class="nav-day" id="prevChallenge" aria-label="Poprzednie wyzwanie">‹</button>
+                <strong id="challengeNumber">#1</strong>
+                <button type="button" class="nav-day" id="nextChallenge" aria-label="Następne wyzwanie">›</button>
+            </div>
+
             <div class="play-area">
                 <aside class="strike-board" aria-label="Błędne odpowiedzi">
                     <span class="strike" id="strike1">X</span>
@@ -39,25 +44,27 @@
                     <span class="strike" id="strike3">X</span>
                 </aside>
 
-                <div class="answer-board" id="answerBoard" aria-label="Tablica odpowiedzi">
-                    <div class="board-question">
-                        <h2 id="questionText">Ładowanie pytania...</h2>
-                        <div class="question-score" aria-label="Aktualny wynik">
-                            <span>Punkty</span>
-                            <strong id="currentScore">0</strong>
+                <div class="board-column">
+                    <div class="answer-board" id="answerBoard" aria-label="Tablica odpowiedzi">
+                        <div class="board-question">
+                            <h2 id="questionText">Ładowanie pytania...</h2>
+                            <div class="question-score" aria-label="Aktualny wynik">
+                                <span>Punkty</span>
+                                <strong id="currentScore">0</strong>
+                            </div>
                         </div>
+                        <div class="answer-rows" id="answersBoard"></div>
+                        <button class="board-start-button" id="startChallengeButton" type="button" aria-label="Rozpocznij wyzwanie">
+                            <span></span>
+                        </button>
                     </div>
-                    <div class="answer-rows" id="answersBoard"></div>
-                    <button class="board-start-button" id="startChallengeButton" type="button" aria-label="Rozpocznij wyzwanie">
-                        <span></span>
-                    </button>
+
+                    <form class="answer-form" id="answerForm">
+                        <input id="answerInput" type="text" autocomplete="off" maxlength="80" placeholder="Wpisz odpowiedź..." disabled>
+                        <button class="submit-button" type="submit" id="submitButton" disabled>Sprawdź</button>
+                    </form>
                 </div>
             </div>
-
-            <form class="answer-form" id="answerForm">
-                <input id="answerInput" type="text" autocomplete="off" maxlength="80" placeholder="Wpisz odpowiedź..." disabled>
-                <button class="submit-button" type="submit" id="submitButton" disabled>Sprawdź</button>
-            </form>
 
             <aside class="ranking-board" aria-label="Ranking graczy">
                 <div class="ranking-head">
@@ -71,7 +78,7 @@
                     <button type="button" data-ranking-scope="day" role="tab" aria-selected="true">Dzień</button>
                     <button type="button" data-ranking-scope="week" role="tab">Tydzień</button>
                     <button type="button" data-ranking-scope="month" role="tab">Miesiąc</button>
-                    <button type="button" data-ranking-scope="all" role="tab">Ogólny</button>
+                    <button type="button" data-ranking-scope="all" role="tab" aria-selected="false">Rok</button>
                 </div>
                 <ol id="rankingList">
                     <li><span>Ładowanie rankingu</span><strong>---</strong></li>
@@ -83,7 +90,10 @@
         <button class="sr-only" id="shareButton" type="button" disabled>Udostępnij</button>
 
         <footer class="solo-footer">
-            <p>&copy; 2026 GrajMyTV. Wszystkie prawa zastrzeżone.</p>
+            <div class="footer-ads" aria-label="Miejsce na reklamę"></div>
+            <div class="footer-copyright">
+                <p>&copy; 2026 GrajMyTV. Wszelkie prawa zastrzeżone.</p>
+            </div>
         </footer>
 
         <dialog class="calendar-dialog" id="calendarDialog">

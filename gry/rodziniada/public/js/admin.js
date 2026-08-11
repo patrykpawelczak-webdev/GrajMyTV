@@ -11,6 +11,10 @@
         questionsTotal: $('questionsTotal'),
         calendarTotal: $('calendarTotal'),
         allQuestionsButton: $('allQuestionsButton'),
+        categoriesButton: $('categoriesButton'),
+        importButton: $('importButton'),
+        exportButton: $('exportButton'),
+        importFileInput: $('importFileInput'),
         adminContentPanel: $('adminContentPanel'),
         saveAllButton: $('saveAllButton'),
         visibleSaveAllButton: $('visibleSaveAllButton'),
@@ -31,7 +35,16 @@
         questionTextInput: $('questionTextInput'),
         answersForm: $('answersForm'),
         sortAnswersButton: $('sortAnswersButton'),
-        deleteQuestionButton: $('deleteQuestionButton')
+        deleteQuestionButton: $('deleteQuestionButton'),
+        addCategoryModalOverlay: $('addCategoryModalOverlay'),
+        addCategoryNameInput: $('addCategoryNameInput'),
+        addCategoryQuestionsList: $('addCategoryQuestionsList'),
+        addCategoryCancelBtn: $('addCategoryCancelBtn'),
+        addCategoryConfirmBtn: $('addCategoryConfirmBtn'),
+        editQuestionModalOverlay: $('editQuestionModalOverlay'),
+        editQuestionModalBody: $('editQuestionModalBody'),
+        editQuestionCloseBtn: $('editQuestionCloseBtn'),
+        editQuestionSaveBtn: $('editQuestionSaveBtn')
     };
 
     const state = {
@@ -60,8 +73,28 @@
     }
 
     function setStatus(message, type = 'info') {
-        els.statusText.textContent = message;
-        els.statusText.dataset.type = type;
+        const toastContainer = $('toastContainer');
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        if (type === 'error') {
+            toast.style.borderLeftColor = 'var(--danger)';
+        } else if (type === 'success') {
+            toast.style.borderLeftColor = 'var(--success)';
+        } else if (type === 'warning') {
+            toast.style.borderLeftColor = 'var(--warning)';
+        }
+        
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            toast.style.transition = 'all 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
     function markDirty() {
@@ -163,18 +196,26 @@
             : { categories: [] };
 
         if (!Array.isArray(state.soloQuestionsData.categories) || !state.soloQuestionsData.categories.length) {
-            const fallbackResponse = await fetch('/rodziniada/rodziniada-solo-questions.json', { cache: 'no-store' }).catch(() => null);
+            const fallbackResponse = await fetch('/rodziniada-solo-questions.json', { cache: 'no-store' }).catch(() => null);
             if (fallbackResponse?.ok) {
                 state.soloQuestionsData = await fallbackResponse.json();
             }
         }
 
+        // Zawsze ładuj oficjalny plik, ignorując ewentualny lokalny draft
         const localDraft = readSoloQuestionsDraft();
         const hasLocalDraft = Boolean(localDraft);
-        if (localDraft) {
-            state.soloQuestionsData = localDraft;
-        }
+        // if (localDraft) {
+        //     state.soloQuestionsData = localDraft;
+        // }
 
+        if (hasLocalDraft) {
+            markDirty();
+            // setStatus usunięty zgodnie z życzeniem
+        } else {
+            markSaved();
+        }
+        
         if (!Array.isArray(state.data.categories)) state.data.categories = [];
         if (!Array.isArray(state.soloQuestionsData.categories)) state.soloQuestionsData.categories = [];
         if (!Array.isArray(state.calendar.days)) state.calendar.days = [];
@@ -198,7 +239,6 @@
         renderAllQuestionsPanel();
         if (hasLocalDraft) {
             markDirty();
-            setStatus('Wczytano lokalny szkic pytań z przeglądarki.');
         } else {
             markSaved();
             setStatus('Dane załadowane.');
@@ -242,7 +282,7 @@
 
         localStorage.removeItem(SOLO_QUESTIONS_DRAFT_KEY);
         markSaved();
-        setStatus('Zapisano panel admina.');
+        setStatus('Zapisano.', 'success');
     }
 
     function renderAll() {
@@ -262,50 +302,83 @@
     function renderAllQuestionsPanel() {
         if (!els.adminContentPanel) return;
 
-        const questions = flattenSoloQuestions();
-        if (!questions.length) {
-            els.adminContentPanel.innerHTML = `
+        const categories = state.soloQuestionsData.categories || [];
+        let html = '';
+        let hasAnyQuestions = false;
+        let globalQuestionIndex = 0;
+
+        categories.forEach(category => {
+            const qs = category.questions || [];
+            if (qs.length > 0) hasAnyQuestions = true;
+
+            html += `
+                <div class="admin-category-group">
+                    <div class="admin-category-heading">${escapeHtml(category.name || 'Bez kategorii')}</div>
+                    <div class="admin-question-list">
+                        ${qs.length ? qs.map(question => {
+                            const qHtml = `
+                                <div class="admin-question-card" data-solo-question-id="${escapeHtml(question.id)}">
+                                    <div class="admin-text-meta admin-question-number">#${globalQuestionIndex + 1}</div>
+                                    <div class="admin-question-main">
+                                        <strong class="admin-text-title">${escapeHtml(question.text || 'Pytanie bez treści')}</strong>
+                                    </div>
+                                    <div class="admin-text-meta admin-question-meta">${(question.answers || []).length} odp.</div>
+                                    <button class="admin-btn-delete admin-btn-delete-question" type="button" data-delete-question="${escapeHtml(question.id)}" aria-label="Usuń pytanie">Usuń</button>
+                                </div>
+                            `;
+                            globalQuestionIndex++;
+                            return qHtml;
+                        }).join('') : '<span class="admin-text-meta" style="padding-left: 0.5rem; opacity: 0.7;">Brak pytań w tej kategorii.</span>'}
+                    </div>
+                </div>
+            `;
+        });
+
+        if (!categories.length) {
+            html = `
                 <div class="admin-empty-content">
                     <strong class="admin-text-title">Brak pytań</strong>
                     <span class="admin-text-meta">Nowa baza pytań jest jeszcze pusta.</span>
                 </div>
             `;
-            return;
         }
 
+        els.adminContentPanel.innerHTML = html;
+    }
+
+    function renderCategoriesPanel() {
+        if (!els.adminContentPanel) return;
+
+        const categories = state.soloQuestionsData.categories || [];
+
         els.adminContentPanel.innerHTML = `
-            <div class="admin-question-list">
-                ${questions.map((question, index) => `
-                    <button class="admin-question-card" type="button" data-solo-question-id="${escapeHtml(question.id)}">
-                        <div class="admin-text-meta admin-question-number">#${index + 1}</div>
-                        <div class="admin-question-main">
-                            <span class="admin-text-kicker admin-question-category">${escapeHtml(question.categoryName || 'Bez kategorii')}</span>
-                            <strong class="admin-text-title">${escapeHtml(question.text || 'Pytanie bez treści')}</strong>
-                        </div>
-                        <div class="admin-text-meta admin-question-meta">${(question.answers || []).length} odp.</div>
-                    </button>
+            <div class="admin-categories-view">
+                ${categories.map(category => `
+                    <div class="admin-category-card" data-admin-category-id="${escapeHtml(category.id)}">
+                        <input type="text" class="admin-category-input" value="${escapeAttr(category.name)}" placeholder="Nazwa kategorii" aria-label="Nazwa kategorii">
+                        <span class="admin-category-stats">${(category.questions || []).length} pytań</span>
+                        <button class="admin-btn-delete" type="button" data-delete-category="${escapeHtml(category.id)}">Usuń</button>
+                    </div>
                 `).join('')}
+                <button class="admin-add-category-btn" type="button" id="addNewCategoryBtn">
+                    + Dodaj nową kategorię
+                </button>
             </div>
         `;
     }
 
     function renderSoloQuestionEditor(questionId) {
-        if (!els.adminContentPanel) return;
-
         const entry = findSoloQuestion(questionId);
-        if (!entry) {
-            renderAllQuestionsPanel();
-            return;
-        }
+        if (!entry) return;
 
         state.activeSoloQuestionId = questionId;
         const { category, question } = entry;
         const answers = Array.isArray(question.answers) ? question.answers : [];
         const categories = state.soloQuestionsData.categories || [];
 
-        els.adminContentPanel.innerHTML = `
+        els.editQuestionModalBody.innerHTML = `
             <form class="admin-question-editor" id="soloQuestionEditor">
-                <div class="admin-editor-head">
+                <div class="admin-editor-head" style="margin-bottom: 1.5rem;">
                     <div class="admin-category-picker" data-category-picker>
                         <input type="hidden" name="categoryId" value="${escapeHtml(category.id)}">
                         <button class="admin-text-control admin-category-picker-button" type="button" data-category-picker-button aria-expanded="false">
@@ -320,22 +393,23 @@
                             `).join('')}
                         </div>
                     </div>
-                    <button class="admin-text-control admin-question-save" type="button" id="saveSoloQuestionButton">Zapisz pytanie</button>
                 </div>
                 <label class="admin-editor-field">
-                    <input class="admin-text-control" type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off">
+                    <input class="admin-text-control" type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off" placeholder="Treść pytania" style="font-size: 1.2rem; padding: 1rem; border-radius: 0.75rem;">
                 </label>
-                <div class="admin-editor-answers">
+                <div class="admin-editor-answers" style="margin-top: 1rem;">
                     ${answers.map((answer, index) => `
                         <div class="admin-editor-answer" data-answer-index="${index}">
-                            <span class="admin-text-meta">${index + 1}</span>
-                            <input class="admin-text-control" type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off">
+                            <span class="admin-text-meta" style="font-size: 1rem;">${index + 1}</span>
+                            <input class="admin-text-control" type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off" placeholder="Odpowiedź">
                             <input class="admin-text-control" type="number" name="answerPoints" value="${Number(answer.points || 0)}" min="0" max="100" inputmode="numeric">
                         </div>
                     `).join('')}
                 </div>
             </form>
         `;
+        
+        els.editQuestionModalOverlay.classList.remove('is-hidden');
     }
 
     function applySoloQuestionEditor() {
@@ -482,9 +556,10 @@
         const answers = [...(question.answers || [])];
         while (answers.length < 6) answers.push({ id: generateId('a'), text: '', points: 0 });
         els.answersForm.innerHTML = answers.slice(0, 8).map((answer, index) => `
-            <div class="answer-row" data-answer="${answer.id}">
-                <input type="text" value="${escapeAttr(answer.text || '')}" placeholder="Odpowiedź ${index + 1}">
-                <input type="number" min="0" max="100" value="${Number(answer.points) || 0}" aria-label="Punkty">
+            <div class="admin-editor-answer" data-answer="${answer.id}" style="margin-bottom: 0.5rem;">
+                <span class="admin-text-meta">${index + 1}</span>
+                <input class="admin-text-control" type="text" value="${escapeAttr(answer.text || '')}" placeholder="Odpowiedź ${index + 1}">
+                <input class="admin-text-control" type="number" min="0" max="100" value="${Number(answer.points) || 0}" aria-label="Punkty" placeholder="Pkt">
             </div>
         `).join('');
     }
@@ -502,9 +577,10 @@
         if (!question || els.questionFields.classList.contains('is-hidden')) return;
 
         question.text = els.questionTextInput.value.trim();
-        question.answers = [...els.answersForm.querySelectorAll('.answer-row')]
+        question.answers = [...els.answersForm.querySelectorAll('.admin-editor-answer')]
             .map(row => {
-                const [textInput, pointsInput] = row.querySelectorAll('input');
+                const textInput = row.querySelector('input[type="text"]');
+                const pointsInput = row.querySelector('input[type="number"]');
                 return {
                     id: row.dataset.answer || generateId('a'),
                     text: textInput.value.trim().toUpperCase(),
@@ -517,7 +593,6 @@
             markDirty();
             renderQuestions();
             renderCalendar();
-            setStatus('Zastosowano zmiany w pytaniu.');
         }
     }
 
@@ -575,7 +650,7 @@
         }
         markDirty();
         renderAll();
-        setStatus('Uzupełniono puste dni pierwszymi dostępnymi pytaniami.');
+        // setStatus usunięty zgodnie z życzeniem
     }
 
     async function openAdminPanel(accessToken = '') {
@@ -635,12 +710,21 @@
     els.saveAllButton.addEventListener('click', saveAll);
     els.allQuestionsButton?.addEventListener('click', () => {
         applySoloQuestionEditor();
-        state.activeSoloQuestionId = null;
         document.querySelectorAll('.admin-action-button').forEach(button => {
             button.classList.toggle('is-active', button === els.allQuestionsButton);
         });
+        state.activeSoloQuestionId = null;
         renderAllQuestionsPanel();
     });
+
+    els.categoriesButton?.addEventListener('click', () => {
+        document.querySelectorAll('.admin-action-button').forEach(button => {
+            button.classList.toggle('is-active', button === els.categoriesButton);
+        });
+        state.activeSoloQuestionId = null;
+        renderCategoriesPanel();
+    });
+
     els.adminContentPanel?.addEventListener('click', event => {
         const pickerButton = event.target.closest('[data-category-picker-button]');
         if (pickerButton) {
@@ -672,6 +756,37 @@
             return;
         }
 
+        const deleteQuestionBtn = event.target.closest('[data-delete-question]');
+        if (deleteQuestionBtn) {
+            if (!deleteQuestionBtn.classList.contains('is-confirming')) {
+                deleteQuestionBtn.classList.add('is-confirming');
+                deleteQuestionBtn.textContent = 'Na pewno?';
+                setTimeout(() => {
+                    if (deleteQuestionBtn && document.body.contains(deleteQuestionBtn)) {
+                        deleteQuestionBtn.classList.remove('is-confirming');
+                        deleteQuestionBtn.textContent = 'Usuń';
+                    }
+                }, 3000);
+            } else {
+                const questionId = deleteQuestionBtn.dataset.deleteQuestion;
+                // Znajdź kategorię zawierającą to pytanie
+                for (const category of state.soloQuestionsData.categories) {
+                    if (category.questions) {
+                        const qIndex = category.questions.findIndex(q => String(q.id) === String(questionId));
+                        if (qIndex > -1) {
+                            category.questions.splice(qIndex, 1);
+                            saveSoloQuestionsDraft();
+                            markDirty();
+                            renderAllQuestionsPanel();
+                            setStatus('Pytanie usunięte.', 'success');
+                            break;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
         const questionButton = event.target.closest('[data-solo-question-id]');
         if (questionButton) {
             renderSoloQuestionEditor(questionButton.dataset.soloQuestionId);
@@ -682,36 +797,184 @@
             applySoloQuestionEditor();
             state.activeSoloQuestionId = null;
             renderAllQuestionsPanel();
+            return;
         }
 
-        if (event.target.closest('#saveSoloQuestionButton')) {
-            applySoloQuestionEditor();
-            if (saveSoloQuestionsDraft()) {
-                markDirty();
-                state.activeSoloQuestionId = null;
-                renderAllQuestionsPanel();
-                setStatus('Pytanie zapisane lokalnie w przeglądarce.');
+        if (event.target.closest('#addNewCategoryBtn')) {
+            els.addCategoryNameInput.value = '';
+            els.addCategoryNameInput.style.borderColor = '';
+            
+            // Pobieranie pytań z "Bez kategorii"
+            const bezKategorii = state.soloQuestionsData.categories?.find(c => c.name.trim().toLowerCase() === 'bez kategorii');
+            const questions = bezKategorii?.questions || [];
+            
+            if (questions.length === 0) {
+                els.addCategoryQuestionsList.innerHTML = '<span class="admin-text-meta">Brak wolnych pytań do przypisania.</span>';
             } else {
-                setStatus('Nie udało się zapisać pytania lokalnie w przeglądarce.', 'error');
+                els.addCategoryQuestionsList.innerHTML = questions.map(q => `
+                    <label class="admin-modal-question-item">
+                        <input type="checkbox" name="assignQuestion" value="${escapeHtml(q.id)}">
+                        <span>${escapeHtml(q.text || 'Pytanie bez treści')}</span>
+                    </label>
+                `).join('');
             }
+            
+            els.addCategoryModalOverlay.classList.remove('is-hidden');
+            setTimeout(() => els.addCategoryNameInput.focus(), 100);
+            return;
+        }
+
+        const deleteBtn = event.target.closest('[data-delete-category]');
+        if (deleteBtn) {
+            if (!deleteBtn.classList.contains('is-confirming')) {
+                deleteBtn.classList.add('is-confirming');
+                deleteBtn.textContent = 'Na pewno?';
+                setTimeout(() => {
+                    if (deleteBtn && document.body.contains(deleteBtn)) {
+                        deleteBtn.classList.remove('is-confirming');
+                        deleteBtn.textContent = 'Usuń';
+                    }
+                }, 3000);
+            } else {
+                const categoryId = deleteBtn.dataset.deleteCategory;
+                const categoryIndex = state.soloQuestionsData.categories.findIndex(c => String(c.id) === String(categoryId));
+                if (categoryIndex > -1) {
+                    const category = state.soloQuestionsData.categories[categoryIndex];
+                    if (category.questions && category.questions.length > 0) {
+                        let bezKategorii = state.soloQuestionsData.categories.find(c => c.name.trim().toLowerCase() === 'bez kategorii');
+                        if (!bezKategorii) {
+                            bezKategorii = { id: generateId('c'), name: 'Bez kategorii', questions: [] };
+                            state.soloQuestionsData.categories.unshift(bezKategorii);
+                        }
+                        if (!bezKategorii.questions) bezKategorii.questions = [];
+                        bezKategorii.questions.push(...category.questions);
+                    }
+                    
+                    // We must recalculate index because unshift might have changed it!
+                    const actualIndex = state.soloQuestionsData.categories.findIndex(c => String(c.id) === String(categoryId));
+                    if (actualIndex > -1) {
+                        state.soloQuestionsData.categories.splice(actualIndex, 1);
+                    }
+                    
+                    saveSoloQuestionsDraft();
+                    markDirty();
+                    renderCategoriesPanel();
+                    setStatus('Kategoria została usunięta.', 'success');
+                }
+            }
+            return;
         }
     });
     els.adminContentPanel?.addEventListener('input', event => {
-        if (!event.target.closest('#soloQuestionEditor')) return;
-        applySoloQuestionEditor();
-        markDirty();
+        if (event.target.classList.contains('admin-category-input')) {
+            const card = event.target.closest('.admin-category-card');
+            if (card) {
+                const categoryId = card.dataset.adminCategoryId;
+                const category = state.soloQuestionsData.categories.find(c => String(c.id) === String(categoryId));
+                if (category) {
+                    category.name = event.target.value;
+                    markDirty();
+                }
+            }
+            return;
+        }
+
+        if (event.target.closest('#soloQuestionEditor')) {
+            applySoloQuestionEditor();
+            markDirty();
+        }
     });
     els.adminContentPanel?.addEventListener('change', event => {
-        if (!event.target.closest('#soloQuestionEditor')) return;
-        applySoloQuestionEditor();
-        markDirty();
+        if (event.target.closest('#soloQuestionEditor')) {
+            applySoloQuestionEditor();
+            markDirty();
+        }
     });
     els.adminContentPanel?.addEventListener('submit', event => {
-        if (!event.target.closest('#soloQuestionEditor')) return;
-        event.preventDefault();
-        applySoloQuestionEditor();
-        markDirty();
+        if (event.target.closest('#soloQuestionEditor')) {
+            event.preventDefault();
+            applySoloQuestionEditor();
+            markDirty();
+        }
     });
+    els.addCategoryCancelBtn?.addEventListener('click', () => {
+        els.addCategoryModalOverlay.classList.add('is-hidden');
+    });
+
+    els.addCategoryModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === els.addCategoryModalOverlay) {
+            els.addCategoryModalOverlay.classList.add('is-hidden');
+        }
+    });
+
+    els.addCategoryConfirmBtn?.addEventListener('click', () => {
+        const name = els.addCategoryNameInput.value.trim();
+        if (!name) {
+            els.addCategoryNameInput.style.borderColor = 'var(--danger)';
+            return;
+        }
+        els.addCategoryNameInput.style.borderColor = '';
+        
+        const selectedQuestionIds = Array.from(els.addCategoryQuestionsList.querySelectorAll('input[name="assignQuestion"]:checked')).map(input => input.value);
+        
+        const newCategory = { id: generateId('c'), name: name, questions: [] };
+        if (!Array.isArray(state.soloQuestionsData.categories)) state.soloQuestionsData.categories = [];
+        
+        // Wyciąganie pytań z "Bez kategorii"
+        if (selectedQuestionIds.length > 0) {
+            const bezKategorii = state.soloQuestionsData.categories.find(c => c.name.trim().toLowerCase() === 'bez kategorii');
+            if (bezKategorii && bezKategorii.questions) {
+                const movedQuestions = bezKategorii.questions.filter(q => selectedQuestionIds.includes(String(q.id)));
+                newCategory.questions = movedQuestions;
+                bezKategorii.questions = bezKategorii.questions.filter(q => !selectedQuestionIds.includes(String(q.id)));
+            }
+        }
+        
+        state.soloQuestionsData.categories.push(newCategory);
+        saveSoloQuestionsDraft();
+        markDirty();
+        
+        els.addCategoryModalOverlay.classList.add('is-hidden');
+        
+        // Odśwież widok
+        if (document.querySelector('.admin-tab[data-tab="questions"]').classList.contains('is-active')) {
+            if (document.getElementById('categoriesButton').classList.contains('is-active')) {
+                renderCategoriesPanel();
+            } else {
+                renderAllQuestionsPanel();
+            }
+        }
+        
+        setStatus('Kategoria została utworzona.', 'success');
+    });
+
+    els.editQuestionCloseBtn?.addEventListener('click', () => {
+        els.editQuestionModalOverlay.classList.add('is-hidden');
+        state.activeSoloQuestionId = null;
+    });
+
+    els.editQuestionModalOverlay?.addEventListener('click', (e) => {
+        if (e.target === els.editQuestionModalOverlay) {
+            els.editQuestionModalOverlay.classList.add('is-hidden');
+            state.activeSoloQuestionId = null;
+        }
+    });
+
+    els.editQuestionSaveBtn?.addEventListener('click', () => {
+        applySoloQuestionEditor();
+        if (saveSoloQuestionsDraft()) {
+            markDirty();
+            if (document.querySelector('.admin-tab[data-tab="questions"]').classList.contains('is-active') && !document.getElementById('categoriesButton').classList.contains('is-active')) {
+                renderAllQuestionsPanel();
+            }
+            setStatus('Zapisano pytanie.', 'success');
+        } else {
+            setStatus('Nie udało się zapisać pytania.', 'error');
+        }
+        els.editQuestionModalOverlay.classList.add('is-hidden');
+        state.activeSoloQuestionId = null;
+    });
+
     els.visibleSaveAllButton?.addEventListener('click', saveAll);
     els.fillCalendarButton.addEventListener('click', fillCalendar);
     els.addCategoryButton.addEventListener('click', addCategory);
@@ -728,6 +991,52 @@
         question.answers.sort((a, b) => b.points - a.points);
         markDirty();
         renderQuestionForm();
+    });
+
+    els.exportButton?.addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.soloQuestionsData, null, 2));
+        const anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        anchor.setAttribute("download", "rodziniada-solo-questions.json");
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        setStatus('Plik z bazą pytań został wyeksportowany.', 'success');
+    });
+
+    els.categoriesButton?.addEventListener('click', () => {
+        // setStatus usunięty zgodnie z życzeniem
+    });
+
+    els.importButton?.addEventListener('click', () => {
+        els.importFileInput?.click();
+    });
+
+    els.importFileInput?.addEventListener('change', event => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData && importedData.categories) {
+                    state.soloQuestionsData = importedData;
+                    saveSoloQuestionsDraft();
+                    markDirty();
+                    if (document.querySelector('.admin-tab[data-tab="questions"]').classList.contains('is-active')) {
+                        renderAllQuestionsPanel();
+                    }
+                    setStatus('Baza pytań została zaimportowana.', 'success');
+                } else {
+                    setStatus('Nieprawidłowy format pliku JSON.', 'error');
+                }
+            } catch (err) {
+                setStatus('Wystąpił błąd podczas odczytu pliku.', 'error');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = ''; // reset
     });
 
     window.addEventListener('beforeunload', event => {

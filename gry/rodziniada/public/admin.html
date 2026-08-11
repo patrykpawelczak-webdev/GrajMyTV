@@ -23,15 +23,18 @@
                 <section class="tab-view admin-empty-view admin-questions-view" id="questionsView" aria-label="Baza pytań">
                     <div class="admin-action-toolbar" aria-label="Akcje bazy pytań">
                         <button class="admin-text-control admin-action-button is-active" type="button" id="allQuestionsButton">Wszystkie pytania</button>
-                        <button class="admin-text-control admin-action-button" type="button">Kategorie</button>
-                        <button class="admin-text-control admin-action-button" type="button">Import</button>
-                        <button class="admin-text-control admin-action-button" type="button">Export</button>
+                        <button class="admin-text-control admin-action-button" type="button" id="categoriesButton">Kategorie</button>
+                        <button class="admin-text-control admin-action-button" type="button" id="importButton">Import</button>
+                        <button class="admin-text-control admin-action-button" type="button" id="exportButton">Export</button>
+                        <input type="file" id="importFileInput" accept=".json" class="is-hidden" aria-hidden="true">
                         <button class="admin-text-control admin-action-button is-primary" type="button" id="visibleSaveAllButton">Zapisz zmiany</button>
                     </div>
                     <div class="admin-content-panel" id="adminContentPanel"></div>
                 </section>
                 <section class="tab-view admin-empty-view is-hidden" id="calendarView" aria-label="Kalendarz"></section>
             </div>
+
+            <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
             <div class="admin-logic-stubs" hidden aria-hidden="true">
                 <p id="statusText">Gotowe.</p>
@@ -60,6 +63,49 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Modal: Dodaj Kategorię -->
+            <div class="admin-modal-overlay is-hidden" id="addCategoryModalOverlay" aria-hidden="true">
+                <div class="admin-modal">
+                    <div class="admin-modal-header">
+                        <h2 class="admin-text-title">Dodaj nową kategorię</h2>
+                    </div>
+                    <div class="admin-modal-body">
+                        <label class="admin-editor-field" style="margin-bottom: 1.5rem;">
+                            <span class="admin-text-meta">Nazwa kategorii</span>
+                            <input class="admin-text-control" type="text" id="addCategoryNameInput" placeholder="Np. Muzyka, Sport, Historia" autocomplete="off">
+                        </label>
+                        
+                        <div class="admin-modal-questions-section">
+                            <span class="admin-text-meta" style="display: block; margin-bottom: 0.75rem;">Możesz od razu przypisać "osierocone" pytania (Bez kategorii):</span>
+                            <div class="admin-modal-questions-list" id="addCategoryQuestionsList">
+                                <!-- Generowane przez JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-modal-footer">
+                        <button class="admin-text-control admin-action-button" type="button" id="addCategoryCancelBtn">Anuluj</button>
+                        <button class="admin-text-control admin-action-button is-primary" type="button" id="addCategoryConfirmBtn">Dodaj kategorię</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: Edytuj Pytanie -->
+            <div class="admin-modal-overlay is-hidden" id="editQuestionModalOverlay" aria-hidden="true">
+                <div class="admin-modal" style="max-width: 42rem;">
+                    <div class="admin-modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 class="admin-text-title">Edytuj pytanie</h2>
+                        <button class="admin-text-control admin-action-button" style="min-height: 2rem; font-size: 0.8rem; padding: 0 0.75rem;" type="button" id="editQuestionCloseBtn">Anuluj</button>
+                    </div>
+                    <div class="admin-modal-body" id="editQuestionModalBody" style="padding-top: 1rem;">
+                        <!-- Generowane przez JS -->
+                    </div>
+                    <div class="admin-modal-footer">
+                        <button class="admin-text-control admin-action-button is-primary" type="button" id="editQuestionSaveBtn">Zapisz pytanie</button>
+                    </div>
+                </div>
+            </div>
+
         </section>
     </main>
 
