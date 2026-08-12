@@ -1,46 +1,15 @@
 {
   "categories": [
     {
+      "id": "c_msq7bqlb_klps3",
+      "name": "Bez kategorii",
+      "questions": []
+    },
+    {
       "id": "cat_zycie",
       "name": "Życie codzienne",
       "icon": "🏠",
       "questions": [
-        {
-          "id": "q_1",
-          "text": "Co ludzie robią zaraz po przebudzeniu?",
-          "answers": [
-            {
-              "id": "a_1",
-              "text": "SPRAWDZAJĄ TELEFON",
-              "points": 35
-            },
-            {
-              "id": "a_2",
-              "text": "IDĄ DO ŁAZIENKI",
-              "points": 25
-            },
-            {
-              "id": "a_3",
-              "text": "PIJĄ KAWĘ",
-              "points": 18
-            },
-            {
-              "id": "a_4",
-              "text": "JEDZĄ ŚNIADANIE",
-              "points": 10
-            },
-            {
-              "id": "a_5",
-              "text": "WYŁĄCZAJĄ BUDZIK",
-              "points": 7
-            },
-            {
-              "id": "a_6",
-              "text": "PRZECIĄGAJĄ SIĘ",
-              "points": 5
-            }
-          ]
-        },
         {
           "id": "q_2",
           "text": "Co ludzie najczęściej gubią?",
@@ -217,6 +186,42 @@
             {
               "id": "a_36",
               "text": "KSIĄŻKĘ",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "q_1",
+          "text": "Co ludzie robią zaraz po przebudzeniu?",
+          "answers": [
+            {
+              "id": "a_1",
+              "text": "SPRAWDZAJĄ TELEFON",
+              "points": 35
+            },
+            {
+              "id": "a_2",
+              "text": "IDĄ DO ŁAZIENKI",
+              "points": 25
+            },
+            {
+              "id": "a_3",
+              "text": "PIJĄ KAWĘ",
+              "points": 18
+            },
+            {
+              "id": "a_4",
+              "text": "JEDZĄ ŚNIADANIE",
+              "points": 10
+            },
+            {
+              "id": "a_5",
+              "text": "WYŁĄCZAJĄ BUDZIK",
+              "points": 7
+            },
+            {
+              "id": "a_6",
+              "text": "PRZECIĄGAJĄ SIĘ",
               "points": 5
             }
           ]

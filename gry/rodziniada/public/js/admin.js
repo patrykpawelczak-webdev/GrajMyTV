@@ -218,6 +218,13 @@
         
         if (!Array.isArray(state.data.categories)) state.data.categories = [];
         if (!Array.isArray(state.soloQuestionsData.categories)) state.soloQuestionsData.categories = [];
+        
+        let bezKategorii = state.soloQuestionsData.categories.find(c => c.name.trim().toLowerCase() === 'bez kategorii');
+        if (!bezKategorii) {
+            bezKategorii = { id: generateId('c'), name: 'Bez kategorii', questions: [] };
+            state.soloQuestionsData.categories.unshift(bezKategorii);
+        }
+
         if (!Array.isArray(state.calendar.days)) state.calendar.days = [];
         while (state.calendar.days.length < JULY_DAYS) state.calendar.days.push('');
 
@@ -303,7 +310,13 @@
         if (!els.adminContentPanel) return;
 
         const categories = state.soloQuestionsData.categories || [];
-        let html = '';
+        let html = `
+            <div style="margin-bottom: 2rem;">
+                <button class="admin-add-category-btn" type="button" id="addNewQuestionBtn">
+                    + Dodaj nowe pytanie
+                </button>
+            </div>
+        `;
         let hasAnyQuestions = false;
         let globalQuestionIndex = 0;
 
@@ -335,7 +348,7 @@
         });
 
         if (!categories.length) {
-            html = `
+            html += `
                 <div class="admin-empty-content">
                     <strong class="admin-text-title">Brak pytań</strong>
                     <span class="admin-text-meta">Nowa baza pytań jest jeszcze pusta.</span>
@@ -349,20 +362,32 @@
     function renderCategoriesPanel() {
         if (!els.adminContentPanel) return;
 
-        const categories = state.soloQuestionsData.categories || [];
+        const categories = (state.soloQuestionsData.categories || []).filter(c => c.name.trim().toLowerCase() !== 'bez kategorii');
 
         els.adminContentPanel.innerHTML = `
             <div class="admin-categories-view">
+                <div style="margin-bottom: 2rem;">
+                    <button class="admin-add-category-btn" type="button" id="addNewCategoryBtn">
+                        + Dodaj nową kategorię
+                    </button>
+                </div>
                 ${categories.map(category => `
                     <div class="admin-category-card" data-admin-category-id="${escapeHtml(category.id)}">
-                        <input type="text" class="admin-category-input" value="${escapeAttr(category.name)}" placeholder="Nazwa kategorii" aria-label="Nazwa kategorii">
-                        <span class="admin-category-stats">${(category.questions || []).length} pytań</span>
-                        <button class="admin-btn-delete" type="button" data-delete-category="${escapeHtml(category.id)}">Usuń</button>
+                        <div class="admin-category-view-mode" style="display: contents;">
+                            <strong class="admin-category-name" style="font-size: 1.1rem; color: #fff;">${escapeHtml(category.name)}</strong>
+                            <span class="admin-category-stats">${(category.questions || []).length} pytań</span>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="admin-btn-edit" type="button" data-edit-category="${escapeHtml(category.id)}">Edytuj</button>
+                                <button class="admin-btn-delete" type="button" data-delete-category="${escapeHtml(category.id)}">Usuń</button>
+                            </div>
+                        </div>
+                        <div class="admin-category-edit-mode is-hidden" style="display: flex; width: 100%; gap: 0.5rem; grid-column: 1 / -1; align-items: center;">
+                            <input type="text" class="admin-category-input" value="${escapeAttr(category.name)}" placeholder="Nazwa kategorii" style="flex: 1;" data-original-name="${escapeAttr(category.name)}">
+                            <button class="admin-text-control admin-action-button is-primary" type="button" data-save-category-name="${escapeHtml(category.id)}" style="min-height: 2.2rem; font-size: 0.8rem; padding: 0 0.75rem;">Zapisz</button>
+                            <button class="admin-text-control admin-action-button" type="button" data-cancel-edit-category="${escapeHtml(category.id)}" style="min-height: 2.2rem; font-size: 0.8rem; padding: 0 0.75rem;">Anuluj</button>
+                        </div>
                     </div>
                 `).join('')}
-                <button class="admin-add-category-btn" type="button" id="addNewCategoryBtn">
-                    + Dodaj nową kategorię
-                </button>
             </div>
         `;
     }
@@ -378,7 +403,7 @@
 
         els.editQuestionModalBody.innerHTML = `
             <form class="admin-question-editor" id="soloQuestionEditor">
-                <div class="admin-editor-head" style="margin-bottom: 1.5rem;">
+                <div class="admin-editor-head" style="margin-bottom: 1rem;">
                     <div class="admin-category-picker" data-category-picker>
                         <input type="hidden" name="categoryId" value="${escapeHtml(category.id)}">
                         <button class="admin-text-control admin-category-picker-button" type="button" data-category-picker-button aria-expanded="false">
@@ -395,14 +420,15 @@
                     </div>
                 </div>
                 <label class="admin-editor-field">
-                    <input class="admin-text-control" type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off" placeholder="Treść pytania" style="font-size: 1.2rem; padding: 1rem; border-radius: 0.75rem;">
+                    <input class="admin-text-control" type="text" name="questionText" value="${escapeHtml(question.text || '')}" autocomplete="off" placeholder="Treść pytania" style="font-size: 1.15rem; padding: 0.85rem 1rem; border-radius: 0.75rem;">
                 </label>
-                <div class="admin-editor-answers" style="margin-top: 1rem;">
+                <div class="admin-editor-answers" style="margin-top: 0.75rem;">
                     ${answers.map((answer, index) => `
                         <div class="admin-editor-answer" data-answer-index="${index}">
                             <span class="admin-text-meta" style="font-size: 1rem;">${index + 1}</span>
                             <input class="admin-text-control" type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off" placeholder="Odpowiedź">
                             <input class="admin-text-control" type="number" name="answerPoints" value="${Number(answer.points || 0)}" min="0" max="100" inputmode="numeric">
+                            <input class="admin-text-control answer-variants-input" type="text" name="answerVariants" value="${escapeHtml((answer.variants || []).join(', '))}" autocomplete="off" placeholder="Warianty (po przecinku)">
                         </div>
                     `).join('')}
                 </div>
@@ -428,6 +454,17 @@
             if (!answer) return;
             answer.text = row.querySelector('[name="answerText"]').value.trim();
             answer.points = Number(row.querySelector('[name="answerPoints"]').value || 0);
+            
+            const variantsRaw = row.querySelector('[name="answerVariants"]')?.value || '';
+            const variants = variantsRaw.split(',')
+                .map(v => v.trim())
+                .filter(v => v.length > 0);
+                
+            if (variants.length > 0) {
+                answer.variants = variants;
+            } else {
+                delete answer.variants;
+            }
         });
     }
 
@@ -725,7 +762,7 @@
         renderCategoriesPanel();
     });
 
-    els.adminContentPanel?.addEventListener('click', event => {
+    document.body.addEventListener('click', event => {
         const pickerButton = event.target.closest('[data-category-picker-button]');
         if (pickerButton) {
             const picker = pickerButton.closest('[data-category-picker]');
@@ -800,6 +837,30 @@
             return;
         }
 
+        if (event.target.closest('#addNewQuestionBtn')) {
+            const newQuestion = {
+                id: generateId('q'),
+                text: 'Nowe pytanie',
+                answers: Array.from({ length: 6 }, (_, index) => ({ id: generateId('a'), text: `ODPOWIEDŹ ${index + 1}`, points: 0 }))
+            };
+            let bezKategorii = state.soloQuestionsData.categories.find(c => c.name.trim().toLowerCase() === 'bez kategorii');
+            if (!bezKategorii) {
+                bezKategorii = { id: generateId('c'), name: 'Bez kategorii', questions: [] };
+                state.soloQuestionsData.categories.unshift(bezKategorii);
+            }
+            if (!bezKategorii.questions) bezKategorii.questions = [];
+            bezKategorii.questions.push(newQuestion);
+            
+            saveSoloQuestionsDraft();
+            markDirty();
+            
+            state.isEditingNewQuestion = newQuestion.id;
+            
+            // Otwórz edytor w modalu dla nowo utworzonego pytania
+            renderSoloQuestionEditor(newQuestion.id);
+            return;
+        }
+
         if (event.target.closest('#addNewCategoryBtn')) {
             els.addCategoryNameInput.value = '';
             els.addCategoryNameInput.style.borderColor = '';
@@ -821,6 +882,58 @@
             
             els.addCategoryModalOverlay.classList.remove('is-hidden');
             setTimeout(() => els.addCategoryNameInput.focus(), 100);
+            return;
+        }
+
+        const editCategoryBtn = event.target.closest('[data-edit-category]');
+        if (editCategoryBtn) {
+            const card = editCategoryBtn.closest('.admin-category-card');
+            card.classList.add('is-editing');
+            card.querySelector('.admin-category-view-mode').classList.add('is-hidden');
+            card.querySelector('.admin-category-edit-mode').classList.remove('is-hidden');
+            const input = card.querySelector('.admin-category-input');
+            setTimeout(() => input.focus(), 50);
+            return;
+        }
+
+        const cancelEditCategoryBtn = event.target.closest('[data-cancel-edit-category]');
+        if (cancelEditCategoryBtn) {
+            const card = cancelEditCategoryBtn.closest('.admin-category-card');
+            card.classList.remove('is-editing');
+            card.querySelector('.admin-category-view-mode').classList.remove('is-hidden');
+            card.querySelector('.admin-category-edit-mode').classList.add('is-hidden');
+            const input = card.querySelector('.admin-category-input');
+            input.value = input.dataset.originalName;
+            input.style.borderColor = '';
+            return;
+        }
+
+        const saveCategoryNameBtn = event.target.closest('[data-save-category-name]');
+        if (saveCategoryNameBtn) {
+            const categoryId = saveCategoryNameBtn.dataset.saveCategoryName;
+            const card = saveCategoryNameBtn.closest('.admin-category-card');
+            const input = card.querySelector('.admin-category-input');
+            const category = state.soloQuestionsData.categories.find(c => String(c.id) === String(categoryId));
+            
+            if (category) {
+                const newName = input.value.trim();
+                if (!newName) {
+                    input.style.borderColor = 'var(--danger)';
+                    return;
+                }
+                input.style.borderColor = '';
+                category.name = newName;
+                input.dataset.originalName = newName;
+                card.querySelector('.admin-category-name').textContent = newName;
+                
+                card.classList.remove('is-editing');
+                card.querySelector('.admin-category-view-mode').classList.remove('is-hidden');
+                card.querySelector('.admin-category-edit-mode').classList.add('is-hidden');
+                
+                saveSoloQuestionsDraft();
+                markDirty();
+                setStatus('Zapisano nową nazwę kategorii.', 'success');
+            }
             return;
         }
 
@@ -865,25 +978,26 @@
             return;
         }
     });
-    els.adminContentPanel?.addEventListener('input', event => {
-        if (event.target.classList.contains('admin-category-input')) {
-            const card = event.target.closest('.admin-category-card');
-            if (card) {
-                const categoryId = card.dataset.adminCategoryId;
-                const category = state.soloQuestionsData.categories.find(c => String(c.id) === String(categoryId));
-                if (category) {
-                    category.name = event.target.value;
-                    markDirty();
-                }
-            }
-            return;
-        }
-
+    document.body.addEventListener('input', event => {
         if (event.target.closest('#soloQuestionEditor')) {
             applySoloQuestionEditor();
             markDirty();
         }
     });
+    
+    document.body.addEventListener('keypress', event => {
+        if (event.key === 'Enter' && event.target.classList.contains('admin-category-input')) {
+            event.preventDefault();
+            const card = event.target.closest('.admin-category-card');
+            if (card) {
+                const saveBtn = card.querySelector('[data-save-category-name]');
+                if (saveBtn) {
+                    saveBtn.click();
+                }
+            }
+        }
+    });
+
     els.adminContentPanel?.addEventListener('change', event => {
         if (event.target.closest('#soloQuestionEditor')) {
             applySoloQuestionEditor();
@@ -948,20 +1062,34 @@
         setStatus('Kategoria została utworzona.', 'success');
     });
 
-    els.editQuestionCloseBtn?.addEventListener('click', () => {
+    function cancelEditQuestion() {
         els.editQuestionModalOverlay.classList.add('is-hidden');
+        if (state.isEditingNewQuestion) {
+            const bezKategorii = state.soloQuestionsData.categories.find(c => c.name.trim().toLowerCase() === 'bez kategorii');
+            if (bezKategorii && bezKategorii.questions) {
+                bezKategorii.questions = bezKategorii.questions.filter(q => q.id !== state.isEditingNewQuestion);
+                saveSoloQuestionsDraft();
+                markDirty();
+                if (document.querySelector('.admin-tab[data-tab="questions"]').classList.contains('is-active') && !document.getElementById('categoriesButton').classList.contains('is-active')) {
+                    renderAllQuestionsPanel();
+                }
+            }
+            state.isEditingNewQuestion = null;
+        }
         state.activeSoloQuestionId = null;
-    });
+    }
+
+    els.editQuestionCloseBtn?.addEventListener('click', cancelEditQuestion);
 
     els.editQuestionModalOverlay?.addEventListener('click', (e) => {
         if (e.target === els.editQuestionModalOverlay) {
-            els.editQuestionModalOverlay.classList.add('is-hidden');
-            state.activeSoloQuestionId = null;
+            cancelEditQuestion();
         }
     });
 
     els.editQuestionSaveBtn?.addEventListener('click', () => {
         applySoloQuestionEditor();
+        state.isEditingNewQuestion = null;
         if (saveSoloQuestionsDraft()) {
             markDirty();
             if (document.querySelector('.admin-tab[data-tab="questions"]').classList.contains('is-active') && !document.getElementById('categoriesButton').classList.contains('is-active')) {

@@ -426,9 +426,9 @@
             .trim();
     }
 
-    function answerVariants(answerText) {
+    function answerVariants(answer) {
         const variants = new Set();
-        const base = normalize(answerText);
+        const base = normalize(answer.text || '');
         if (!base) return variants;
 
         variants.add(base);
@@ -449,6 +449,13 @@
                 aliases.forEach(alias => variants.add(normalize(alias)));
             }
         });
+
+        if (Array.isArray(answer.variants)) {
+            answer.variants.forEach(variant => {
+                const normalized = normalize(variant);
+                if (normalized.length >= 2) variants.add(normalized);
+            });
+        }
 
         return variants;
     }
@@ -900,7 +907,7 @@
 
         return state.challengeQuestion.answers.findIndex((answer, index) => {
             if (state.revealed.has(index)) return false;
-            const variants = answerVariants(answer.text);
+            const variants = answerVariants(answer);
             return [...variants].some(variant => {
                 return variant === normalizedInput
                     || (normalizedInput.length >= 4 && variant.includes(normalizedInput))
