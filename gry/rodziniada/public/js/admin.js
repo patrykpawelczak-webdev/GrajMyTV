@@ -483,57 +483,221 @@
         });
     }
 
-    function renderCalendar() {
-        const questions = flattenQuestions();
-        els.dayList.innerHTML = Array.from({ length: JULY_DAYS }, (_, index) => {
-            const day = index + 1;
-            const questionId = state.calendar.days[index];
-            const question = questions.find(item => item.id === questionId);
-            return `
-                <button type="button" class="day-item ${state.selectedDay === day ? 'is-active' : ''}" data-day="${day}">
-                    <strong>#${day}</strong>
-                    <span>${question ? question.text : 'Brak przypisanego pytania'}</span>
-                    <span class="item-meta">${question ? question.categoryName : 'Nieuzupełnione'}</span>
-                </button>
-            `;
-        }).join('');
+    let currentCalendarViewDate = null;
+    let isCalendarInitialized = false;
+    const miesiace = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
 
-        els.dayList.querySelectorAll('[data-day]').forEach(button => {
-            button.addEventListener('click', () => {
-                state.selectedDay = Number(button.dataset.day);
-                renderCalendar();
-            });
-        });
-
-        els.selectedDayLabel.textContent = `Dzień #${state.selectedDay}`;
-        els.selectedDayTitle.textContent = `Wyzwanie z ${state.selectedDay} lipca 2026`;
-
-        els.calendarQuestionSelect.innerHTML = [
-            '<option value="">Brak pytania</option>',
-            ...questions.map(question => `<option value="${question.id}">${question.categoryName} - ${question.text}</option>`)
-        ].join('');
-        els.calendarQuestionSelect.value = state.calendar.days[state.selectedDay - 1] || '';
-
-        renderCalendarPreview();
+    function getDaysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate();
     }
 
-    function renderCalendarPreview() {
-        const question = flattenQuestions().find(item => item.id === state.calendar.days[state.selectedDay - 1]);
-        if (!question) {
-            els.calendarPreview.innerHTML = '<p>Ten dzień nie ma jeszcze przypisanego pytania.</p>';
-            return;
+    function getFirstDayOfMonth(year, month) {
+        let day = new Date(year, month, 1).getDay();
+        return day === 0 ? 6 : day - 1; // Pn = 0, Nd = 6
+    }
+
+    function parseLocalDate(dateStr) {
+        const [y, m, d] = dateStr.split('-');
+        return new Date(y, m - 1, d);
+    }
+
+    function getDiffDays(date1, date2) {
+        const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
+        const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
+        return Math.floor((utc1 - utc2) / 86400000);
+    }
+
+    function renderCalendar() {
+        const startDateObj = parseLocalDate(state.calendar.startDate);
+        const today = new Date();
+
+        if (!isCalendarInitialized) {
+            isCalendarInitialized = true;
+            currentCalendarViewDate = new Date(); // start in current month
+            currentCalendarViewDate.setDate(1);
+            
+            // set selectedDay to today
+            state.selectedDay = getDiffDays(today, startDateObj);
         }
 
-        const answers = [...(question.answers || [])]
-            .sort((a, b) => b.points - a.points)
-            .slice(0, 6);
+        const year = currentCalendarViewDate.getFullYear();
+        const month = currentCalendarViewDate.getMonth();
+        
+        const grid = $('calendarGrid');
+        if (!grid) return;
 
-        els.calendarPreview.innerHTML = `
-            <h3>${question.text}</h3>
-            <ol>
-                ${answers.map(answer => `<li>${answer.text} - <strong>${answer.points} pkt</strong></li>`).join('')}
-            </ol>
-        `;
+        $('calendarCurrentMonthLabel').textContent = `${miesiace[month]} ${year}`;
+        
+        const prevBtn = $('calendarPrevMonthBtn');
+        if (prevBtn) {
+            if (year < 2026 || (year === 2026 && month <= 6)) {
+                prevBtn.style.visibility = 'hidden';
+            } else {
+                prevBtn.style.visibility = 'visible';
+            }
+        }
+
+        const nextBtn = $('calendarNextMonthBtn');
+        if (nextBtn) {
+            const limitDate = new Date();
+            const maxYear = limitDate.getFullYear() + 1;
+            const maxMonth = limitDate.getMonth();
+            if (year > maxYear || (year === maxYear && month >= maxMonth)) {
+                nextBtn.style.visibility = 'hidden';
+            } else {
+                nextBtn.style.visibility = 'visible';
+            }
+        }
+
+        const daysInMonth = getDaysInMonth(year, month);
+        const firstDay = getFirstDayOfMonth(year, month);
+        
+        let html = ``;
+
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div class="admin-calendar-day" style="visibility: hidden"></div>`;
+        }
+
+        const soloQuestions = flattenSoloQuestions();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const currentDate = new Date(year, month, day);
+            const diffDays = getDiffDays(currentDate, startDateObj);
+            
+            if (diffDays < 0) {
+                html += `<div class="admin-calendar-day is-past"><span class="day-number" style="align-self: center;">${day}</span></div>`;
+            } else {
+                const questionId = state.calendar.days[diffDays];
+                const isActive = state.selectedDay === diffDays;
+                
+                const diffDaysFromToday = getDiffDays(currentDate, today);
+                const isToday = diffDaysFromToday === 0;
+                const isHistorical = diffDaysFromToday < 0;
+                const isUrgentEmpty = !questionId && diffDaysFromToday >= 0 && diffDaysFromToday <= 7;
+                const isWarningEmpty = !questionId && diffDaysFromToday > 7 && diffDaysFromToday <= 30;
+                const isInfoEmpty = !questionId && diffDaysFromToday > 30;
+                
+                const challengeBadgeText = questionId ? questionId.replace('q_', 'P') : '+';
+                
+                const classes = [
+                    'admin-calendar-day',
+                    questionId ? 'is-filled' : 'is-empty',
+                    isActive ? 'is-active' : '',
+                    isToday ? 'is-today' : '',
+                    isHistorical ? 'is-historical' : '',
+                    isUrgentEmpty ? 'is-urgent-empty' : '',
+                    isWarningEmpty ? 'is-warning-empty' : '',
+                    isInfoEmpty ? 'is-info-empty' : ''
+                ].filter(Boolean).join(' ');
+                
+                html += `
+                    <div class="${classes}" data-day-index="${diffDays}" data-day="${day}">
+                        <span class="day-number" ${isToday ? 'style="color: var(--primary); font-weight: 800; align-self: center;"' : 'style="align-self: center;"'}>${day}</span>
+                        <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-align: center; margin-bottom: 0.25rem;">#${diffDays + 1}</span>
+                        <span class="day-badge">${challengeBadgeText}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        grid.innerHTML = html;
+
+        grid.querySelectorAll('[data-day-index]').forEach(cell => {
+            const diffDays = Number(cell.dataset.dayIndex);
+            if (isNaN(diffDays)) return;
+            
+            const isLocked = cell.classList.contains('is-past') || cell.classList.contains('is-today');
+
+            if (!isLocked) {
+                cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('is-dragover'); });
+                cell.addEventListener('dragleave', e => { cell.classList.remove('is-dragover'); });
+                cell.addEventListener('drop', e => {
+                    e.preventDefault();
+                    cell.classList.remove('is-dragover');
+                    const qId = e.dataTransfer.getData('text/plain');
+                    const sourceDay = e.dataTransfer.getData('source-day');
+                    
+                    if (qId) {
+                        if (sourceDay !== '') {
+                            state.calendar.days[sourceDay] = ''; // Usuń z poprzedniego dnia
+                        }
+                        state.calendar.days[diffDays] = qId; // Przypisz do nowego
+                        renderCalendar();
+                        autosaveCalendar();
+                    }
+                });
+            }
+            
+            const badge = cell.querySelector('.day-badge');
+            if (badge && !isLocked && badge.textContent !== '+') {
+                badge.style.cursor = 'grab';
+                badge.setAttribute('draggable', 'true');
+                badge.addEventListener('dragstart', e => {
+                    const qId = state.calendar.days[diffDays];
+                    e.dataTransfer.setData('text/plain', qId);
+                    e.dataTransfer.setData('source-day', diffDays);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                
+                badge.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm('Odpiąć wyzwanie od tego dnia?')) {
+                        state.calendar.days[diffDays] = '';
+                        renderCalendar();
+                        autosaveCalendar();
+                    }
+                });
+            }
+        });
+
+        renderCalendarSidebar();
+    }
+
+    function renderCalendarSidebar() {
+        const today = new Date();
+        const startDateObj = parseLocalDate(state.calendar.startDate);
+        
+        // Obliczamy wybrane dni z ostatnich 90 dni, biorąc pod uwagę aktualny dzień
+        const currentDiffDays = getDiffDays(today, startDateObj);
+        
+        const usedQuestions = new Set();
+        const windowStart = Math.max(0, currentDiffDays - 90);
+        Object.keys(state.calendar.days).forEach(dayStr => {
+            const day = parseInt(dayStr);
+            if (day >= windowStart && state.calendar.days[day]) {
+                usedQuestions.add(state.calendar.days[day]);
+            }
+        });
+        
+        const allSoloQuestions = flattenSoloQuestions();
+        
+        const questionPoolList = $('questionPoolList');
+        if (!questionPoolList) return;
+        
+        let poolHtml = '';
+        allSoloQuestions.forEach(q => {
+            const isUsed = usedQuestions.has(q.id);
+            const classList = isUsed ? 'admin-draggable-question is-disabled' : 'admin-draggable-question';
+            const draggableAttr = isUsed ? '' : 'draggable="true"';
+            
+            poolHtml += `
+                <div class="${classList}" ${draggableAttr} data-id="${q.id}">
+                    <span style="opacity: 0.5; cursor: ${isUsed ? 'default' : 'grab'}; padding-right: 0.2rem;">⣿</span>
+                    <strong>[${q.id.replace('q_', 'P')}]</strong> 
+                    <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(q.text)}">${escapeHtml(q.text)}</span>
+                </div>
+            `;
+        });
+        questionPoolList.innerHTML = poolHtml;
+
+        // Bind drag events
+        questionPoolList.querySelectorAll('.admin-draggable-question:not(.is-disabled)').forEach(el => {
+            el.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', el.dataset.id);
+                e.dataTransfer.setData('source-day', '');
+                e.dataTransfer.effectAllowed = 'copyMove';
+            });
+        });
     }
 
     function renderCategories() {
@@ -738,11 +902,7 @@
         });
     });
 
-    els.calendarQuestionSelect.addEventListener('change', () => {
-        state.calendar.days[state.selectedDay - 1] = els.calendarQuestionSelect.value;
-        markDirty();
-        renderCalendar();
-    });
+
 
     els.saveAllButton.addEventListener('click', saveAll);
     els.allQuestionsButton?.addEventListener('click', () => {
@@ -1104,7 +1264,192 @@
     });
 
     els.visibleSaveAllButton?.addEventListener('click', saveAll);
-    els.fillCalendarButton.addEventListener('click', fillCalendar);
+    $('calendarPrevMonthBtn')?.addEventListener('click', () => {
+        if (!currentCalendarViewDate) return;
+        const currentYear = currentCalendarViewDate.getFullYear();
+        const currentMonth = currentCalendarViewDate.getMonth();
+        if (currentYear < 2026 || (currentYear === 2026 && currentMonth <= 6)) return;
+        currentCalendarViewDate.setMonth(currentMonth - 1);
+        renderCalendar();
+    });
+
+    $('calendarNextMonthBtn')?.addEventListener('click', () => {
+        if (!currentCalendarViewDate) return;
+        const currentYear = currentCalendarViewDate.getFullYear();
+        const currentMonth = currentCalendarViewDate.getMonth();
+        
+        const limitDate = new Date();
+        const maxYear = limitDate.getFullYear() + 1;
+        const maxMonth = limitDate.getMonth();
+        
+        if (currentYear > maxYear || (currentYear === maxYear && currentMonth >= maxMonth)) return;
+        
+        currentCalendarViewDate.setMonth(currentMonth + 1);
+        renderCalendar();
+    });
+    $('calendarCurrentMonthLabel')?.addEventListener('click', () => {
+        const popup = $('calendarQuickJump');
+        if (!popup) return;
+        if (popup.classList.contains('is-hidden')) {
+            popup.classList.remove('is-hidden');
+            $('calendarQuickMonth').value = currentCalendarViewDate.getMonth();
+            
+            const limitDate = new Date();
+            const currY = limitDate.getFullYear();
+            const nextY = currY + 1;
+            const btnCurr = $('calendarQuickYearCurrent');
+            const btnNext = $('calendarQuickYearNext');
+            
+            if (btnCurr && btnNext) {
+                btnCurr.textContent = currY;
+                btnNext.textContent = nextY;
+                
+                const setInactive = (btn) => {
+                    btn.classList.remove('is-active');
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'var(--text-secondary)';
+                };
+                const setActive = (btn) => {
+                    btn.classList.add('is-active');
+                    btn.style.background = 'var(--primary)';
+                    btn.style.color = '#fff';
+                };
+                
+                if (currentCalendarViewDate.getFullYear() === nextY) {
+                    setActive(btnNext);
+                    setInactive(btnCurr);
+                } else {
+                    setActive(btnCurr);
+                    setInactive(btnNext);
+                }
+            }
+        } else {
+            popup.classList.add('is-hidden');
+        }
+    });
+
+    $('calendarQuickYearCurrent')?.addEventListener('click', (e) => {
+        e.target.classList.add('is-active');
+        e.target.style.background = 'var(--primary)';
+        e.target.style.color = '#fff';
+        const other = $('calendarQuickYearNext');
+        if (other) {
+            other.classList.remove('is-active');
+            other.style.background = 'transparent';
+            other.style.color = 'var(--text-secondary)';
+        }
+    });
+
+    $('calendarQuickYearNext')?.addEventListener('click', (e) => {
+        e.target.classList.add('is-active');
+        e.target.style.background = 'var(--primary)';
+        e.target.style.color = '#fff';
+        const other = $('calendarQuickYearCurrent');
+        if (other) {
+            other.classList.remove('is-active');
+            other.style.background = 'transparent';
+            other.style.color = 'var(--text-secondary)';
+        }
+    });
+
+    $('calendarQuickJumpBtn')?.addEventListener('click', () => {
+        let m = parseInt($('calendarQuickMonth').value);
+        let y = parseInt(new Date().getFullYear());
+        const activeBtn = document.querySelector('#calendarQuickJump .is-active');
+        if (activeBtn) {
+            y = parseInt(activeBtn.textContent);
+        }
+        if (!isNaN(m) && !isNaN(y)) {
+            if (y < 2026 || (y === 2026 && m < 6)) {
+                y = 2026;
+                m = 6;
+            }
+            
+            const limitDate = new Date();
+            const maxYear = limitDate.getFullYear() + 1;
+            const maxMonth = limitDate.getMonth();
+            
+            if (y > maxYear || (y === maxYear && m > maxMonth)) {
+                y = maxYear;
+                m = maxMonth;
+            }
+            
+            currentCalendarViewDate.setMonth(m);
+            currentCalendarViewDate.setFullYear(y);
+            renderCalendar();
+        }
+        $('calendarQuickJump')?.classList.add('is-hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+        const popup = $('calendarQuickJump');
+        const trigger = $('calendarCurrentMonthLabel');
+        if (popup && trigger && !popup.contains(e.target) && !trigger.contains(e.target)) {
+            popup.classList.add('is-hidden');
+        }
+    });
+    
+    document.addEventListener('input', (e) => {
+        if (e.target.id === 'calendarQuestionSearch') {
+            const filter = e.target.value.toLowerCase();
+            const poolList = $('questionPoolList');
+            if (poolList) {
+                poolList.querySelectorAll('.admin-draggable-question').forEach(option => {
+                    if (option.textContent.toLowerCase().includes(filter)) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+            }
+        }
+    });
+
+    async function autosaveCalendar() {
+        try {
+            const response = await fetch('/rodziniada/api/solo-calendar', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.accessToken}` 
+                },
+                body: JSON.stringify(state.calendar)
+            });
+            if (response.ok) {
+                setStatus('Zapisano pomyślnie!', 'success');
+                markSaved();
+            } else {
+                throw new Error();
+            }
+        } catch (err) {
+            setStatus('Błąd autozapisu', 'error');
+            markDirty();
+        }
+    }
+
+    // Dodaj funkcję pozwalającą na obsłużenie upuszczenia pytania w Dropzone'ie puli pytań (usunięcie)
+    const questionPoolList = $('questionPoolList');
+    if (questionPoolList) {
+        questionPoolList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            questionPoolList.classList.add('is-dragover');
+        });
+        questionPoolList.addEventListener('dragleave', () => {
+            questionPoolList.classList.remove('is-dragover');
+        });
+        questionPoolList.addEventListener('drop', (e) => {
+            e.preventDefault();
+            questionPoolList.classList.remove('is-dragover');
+            const sourceDay = e.dataTransfer.getData('source-day');
+            if (sourceDay !== '') {
+                state.calendar.days[sourceDay] = ''; // Usunięcie pytania
+                renderCalendar();
+                autosaveCalendar();
+            }
+        });
+    }
+
+    els.fillCalendarButton?.addEventListener('click', fillCalendar);
     els.addCategoryButton.addEventListener('click', addCategory);
     els.addQuestionButton.addEventListener('click', addQuestion);
     els.deleteQuestionButton.addEventListener('click', deleteQuestion);
