@@ -240,6 +240,13 @@ module.exports = function(io, logInfo, logSuccess, logWarn, logError, c) {
             cleanupGame(gameId);
         });
 
+        socket.on('joinSolo', ({ userId }) => {
+            if (userId) {
+                socket.join(`solo_${userId}`);
+                logInfo('RODZINIADA', `Gracz dolaczyl do pokoju solo: ${c.magenta}solo_${userId}${c.reset}`);
+            }
+        });
+
         socket.on('disconnect', (reason) => {
             const { gameId, role, playerId } = socket.data;
             if (!gameId) return;

@@ -44,7 +44,7 @@ if %errorlevel% neq 0 (
 echo  [INFO] Uruchamiam serwer...
 echo.
 
-start "" cmd /c "timeout /t 2 /nobreak >nul & start http://localhost:3000"
+rem start "" cmd /c "timeout /t 2 /nobreak >nul & start http://localhost:3000"
 
 node server.js
 

@@ -635,10 +635,7 @@ async function findSavedResult(challengeKey, playerId, userId = null) {
 
 async function saveResultEntry(entry) {
     const existing = await findSavedResult(entry.challengeKey, entry.playerId, entry.userId);
-    const shouldReplace = !existing
-        || isBeforeResultsEpoch(existing)
-        || entry.score > existing.score
-        || (entry.score === existing.score && entry.misses < existing.misses);
+    const shouldReplace = !existing || isBeforeResultsEpoch(existing);
 
     if (supabaseEnabled()) {
         if (existing) {
@@ -704,8 +701,12 @@ router.get('/local', (req, res) => {
 });
 
 // Gra solo - osobny wariant przygotowany pod dedykowany ekran
-router.get('/solo', (req, res) => {
+router.get('/wyzwanie', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'RodziniadaSolo.html'));
+});
+
+router.get('/solo', (req, res) => {
+    res.redirect('/rodziniada/wyzwanie');
 });
 
 // Panel hosta - gra online
@@ -732,12 +733,16 @@ router.get('/edytor', (req, res) => {
 });
 
 // Panel admina Rodziniady Solo
-router.get('/solo/admin', (req, res) => {
+router.get('/wyzwanie/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+router.get('/solo/admin', (req, res) => {
+    res.redirect('/rodziniada/wyzwanie/admin');
+});
+
 router.get('/admin', (req, res) => {
-    res.redirect('/rodziniada/solo/admin');
+    res.redirect('/rodziniada/wyzwanie/admin');
 });
 
 // ===== API PYTAŃ =====
@@ -977,6 +982,14 @@ router.post('/api/solo-state', async (req, res) => {
     try {
         const { user } = await requireAllowedUser(req);
         const state = await saveSoloStateForUser(user, nextState);
+        const rodziniadaIO = req.app.get('rodziniadaIO');
+        console.log(`[RODZINIADA SOLO] POST /api/solo-state called for user: ${user.id}`);
+        if (rodziniadaIO) {
+            console.log(`[RODZINIADA SOLO] Emitting soloStateUpdated to room: solo_${user.id}`);
+            rodziniadaIO.to(`solo_${user.id}`).emit('soloStateUpdated', state);
+        } else {
+            console.error(`[RODZINIADA SOLO] ERROR: rodziniadaIO is not defined in req.app`);
+        }
         res.json({ ok: true, state });
     } catch(e) {
         res.status(e.status || 401).json({ error: e.status === 403 ? 'Brak dostepu' : 'Zaloguj sie, aby zapisac status gry' });

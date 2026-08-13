@@ -47,6 +47,66 @@
         editQuestionSaveBtn: $('editQuestionSaveBtn')
     };
 
+    const COMMON_ALIASES = {
+        auto: ['samochod', 'samochodem', 'auta', 'autem'],
+        samochod: ['auto', 'auta', 'autem'],
+        telefon: ['komorka', 'komorke', 'smartfon', 'smartfona', 'telefon komorkowy'],
+        telewizor: ['tv', 'telewizja'],
+        pieniadze: ['kasa', 'hajs', 'gotowka'],
+        praca: ['robota'],
+        sklep: ['zakupy', 'market'],
+        dom: ['mieszkanie', 'chata'],
+        internet: ['net', 'sieci'],
+        wakacje: ['urlop'],
+        jedzenie: ['posilek', 'obiad'],
+        mama: ['matka'],
+        tata: ['ojciec']
+    };
+
+    const SHORT_WORDS = new Set(['i', 'w', 'we', 'z', 'ze', 'na', 'do', 'od', 'po', 'za', 'u', 'o', 'a']);
+
+    function normalize(value) {
+        return value
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\u0142/g, 'l')
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    window.autoFillVariants = function(input) {
+        const variantsInput = input.closest('.admin-editor-answer').querySelector('[name="answerVariants"]');
+        if (!variantsInput || variantsInput.value.trim() !== '') return;
+
+        const text = input.value.trim();
+        if (!text) return;
+
+        const variants = new Set();
+        const base = normalize(text);
+        if (!base) return;
+
+        base.split(/\s+\/\s+|\/|,|;|\s+albo\s+|\s+lub\s+/).forEach(part => {
+            const normalized = normalize(part);
+            if (normalized.length >= 2) variants.add(normalized);
+        });
+
+        const words = base.split(' ').filter(word => word.length >= 3 && !SHORT_WORDS.has(word));
+        words.forEach(word => {
+            variants.add(word);
+            (COMMON_ALIASES[word] || []).forEach(alias => variants.add(normalize(alias)));
+        });
+
+        Object.entries(COMMON_ALIASES).forEach(([word, aliases]) => {
+            if (base.includes(word)) {
+                aliases.forEach(alias => variants.add(normalize(alias)));
+            }
+        });
+
+        variantsInput.value = Array.from(variants).join(', ');
+    };
+
     const state = {
         accessToken: '',
         data: { categories: [] },
@@ -426,7 +486,7 @@
                     ${answers.map((answer, index) => `
                         <div class="admin-editor-answer" data-answer-index="${index}">
                             <span class="admin-text-meta" style="font-size: 1rem;">${index + 1}</span>
-                            <input class="admin-text-control" type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off" placeholder="Odpowiedź">
+                            <input class="admin-text-control" type="text" name="answerText" value="${escapeHtml(answer.text || '')}" autocomplete="off" placeholder="Odpowiedź" onblur="window.autoFillVariants(this)">
                             <input class="admin-text-control" type="number" name="answerPoints" value="${Number(answer.points || 0)}" min="0" max="100" inputmode="numeric">
                             <input class="admin-text-control answer-variants-input" type="text" name="answerVariants" value="${escapeHtml((answer.variants || []).join(', '))}" autocomplete="off" placeholder="Warianty (po przecinku)">
                         </div>
@@ -862,7 +922,7 @@
     }
 
     function returnToPreviousPage() {
-        window.location.replace('/rodziniada/solo');
+        window.location.replace('/rodziniada/wyzwanie');
     }
 
     async function authorizeAdminFromAccount() {

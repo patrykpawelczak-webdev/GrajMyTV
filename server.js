@@ -12,7 +12,6 @@ const server = http.createServer(app);
 const io     = new Server(server, {
     pingTimeout:  5000,   // 5s – czas oczekiwania na pong zanim uzna klienta za rozłączonego
     pingInterval: 3000,   // 3s – jak często serwer pinguje klientów
-    transports: ['websocket'],  // wymuś WebSocket, bez fallbacku na polling
     upgradeTimeout: 3000,
 });
 
@@ -497,6 +496,8 @@ app.get('/gra4', (req, res) => res.redirect('/w-przygotowaniu?game=gra4'));
 
 // ===== SOCKET.IO NAMESPACES =====
 const rodziniadaIO = io.of('/rodziniada');
+app.set('rodziniadaIO', rodziniadaIO);
+
 const rodziniadaSocket = require('./gry/rodziniada/socket');
 const rodziniadaAPI = rodziniadaSocket(rodziniadaIO, logInfo, logSuccess, logWarn, logError, c);
 

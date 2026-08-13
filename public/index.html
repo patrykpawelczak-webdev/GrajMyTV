@@ -104,7 +104,7 @@
                     <h1 class="hero-title">
                         Teleturnieje, <span class="gradient-text">kiedy chcesz</span> i gdzie chcesz.
                     </h1>
-                    <a href="/rodziniada/solo" class="daily-challenge-link" aria-label="Przejdź do dzisiejszego wyzwania Rodziniada - codzienne wyzwanie">
+                    <a href="/rodziniada/wyzwanie" class="daily-challenge-link" aria-label="Przejdź do dzisiejszego wyzwania Rodziniada - codzienne wyzwanie">
                         <span class="daily-challenge-thumb rodziniada-banner" aria-hidden="true"></span>
                         <span class="daily-challenge-copy">
                             <span class="daily-challenge-kicker">Dzisiejsze wyzwanie</span>
@@ -130,17 +130,21 @@
                     <div class="game-mode-switcher" aria-label="Sekcje gier">
                         <button class="game-mode-tab active" type="button" data-mode-filter="solo">
                             <i data-lucide="user-round"></i>
-                            <span>Solo</span>
+                            <span>Wyzwanie</span>
                         </button>
                         <button class="game-mode-tab" type="button" data-mode-filter="local">
                             <i data-lucide="home"></i>
-                            <span>Lokalnie</span>
+                            <span>Kanapa</span>
+                        </button>
+                        <button class="game-mode-tab" type="button" data-mode-filter="online" style="display: none;">
+                            <i data-lucide="wifi"></i>
+                            <span>Sieć</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="games-grid">
-                    <div class="game-card is-clickable" data-game-variant="true" data-game-key="rodziniada-solo" data-game-modes="solo" data-card-href="/rodziniada/solo" tabindex="0" role="link" aria-label="Uruchom Rodziniadę - codzienne wyzwanie">
+                    <div class="game-card is-clickable" data-game-variant="true" data-game-key="rodziniada-solo" data-game-modes="solo" data-card-href="/rodziniada/wyzwanie" tabindex="0" role="link" aria-label="Uruchom Rodziniadę - codzienne wyzwanie">
                         <div class="game-card-banner game-card-image-banner rodziniada-banner">
                             <span class="game-badge badge-beta">Beta</span>
                             <div class="game-banner-icon"><i data-lucide="heart"></i></div>
@@ -149,10 +153,10 @@
                             <h3 class="game-name">Rodziniada - codzienne wyzwanie</h3>
                             <p class="game-desc">Codzienna ankieta z sześcioma odpowiedziami do odgadnięcia.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="user-check"></i> Gra solo</span>
+                                <span><i data-lucide="user-check"></i> Wyzwanie</span>
                                 <span><i data-lucide="users-2"></i> 1 gracz</span>
                             </div>
-                            <a href="/rodziniada/solo" class="btn btn-primary btn-full">Uruchom solo</a>
+                            <a href="/rodziniada/wyzwanie" class="btn btn-primary btn-full">Uruchom wyzwanie</a>
                         </div>
                     </div>
 
@@ -165,7 +169,7 @@
                             <h3 class="game-name">Droga do Miliona</h3>
                             <p class="game-desc">Klasyczna ścieżka pytań dla jednej osoby. Odpowiadasz po kolei, korzystasz z kół ratunkowych i walczysz o najwyższy wynik.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="user-check"></i> Gra solo</span>
+                                <span><i data-lucide="user-check"></i> Wyzwanie</span>
                                 <span><i data-lucide="users-2"></i> 1 gracz</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
@@ -187,7 +191,7 @@
                             <h3 class="game-name">Szczęśliwe Koło</h3>
                             <p class="game-desc">Samodzielne odgadywanie haseł z limitem tur. Kręcisz kołem, odkrywasz litery i próbujesz pobić własny rekord.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="user-check"></i> Gra solo</span>
+                                <span><i data-lucide="user-check"></i> Wyzwanie</span>
                                 <span><i data-lucide="users-2"></i> 1 gracz</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
@@ -209,7 +213,7 @@
                             <h3 class="game-name">Rodziniada</h3>
                             <p class="game-desc">Drużynowa wersja przy jednym ekranie, tworzona do gry ze znajomymi.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="home"></i> Kanapa</span>
                                 <span><i data-lucide="users-2"></i> 3+ graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Obecnie tworzone, 10%">
@@ -231,7 +235,7 @@
                             <h3 class="game-name">Droga do Miliona</h3>
                             <p class="game-desc">Wspólna gra na jednym ekranie z prowadzącym. Uczestnicy odpowiadają przy stole, a ekran pokazuje pytania, progi i koła ratunkowe.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="home"></i> Kanapa</span>
                                 <span><i data-lucide="users-2"></i> 2-8 graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
@@ -253,7 +257,7 @@
                             <h3 class="game-name">Szczęśliwe Koło</h3>
                             <p class="game-desc">Imprezowa rozgrywka przy telewizorze. Gracze kolejno kręcą kołem, zgadują litery i ścigają się o największą pulę punktów.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="home"></i> Kanapa</span>
                                 <span><i data-lucide="users-2"></i> 2-4 graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
@@ -275,7 +279,7 @@
                             <h3 class="game-name">Jeden na Dziesięciu</h3>
                             <p class="game-desc">Lokalny quiz eliminacyjny dla grupy. Jeden prowadzący, wielu zawodników i klasyczna walka o przetrwanie do finału.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="home"></i> Gry lokalne</span>
+                                <span><i data-lucide="home"></i> Kanapa</span>
                                 <span><i data-lucide="users-2"></i> 3-10 graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
@@ -297,7 +301,7 @@
                             <h3 class="game-name">Rodziniada</h3>
                             <p class="game-desc">Wariant z pokojem online i kodem dołączania. Gracze wchodzą ze swoich urządzeń, a gospodarz układa drużyny i startuje grę.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="wifi"></i> Sieć</span>
                                 <span><i data-lucide="users-2"></i> 3+ graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Obecnie tworzone, 10%">
@@ -319,7 +323,7 @@
                             <h3 class="game-name">Droga do Miliona</h3>
                             <p class="game-desc">Pokoje online dla quizu wiedzy. Uczestnicy dołączają kodem, odpowiadają zdalnie i rywalizują o najlepszy wynik.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="wifi"></i> Sieć</span>
                                 <span><i data-lucide="users-2"></i> 1-100 graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">
@@ -341,7 +345,7 @@
                             <h3 class="game-name">Szczęśliwe Koło</h3>
                             <p class="game-desc">Zdalna rozgrywka w odgadywanie haseł. Każdy gracz ma własne urządzenie, a wspólna plansza prowadzi rundy i punktację.</p>
                             <div class="game-meta">
-                                <span><i data-lucide="wifi"></i> Gry online</span>
+                                <span><i data-lucide="wifi"></i> Sieć</span>
                                 <span><i data-lucide="users-2"></i> 2-4 graczy</span>
                             </div>
                             <div class="game-progress" aria-label="Status prac: Pomysł, 1%">

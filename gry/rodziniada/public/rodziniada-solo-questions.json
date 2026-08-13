@@ -17,32 +17,56 @@
             {
               "id": "a_7",
               "text": "KLUCZE",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "klucze"
+              ]
             },
             {
               "id": "a_8",
               "text": "TELEFON",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_9",
               "text": "PORTFEL",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "portfel"
+              ]
             },
             {
               "id": "a_10",
               "text": "PILOT OD TV",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "pilot od tv",
+                "pilot"
+              ]
             },
             {
               "id": "a_11",
               "text": "OKULARY",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "okulary"
+              ]
             },
             {
               "id": "a_12",
               "text": "SKARPETKI",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "skarpetki"
+              ]
             }
           ]
         },
@@ -53,32 +77,59 @@
             {
               "id": "a_13",
               "text": "NA POGODĘ",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "na pogode",
+                "pogode"
+              ]
             },
             {
               "id": "a_14",
               "text": "NA PRACĘ",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "na prace",
+                "prace"
+              ]
             },
             {
               "id": "a_15",
               "text": "NA PIENIĄDZE",
-              "points": 20
+              "points": 20,
+              "variants": [
+                "na pieniadze",
+                "pieniadze",
+                "kasa",
+                "hajs",
+                "gotowka"
+              ]
             },
             {
               "id": "a_16",
               "text": "NA ZDROWIE",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "na zdrowie",
+                "zdrowie"
+              ]
             },
             {
               "id": "a_17",
               "text": "NA SĄSIADÓW",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "na sasiadow",
+                "sasiadow"
+              ]
             },
             {
               "id": "a_18",
               "text": "NA POLITYKÓW",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "na politykow",
+                "politykow"
+              ]
             }
           ]
         },
@@ -89,32 +140,61 @@
             {
               "id": "a_19",
               "text": "PRZEGLĄDAJĄ TELEFON",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "przegladaja telefon",
+                "przegladaja",
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_20",
               "text": "ROZMAWIAJĄ",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "rozmawiaja"
+              ]
             },
             {
               "id": "a_21",
               "text": "DENERWUJĄ SIĘ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "denerwuja sie",
+                "denerwuja",
+                "sie"
+              ]
             },
             {
               "id": "a_22",
               "text": "PATRZĄ NA ZEGAREK",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "patrza na zegarek",
+                "patrza",
+                "zegarek"
+              ]
             },
             {
               "id": "a_23",
               "text": "CZYTAJĄ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "czytaja"
+              ]
             },
             {
               "id": "a_24",
               "text": "JEDZĄ",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "jedza"
+              ]
             }
           ]
         },
@@ -125,32 +205,58 @@
             {
               "id": "a_25",
               "text": "FILMÓW I SERIALI",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "filmow i seriali",
+                "filmow",
+                "seriali"
+              ]
             },
             {
               "id": "a_26",
               "text": "WIADOMOŚCI",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "wiadomosci",
+                "mieszkanie",
+                "chata"
+              ]
             },
             {
               "id": "a_27",
               "text": "PRZEPISÓW KULINARNYCH",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "przepisow kulinarnych",
+                "przepisow",
+                "kulinarnych"
+              ]
             },
             {
               "id": "a_28",
               "text": "ZAKUPÓW",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "zakupow"
+              ]
             },
             {
               "id": "a_29",
               "text": "SOCIAL MEDIA",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "social media",
+                "social",
+                "media"
+              ]
             },
             {
               "id": "a_30",
               "text": "POGODY",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "pogody"
+              ]
             }
           ]
         },
@@ -161,32 +267,59 @@
             {
               "id": "a_31",
               "text": "RĘCZNIK",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "recznik"
+              ]
             },
             {
               "id": "a_32",
               "text": "KREM DO OPALANIA",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "krem do opalania",
+                "krem",
+                "opalania"
+              ]
             },
             {
               "id": "a_33",
               "text": "WODĘ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "wode"
+              ]
             },
             {
               "id": "a_34",
               "text": "TELEFON",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_35",
               "text": "OKULARY PRZECIWSŁONECZNE",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "okulary przeciwsloneczne",
+                "okulary",
+                "przeciwsloneczne"
+              ]
             },
             {
               "id": "a_36",
               "text": "KSIĄŻKĘ",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "ksiazke"
+              ]
             }
           ]
         },
@@ -197,32 +330,67 @@
             {
               "id": "a_1",
               "text": "SPRAWDZAJĄ TELEFON",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "sprawdzaja telefon",
+                "sprawdzaja",
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_2",
               "text": "IDĄ DO ŁAZIENKI",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "ida do lazienki",
+                "ida",
+                "lazienki"
+              ]
             },
             {
               "id": "a_3",
               "text": "PIJĄ KAWĘ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "pija kawe",
+                "pija",
+                "kawe"
+              ]
             },
             {
               "id": "a_4",
               "text": "JEDZĄ ŚNIADANIE",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "jedza sniadanie",
+                "jedza",
+                "sniadanie"
+              ]
             },
             {
               "id": "a_5",
               "text": "WYŁĄCZAJĄ BUDZIK",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "wylaczaja budzik",
+                "wylaczaja",
+                "budzik"
+              ]
             },
             {
               "id": "a_6",
               "text": "PRZECIĄGAJĄ SIĘ",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "przeciagaja sie",
+                "przeciagaja",
+                "sie"
+              ]
             }
           ]
         }
@@ -240,32 +408,52 @@
             {
               "id": "a_37",
               "text": "SCHABOWY Z ZIEMNIAKAMI",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "schabowy z ziemniakami",
+                "schabowy",
+                "ziemniakami"
+              ]
             },
             {
               "id": "a_38",
               "text": "PIEROGI",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "pierogi"
+              ]
             },
             {
               "id": "a_39",
               "text": "ROSÓŁ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "rosol"
+              ]
             },
             {
               "id": "a_40",
               "text": "SPAGHETTI",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "spaghetti"
+              ]
             },
             {
               "id": "a_41",
               "text": "NALEŚNIKI",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "nalesniki"
+              ]
             },
             {
               "id": "a_42",
               "text": "BIGOS",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "bigos"
+              ]
             }
           ]
         },
@@ -276,32 +464,52 @@
             {
               "id": "a_43",
               "text": "KANAPKI",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "kanapki"
+              ]
             },
             {
               "id": "a_44",
               "text": "JAJECZNICĘ",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "jajecznice"
+              ]
             },
             {
               "id": "a_45",
               "text": "PŁATKI Z MLEKIEM",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "platki z mlekiem",
+                "platki",
+                "mlekiem"
+              ]
             },
             {
               "id": "a_46",
               "text": "JOGURT",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "jogurt"
+              ]
             },
             {
               "id": "a_47",
               "text": "TOSTY",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "tosty"
+              ]
             },
             {
               "id": "a_48",
               "text": "OWSIANKĘ",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "owsianke"
+              ]
             }
           ]
         },
@@ -312,32 +520,52 @@
             {
               "id": "a_49",
               "text": "MARGHERITA",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "margherita"
+              ]
             },
             {
               "id": "a_50",
               "text": "PEPPERONI",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "pepperoni"
+              ]
             },
             {
               "id": "a_51",
               "text": "HAWAJSKA",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "hawajska"
+              ]
             },
             {
               "id": "a_52",
               "text": "CAPRICCIOSA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "capricciosa"
+              ]
             },
             {
               "id": "a_53",
               "text": "CZTERY SERY",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "cztery sery",
+                "cztery",
+                "sery"
+              ]
             },
             {
               "id": "a_54",
               "text": "KEBAB",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "kebab"
+              ]
             }
           ]
         },
@@ -348,32 +576,56 @@
             {
               "id": "a_55",
               "text": "WODĘ",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "wode"
+              ]
             },
             {
               "id": "a_56",
               "text": "PIWO",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "piwo"
+              ]
             },
             {
               "id": "a_57",
               "text": "LODY / SHAKE",
-              "points": 15
+              "points": 15,
+              "variants": [
+                "lody shake",
+                "lody",
+                "shake"
+              ]
             },
             {
               "id": "a_58",
               "text": "LEMONIADĘ",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "lemoniade"
+              ]
             },
             {
               "id": "a_59",
               "text": "KAWĘ MROŻONĄ",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "kawe mrozona",
+                "kawe",
+                "mrozona"
+              ]
             },
             {
               "id": "a_60",
               "text": "HERBATĘ MROŻONĄ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "herbate mrozona",
+                "herbate",
+                "mrozona"
+              ]
             }
           ]
         },
@@ -384,32 +636,50 @@
             {
               "id": "a_61",
               "text": "CHLEB",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "chleb"
+              ]
             },
             {
               "id": "a_62",
               "text": "BUŁKI",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "bulki"
+              ]
             },
             {
               "id": "a_63",
               "text": "DROŻDŻÓWKĘ",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "drozdzowke"
+              ]
             },
             {
               "id": "a_64",
               "text": "PĄCZKI",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "paczki"
+              ]
             },
             {
               "id": "a_65",
               "text": "ROGALIKI",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "rogaliki"
+              ]
             },
             {
               "id": "a_66",
               "text": "CIASTKA",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "ciastka"
+              ]
             }
           ]
         },
@@ -420,32 +690,54 @@
             {
               "id": "a_67",
               "text": "PTASIE MLECZKO",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "ptasie mleczko",
+                "ptasie",
+                "mleczko"
+              ]
             },
             {
               "id": "a_68",
               "text": "PRINCE POLO",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "prince polo",
+                "prince",
+                "polo"
+              ]
             },
             {
               "id": "a_69",
               "text": "MICHAŁKI",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "michalki"
+              ]
             },
             {
               "id": "a_70",
               "text": "KRÓWKI",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "krowki"
+              ]
             },
             {
               "id": "a_71",
               "text": "PAWEŁEK",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "pawelek"
+              ]
             },
             {
               "id": "a_72",
               "text": "GRZEŚKI",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "grzeski"
+              ]
             }
           ]
         }
@@ -463,32 +755,57 @@
             {
               "id": "a_73",
               "text": "MIŚ",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "mis"
+              ]
             },
             {
               "id": "a_74",
               "text": "CHŁOPAKI NIE PŁACZĄ",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "chlopaki nie placza",
+                "chlopaki",
+                "nie",
+                "placza"
+              ]
             },
             {
               "id": "a_75",
               "text": "KOGEL MOGEL",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "kogel mogel",
+                "kogel",
+                "mogel"
+              ]
             },
             {
               "id": "a_76",
               "text": "SEKSMISJA",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "seksmisja"
+              ]
             },
             {
               "id": "a_77",
               "text": "DZIEŃ ŚWIRA",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "dzien swira",
+                "dzien",
+                "swira"
+              ]
             },
             {
               "id": "a_78",
               "text": "KILER",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "kiler"
+              ]
             }
           ]
         },
@@ -499,32 +816,59 @@
             {
               "id": "a_79",
               "text": "OGLĄDAJĄ FILMY",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "ogladaja filmy",
+                "ogladaja",
+                "filmy"
+              ]
             },
             {
               "id": "a_80",
               "text": "ŚPIĄ DŁUŻEJ",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "spia dluzej",
+                "spia",
+                "dluzej"
+              ]
             },
             {
               "id": "a_81",
               "text": "SPOTYKAJĄ SIĘ ZE ZNAJOMYMI",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "spotykaja sie ze znajomymi",
+                "spotykaja",
+                "sie",
+                "znajomymi"
+              ]
             },
             {
               "id": "a_82",
               "text": "ROBIĄ ZAKUPY",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "robia zakupy",
+                "robia",
+                "zakupy"
+              ]
             },
             {
               "id": "a_83",
               "text": "SPRZĄTAJĄ",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "sprzataja"
+              ]
             },
             {
               "id": "a_84",
               "text": "GOTUJĄ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "gotuja"
+              ]
             }
           ]
         },
@@ -535,32 +879,50 @@
             {
               "id": "a_85",
               "text": "MONOPOLY",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "monopoly"
+              ]
             },
             {
               "id": "a_86",
               "text": "SCRABBLE",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "scrabble"
+              ]
             },
             {
               "id": "a_87",
               "text": "CHIŃCZYK",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "chinczyk"
+              ]
             },
             {
               "id": "a_88",
               "text": "SZACHY",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "szachy"
+              ]
             },
             {
               "id": "a_89",
               "text": "UNO",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "uno"
+              ]
             },
             {
               "id": "a_90",
               "text": "WARCABY",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "warcaby"
+              ]
             }
           ]
         },
@@ -571,32 +933,58 @@
             {
               "id": "a_91",
               "text": "M JAK MIŁOŚĆ",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "m jak milosc",
+                "jak",
+                "milosc"
+              ]
             },
             {
               "id": "a_92",
               "text": "NA DOBRE I NA ZŁE",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "na dobre i na zle",
+                "dobre",
+                "zle"
+              ]
             },
             {
               "id": "a_93",
               "text": "KLAN",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "klan"
+              ]
             },
             {
               "id": "a_94",
               "text": "ŚWIAT WEDŁUG KIEPSKICH",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "swiat wedlug kiepskich",
+                "swiat",
+                "wedlug",
+                "kiepskich"
+              ]
             },
             {
               "id": "a_95",
               "text": "RANCZO",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "ranczo"
+              ]
             },
             {
               "id": "a_96",
               "text": "RODZINKA.PL",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "rodzinka pl",
+                "rodzinka"
+              ]
             }
           ]
         },
@@ -607,32 +995,54 @@
             {
               "id": "a_97",
               "text": "TAŃCZĄ",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "tancza"
+              ]
             },
             {
               "id": "a_98",
               "text": "PIJĄ",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "pija"
+              ]
             },
             {
               "id": "a_99",
               "text": "ROZMAWIAJĄ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "rozmawiaja"
+              ]
             },
             {
               "id": "a_100",
               "text": "JEDZĄ",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "jedza"
+              ]
             },
             {
               "id": "a_101",
               "text": "ROBIĄ ZDJĘCIA",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "robia zdjecia",
+                "robia",
+                "zdjecia"
+              ]
             },
             {
               "id": "a_102",
               "text": "GRAJĄ W GRY",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "graja w gry",
+                "graja",
+                "gry"
+              ]
             }
           ]
         },
@@ -643,32 +1053,56 @@
             {
               "id": "a_103",
               "text": "DODA",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "doda"
+              ]
             },
             {
               "id": "a_104",
               "text": "MARYLA RODOWICZ",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "maryla rodowicz",
+                "maryla",
+                "rodowicz"
+              ]
             },
             {
               "id": "a_105",
               "text": "BUDKA SUFLERA",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "budka suflera",
+                "budka",
+                "suflera"
+              ]
             },
             {
               "id": "a_106",
               "text": "PERFECT",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "perfect"
+              ]
             },
             {
               "id": "a_107",
               "text": "SANAH",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "sanah"
+              ]
             },
             {
               "id": "a_108",
               "text": "Lady PANK",
-              "points": 9
+              "points": 9,
+              "variants": [
+                "lady pank",
+                "lady",
+                "pank"
+              ]
             }
           ]
         }
@@ -686,32 +1120,56 @@
             {
               "id": "a_109",
               "text": "KARP",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "karp"
+              ]
             },
             {
               "id": "a_110",
               "text": "BARSZCZ Z USZKAMI",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "barszcz z uszkami",
+                "barszcz",
+                "uszkami"
+              ]
             },
             {
               "id": "a_111",
               "text": "PIEROGI",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "pierogi"
+              ]
             },
             {
               "id": "a_112",
               "text": "SAŁATKA JARZYNOWA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "salatka jarzynowa",
+                "salatka",
+                "jarzynowa"
+              ]
             },
             {
               "id": "a_113",
               "text": "KUTIA",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "kutia"
+              ]
             },
             {
               "id": "a_114",
               "text": "KOMPOT Z SUSZU",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "kompot z suszu",
+                "kompot",
+                "suszu"
+              ]
             }
           ]
         },
@@ -722,32 +1180,55 @@
             {
               "id": "a_115",
               "text": "ZABAWKI",
-              "points": 34
+              "points": 34,
+              "variants": [
+                "zabawki"
+              ]
             },
             {
               "id": "a_116",
               "text": "SŁODYCZE",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "slodycze"
+              ]
             },
             {
               "id": "a_117",
               "text": "GRY / KONSOLĘ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "gry konsole",
+                "gry",
+                "konsole"
+              ]
             },
             {
               "id": "a_118",
               "text": "UBRANIA",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "ubrania"
+              ]
             },
             {
               "id": "a_119",
               "text": "KSIĄŻKI",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "ksiazki"
+              ]
             },
             {
               "id": "a_120",
               "text": "PIENIĄDZE",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "pieniadze",
+                "kasa",
+                "hajs",
+                "gotowka"
+              ]
             }
           ]
         },
@@ -758,32 +1239,57 @@
             {
               "id": "a_121",
               "text": "O PRACY",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "o pracy",
+                "pracy"
+              ]
             },
             {
               "id": "a_122",
               "text": "O DZIECIACH / SZKOLE",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "o dzieciach szkole",
+                "dzieciach",
+                "szkole"
+              ]
             },
             {
               "id": "a_123",
               "text": "O ZDROWIU",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "o zdrowiu",
+                "zdrowiu"
+              ]
             },
             {
               "id": "a_124",
               "text": "O PIENIĄDZACH",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "o pieniadzach",
+                "pieniadzach"
+              ]
             },
             {
               "id": "a_125",
               "text": "O POLITYCE",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "o polityce",
+                "polityce"
+              ]
             },
             {
               "id": "a_126",
               "text": "O SĄSIADACH",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "o sasiadach",
+                "sasiadach"
+              ]
             }
           ]
         },
@@ -794,32 +1300,64 @@
             {
               "id": "a_127",
               "text": "JEDZ WIĘCEJ",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "jedz wiecej",
+                "jedz",
+                "wiecej"
+              ]
             },
             {
               "id": "a_128",
               "text": "UBIERZ SIĘ CIEPLEJ",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "ubierz sie cieplej",
+                "ubierz",
+                "sie",
+                "cieplej"
+              ]
             },
             {
               "id": "a_129",
               "text": "JAK TY UROSŁEŚ",
-              "points": 15
+              "points": 15,
+              "variants": [
+                "jak ty urosles",
+                "jak",
+                "urosles"
+              ]
             },
             {
               "id": "a_130",
               "text": "MASZ DZIEWCZYNĘ/CHŁOPAKA?",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "masz dziewczyne chlopaka",
+                "masz",
+                "dziewczyne",
+                "chlopaka"
+              ]
             },
             {
               "id": "a_131",
               "text": "BĄDŹ GRZECZNY",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "badz grzeczny",
+                "badz",
+                "grzeczny"
+              ]
             },
             {
               "id": "a_132",
               "text": "KIEDY ŚLUB?",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "kiedy slub",
+                "kiedy",
+                "slub"
+              ]
             }
           ]
         },
@@ -830,32 +1368,50 @@
             {
               "id": "a_133",
               "text": "KWIATY",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "kwiaty"
+              ]
             },
             {
               "id": "a_134",
               "text": "CZEKOLADKI",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "czekoladki"
+              ]
             },
             {
               "id": "a_135",
               "text": "PERFUMY",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "perfumy"
+              ]
             },
             {
               "id": "a_136",
               "text": "LAURKA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "laurka"
+              ]
             },
             {
               "id": "a_137",
               "text": "BIŻUTERIA",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "bizuteria"
+              ]
             },
             {
               "id": "a_138",
               "text": "KOLACJA",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "kolacja"
+              ]
             }
           ]
         },
@@ -866,32 +1422,67 @@
             {
               "id": "a_139",
               "text": "POSPRZĄTAJ POKÓJ",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "posprzataj pokoj",
+                "posprzataj",
+                "pokoj"
+              ]
             },
             {
               "id": "a_140",
               "text": "ODŁÓŻ TELEFON",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "odloz telefon",
+                "odloz",
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_141",
               "text": "ODRABIAJ LEKCJE",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "odrabiaj lekcje",
+                "odrabiaj",
+                "lekcje"
+              ]
             },
             {
               "id": "a_142",
               "text": "IDŹ SPAĆ",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "idz spac",
+                "idz",
+                "spac"
+              ]
             },
             {
               "id": "a_143",
               "text": "UMYJ ZĘBY",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "umyj zeby",
+                "umyj",
+                "zeby"
+              ]
             },
             {
               "id": "a_144",
               "text": "JEDZ WARZYWA",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "jedz warzywa",
+                "jedz",
+                "warzywa"
+              ]
             }
           ]
         }
@@ -909,32 +1500,50 @@
             {
               "id": "a_145",
               "text": "PIŁKARZ",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "pilkarz"
+              ]
             },
             {
               "id": "a_146",
               "text": "LEKARZ",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "lekarz"
+              ]
             },
             {
               "id": "a_147",
               "text": "STRAŻAK",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "strazak"
+              ]
             },
             {
               "id": "a_148",
               "text": "POLICJANT",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "policjant"
+              ]
             },
             {
               "id": "a_149",
               "text": "ASTRONAUTA",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "astronauta"
+              ]
             },
             {
               "id": "a_150",
               "text": "YOUTUBER",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "youtuber"
+              ]
             }
           ]
         },
@@ -945,32 +1554,65 @@
             {
               "id": "a_151",
               "text": "PRZEGLĄDAJĄ INTERNET",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "przegladaja internet",
+                "przegladaja",
+                "internet",
+                "net",
+                "sieci"
+              ]
             },
             {
               "id": "a_152",
               "text": "PIJĄ KAWĘ",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "pija kawe",
+                "pija",
+                "kawe"
+              ]
             },
             {
               "id": "a_153",
               "text": "PLOTKUJĄ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "plotkuja"
+              ]
             },
             {
               "id": "a_154",
               "text": "SIEDZĄ NA TELEFONIE",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "siedza na telefonie",
+                "siedza",
+                "telefonie",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_155",
               "text": "JEDZĄ",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "jedza"
+              ]
             },
             {
               "id": "a_156",
               "text": "CHODZĄ NA PAPIEROSA",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "chodza na papierosa",
+                "chodza",
+                "papierosa"
+              ]
             }
           ]
         },
@@ -981,32 +1623,50 @@
             {
               "id": "a_157",
               "text": "MATEMATYKA",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "matematyka"
+              ]
             },
             {
               "id": "a_158",
               "text": "FIZYKA",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "fizyka"
+              ]
             },
             {
               "id": "a_159",
               "text": "CHEMIA",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "chemia"
+              ]
             },
             {
               "id": "a_160",
               "text": "HISTORIA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "historia"
+              ]
             },
             {
               "id": "a_161",
               "text": "POLSKI",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "polski"
+              ]
             },
             {
               "id": "a_162",
               "text": "WF",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "wf"
+              ]
             }
           ]
         },
@@ -1017,32 +1677,59 @@
             {
               "id": "a_163",
               "text": "TELEFON",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_164",
               "text": "PORTFEL",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "portfel"
+              ]
             },
             {
               "id": "a_165",
               "text": "LUNCH / JEDZENIE",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "lunch jedzenie",
+                "lunch",
+                "jedzenie",
+                "posilek",
+                "obiad"
+              ]
             },
             {
               "id": "a_166",
               "text": "LAPTOP",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "laptop"
+              ]
             },
             {
               "id": "a_167",
               "text": "KLUCZE",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "klucze"
+              ]
             },
             {
               "id": "a_168",
               "text": "SŁUCHAWKI",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "sluchawki"
+              ]
             }
           ]
         },
@@ -1053,32 +1740,68 @@
             {
               "id": "a_169",
               "text": "KORKI / RUCH",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "korki ruch",
+                "korki",
+                "ruch"
+              ]
             },
             {
               "id": "a_170",
               "text": "AUTOBUS SIĘ SPÓŹNIŁ",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "autobus sie spoznil",
+                "autobus",
+                "sie",
+                "spoznil",
+                "samochod",
+                "samochodem",
+                "auta",
+                "autem"
+              ]
             },
             {
               "id": "a_171",
               "text": "NIE SŁYSZAŁEM BUDZIKA",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "nie slyszalem budzika",
+                "nie",
+                "slyszalem",
+                "budzika"
+              ]
             },
             {
               "id": "a_172",
               "text": "DZIECKO CHOROWAŁO",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "dziecko chorowalo",
+                "dziecko",
+                "chorowalo"
+              ]
             },
             {
               "id": "a_173",
               "text": "WYPADEK NA DRODZE",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "wypadek na drodze",
+                "wypadek",
+                "drodze"
+              ]
             },
             {
               "id": "a_174",
               "text": "ZEGAREK MI STANĄŁ",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "zegarek mi stanal",
+                "zegarek",
+                "stanal"
+              ]
             }
           ]
         },
@@ -1089,32 +1812,64 @@
             {
               "id": "a_175",
               "text": "SIEDZĄ NA TELEFONIE",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "siedza na telefonie",
+                "siedza",
+                "telefonie",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_176",
               "text": "RYSUJĄ W ZESZYCIE",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "rysuja w zeszycie",
+                "rysuja",
+                "zeszycie"
+              ]
             },
             {
               "id": "a_177",
               "text": "ROZMAWIAJĄ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "rozmawiaja"
+              ]
             },
             {
               "id": "a_178",
               "text": "ŚPIĄ",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "spia"
+              ]
             },
             {
               "id": "a_179",
               "text": "PATRZĄ PRZEZ OKNO",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "patrza przez okno",
+                "patrza",
+                "przez",
+                "okno"
+              ]
             },
             {
               "id": "a_180",
               "text": "PISZĄ KARTECZKI",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "pisza karteczki",
+                "pisza",
+                "karteczki"
+              ]
             }
           ]
         }
@@ -1132,32 +1887,50 @@
             {
               "id": "a_181",
               "text": "CHLEB",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "chleb"
+              ]
             },
             {
               "id": "a_182",
               "text": "MLEKO",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "mleko"
+              ]
             },
             {
               "id": "a_183",
               "text": "MASŁO",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "maslo"
+              ]
             },
             {
               "id": "a_184",
               "text": "JAJKA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "jajka"
+              ]
             },
             {
               "id": "a_185",
               "text": "WODA",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "woda"
+              ]
             },
             {
               "id": "a_186",
               "text": "SER",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "ser"
+              ]
             }
           ]
         },
@@ -1168,32 +1941,60 @@
             {
               "id": "a_187",
               "text": "NA WAKACJE",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "na wakacje",
+                "wakacje",
+                "urlop"
+              ]
             },
             {
               "id": "a_188",
               "text": "NA SAMOCHÓD",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "na samochod",
+                "samochod",
+                "auto",
+                "auta",
+                "autem"
+              ]
             },
             {
               "id": "a_189",
               "text": "NA MIESZKANIE",
-              "points": 20
+              "points": 20,
+              "variants": [
+                "na mieszkanie",
+                "mieszkanie"
+              ]
             },
             {
               "id": "a_190",
               "text": "NA ELEKTRONIKĘ",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "na elektronike",
+                "elektronike"
+              ]
             },
             {
               "id": "a_191",
               "text": "NA EMERYTURĘ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "na emeryture",
+                "emeryture"
+              ]
             },
             {
               "id": "a_192",
               "text": "NA UBRANIA",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "na ubrania",
+                "ubrania"
+              ]
             }
           ]
         },
@@ -1204,32 +2005,52 @@
             {
               "id": "a_193",
               "text": "UBRANIA",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "ubrania"
+              ]
             },
             {
               "id": "a_194",
               "text": "BUTY",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "buty"
+              ]
             },
             {
               "id": "a_195",
               "text": "ELEKTRONIKĘ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "elektronike"
+              ]
             },
             {
               "id": "a_196",
               "text": "KOSMETYKI",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "kosmetyki"
+              ]
             },
             {
               "id": "a_197",
               "text": "JEDZENIE",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "jedzenie",
+                "posilek",
+                "obiad"
+              ]
             },
             {
               "id": "a_198",
               "text": "ZABAWKI",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "zabawki"
+              ]
             }
           ]
         },
@@ -1240,32 +2061,50 @@
             {
               "id": "a_199",
               "text": "BIEDRONKA",
-              "points": 37
+              "points": 37,
+              "variants": [
+                "biedronka"
+              ]
             },
             {
               "id": "a_200",
               "text": "LIDL",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "lidl"
+              ]
             },
             {
               "id": "a_201",
               "text": "ŻABKA",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "zabka"
+              ]
             },
             {
               "id": "a_202",
               "text": "IKEA",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "ikea"
+              ]
             },
             {
               "id": "a_203",
               "text": "ROSSMANN",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "rossmann"
+              ]
             },
             {
               "id": "a_204",
               "text": "PEPCO",
-              "points": 5
+              "points": 5,
+              "variants": [
+                "pepco"
+              ]
             }
           ]
         },
@@ -1276,32 +2115,54 @@
             {
               "id": "a_205",
               "text": "KAWĘ",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "kawe"
+              ]
             },
             {
               "id": "a_206",
               "text": "HOT DOGA",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "hot doga",
+                "hot",
+                "doga"
+              ]
             },
             {
               "id": "a_207",
               "text": "NAPOJE",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "napoje"
+              ]
             },
             {
               "id": "a_208",
               "text": "PAPIEROSY",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "papierosy"
+              ]
             },
             {
               "id": "a_209",
               "text": "SŁODYCZE",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "slodycze"
+              ]
             },
             {
               "id": "a_210",
               "text": "PŁYN DO SPRYSKIWACZY",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "plyn do spryskiwaczy",
+                "plyn",
+                "spryskiwaczy"
+              ]
             }
           ]
         },
@@ -1312,32 +2173,62 @@
             {
               "id": "a_211",
               "text": "NA MIESZKANIE / CZYNSZ",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "na mieszkanie czynsz",
+                "mieszkanie",
+                "czynsz"
+              ]
             },
             {
               "id": "a_212",
               "text": "NA JEDZENIE",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "na jedzenie",
+                "jedzenie",
+                "posilek",
+                "obiad"
+              ]
             },
             {
               "id": "a_213",
               "text": "NA SAMOCHÓD",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "na samochod",
+                "samochod",
+                "auto",
+                "auta",
+                "autem"
+              ]
             },
             {
               "id": "a_214",
               "text": "NA RACHUNKI",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "na rachunki",
+                "rachunki"
+              ]
             },
             {
               "id": "a_215",
               "text": "NA UBRANIA",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "na ubrania",
+                "ubrania"
+              ]
             },
             {
               "id": "a_216",
               "text": "NA ROZRYWKĘ",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "na rozrywke",
+                "rozrywke"
+              ]
             }
           ]
         }
@@ -1355,32 +2246,50 @@
             {
               "id": "a_217",
               "text": "WARSZAWA",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "warszawa"
+              ]
             },
             {
               "id": "a_218",
               "text": "KRAKÓW",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "krakow"
+              ]
             },
             {
               "id": "a_219",
               "text": "ŁÓDŹ",
-              "points": 15
+              "points": 15,
+              "variants": [
+                "lodz"
+              ]
             },
             {
               "id": "a_220",
               "text": "WROCŁAW",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "wroclaw"
+              ]
             },
             {
               "id": "a_221",
               "text": "POZNAŃ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "poznan"
+              ]
             },
             {
               "id": "a_222",
               "text": "GDAŃSK",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "gdansk"
+              ]
             }
           ]
         },
@@ -1391,32 +2300,63 @@
             {
               "id": "a_223",
               "text": "ROBERT LEWANDOWSKI",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "robert lewandowski",
+                "robert",
+                "lewandowski"
+              ]
             },
             {
               "id": "a_224",
               "text": "JAN PAWEŁ II",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "jan pawel ii",
+                "jan",
+                "pawel"
+              ]
             },
             {
               "id": "a_225",
               "text": "FRYDERYK CHOPIN",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "fryderyk chopin",
+                "fryderyk",
+                "chopin"
+              ]
             },
             {
               "id": "a_226",
               "text": "MARIA CURIE-SKŁODOWSKA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "maria curie sklodowska",
+                "maria",
+                "curie",
+                "sklodowska"
+              ]
             },
             {
               "id": "a_227",
               "text": "MIKOŁAJ KOPERNIK",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "mikolaj kopernik",
+                "mikolaj",
+                "kopernik"
+              ]
             },
             {
               "id": "a_228",
               "text": "ADAM MAŁYSZ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "adam malysz",
+                "adam",
+                "malysz"
+              ]
             }
           ]
         },
@@ -1427,32 +2367,60 @@
             {
               "id": "a_229",
               "text": "BOŻE NARODZENIE",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "boze narodzenie",
+                "boze",
+                "narodzenie"
+              ]
             },
             {
               "id": "a_230",
               "text": "WIELKANOC",
-              "points": 25
+              "points": 25,
+              "variants": [
+                "wielkanoc"
+              ]
             },
             {
               "id": "a_231",
               "text": "NOWY ROK",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "nowy rok",
+                "nowy",
+                "rok"
+              ]
             },
             {
               "id": "a_232",
               "text": "WSZYSTKICH ŚWIĘTYCH",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "wszystkich swietych",
+                "wszystkich",
+                "swietych"
+              ]
             },
             {
               "id": "a_233",
               "text": "DZIEŃ NIEPODLEGŁOŚCI",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "dzien niepodleglosci",
+                "dzien",
+                "niepodleglosci"
+              ]
             },
             {
               "id": "a_234",
               "text": "DZIEŃ KOBIET",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "dzien kobiet",
+                "dzien",
+                "kobiet"
+              ]
             }
           ]
         },
@@ -1463,32 +2431,54 @@
             {
               "id": "a_235",
               "text": "WÓDKA",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "wodka"
+              ]
             },
             {
               "id": "a_236",
               "text": "PIEROGI",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "pierogi"
+              ]
             },
             {
               "id": "a_237",
               "text": "PIŁKA NOŻNA",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "pilka nozna",
+                "pilka",
+                "nozna"
+              ]
             },
             {
               "id": "a_238",
               "text": "KIEŁBASA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "kielbasa"
+              ]
             },
             {
               "id": "a_239",
               "text": "BIGOS",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "bigos"
+              ]
             },
             {
               "id": "a_240",
               "text": "JAN PAWEŁ II",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "jan pawel ii",
+                "jan",
+                "pawel"
+              ]
             }
           ]
         },
@@ -1499,32 +2489,50 @@
             {
               "id": "a_241",
               "text": "ZAKOPANE",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "zakopane"
+              ]
             },
             {
               "id": "a_242",
               "text": "TRÓJMIASTO",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "trojmiasto"
+              ]
             },
             {
               "id": "a_243",
               "text": "KRAKÓW",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "krakow"
+              ]
             },
             {
               "id": "a_244",
               "text": "MAZURY",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "mazury"
+              ]
             },
             {
               "id": "a_245",
               "text": "KOŁOBRZEG",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "kolobrzeg"
+              ]
             },
             {
               "id": "a_246",
               "text": "WROCŁAW",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "wroclaw"
+              ]
             }
           ]
         },
@@ -1535,32 +2543,50 @@
             {
               "id": "a_247",
               "text": "VOLKSWAGEN",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "volkswagen"
+              ]
             },
             {
               "id": "a_248",
               "text": "OPEL",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "opel"
+              ]
             },
             {
               "id": "a_249",
               "text": "SKODA",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "skoda"
+              ]
             },
             {
               "id": "a_250",
               "text": "TOYOTA",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "toyota"
+              ]
             },
             {
               "id": "a_251",
               "text": "BMW",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "bmw"
+              ]
             },
             {
               "id": "a_252",
               "text": "FIAT",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "fiat"
+              ]
             }
           ]
         }
@@ -1578,32 +2604,54 @@
             {
               "id": "a_253",
               "text": "PIŁKA NOŻNA",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "pilka nozna",
+                "pilka",
+                "nozna"
+              ]
             },
             {
               "id": "a_254",
               "text": "SIATKÓWKA",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "siatkowka"
+              ]
             },
             {
               "id": "a_255",
               "text": "SKOKI NARCIARSKIE",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "skoki narciarskie",
+                "skoki",
+                "narciarskie"
+              ]
             },
             {
               "id": "a_256",
               "text": "ŻUŻEL",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "zuzel"
+              ]
             },
             {
               "id": "a_257",
               "text": "TENIS",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "tenis"
+              ]
             },
             {
               "id": "a_258",
               "text": "KOSZYKÓWKA",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "koszykowka"
+              ]
             }
           ]
         },
@@ -1614,32 +2662,60 @@
             {
               "id": "a_259",
               "text": "ĆWICZĄ",
-              "points": 30
+              "points": 30,
+              "variants": [
+                "cwicza"
+              ]
             },
             {
               "id": "a_260",
               "text": "JEDZĄ MNIEJ",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "jedza mniej",
+                "jedza",
+                "mniej"
+              ]
             },
             {
               "id": "a_261",
               "text": "STOSUJĄ DIETĘ",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "stosuja diete",
+                "stosuja",
+                "diete"
+              ]
             },
             {
               "id": "a_262",
               "text": "BIEGAJĄ",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "biegaja"
+              ]
             },
             {
               "id": "a_263",
               "text": "PIJĄ WIĘCEJ WODY",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "pija wiecej wody",
+                "pija",
+                "wiecej",
+                "wody"
+              ]
             },
             {
               "id": "a_264",
               "text": "NIE JEDZĄ SŁODYCZY",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "nie jedza slodyczy",
+                "nie",
+                "jedza",
+                "slodyczy"
+              ]
             }
           ]
         },
@@ -1650,32 +2726,65 @@
             {
               "id": "a_265",
               "text": "NIE MAM CZASU",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "nie mam czasu",
+                "nie",
+                "mam",
+                "czasu"
+              ]
             },
             {
               "id": "a_266",
               "text": "JESTEM ZMĘCZONY",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "jestem zmeczony",
+                "jestem",
+                "zmeczony"
+              ]
             },
             {
               "id": "a_267",
               "text": "BOLI MNIE COŚ",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "boli mnie cos",
+                "boli",
+                "mnie",
+                "cos"
+              ]
             },
             {
               "id": "a_268",
               "text": "ZŁA POGODA",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "zla pogoda",
+                "zla",
+                "pogoda"
+              ]
             },
             {
               "id": "a_269",
               "text": "ZACZNĘ OD PONIEDZIAŁKU",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "zaczne od poniedzialku",
+                "zaczne",
+                "poniedzialku"
+              ]
             },
             {
               "id": "a_270",
               "text": "NIE MAM W CZYM",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "nie mam w czym",
+                "nie",
+                "mam",
+                "czym"
+              ]
             }
           ]
         },
@@ -1686,32 +2795,50 @@
             {
               "id": "a_271",
               "text": "GŁOWA",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "glowa"
+              ]
             },
             {
               "id": "a_272",
               "text": "PLECY",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "plecy"
+              ]
             },
             {
               "id": "a_273",
               "text": "GARDŁO",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "gardlo"
+              ]
             },
             {
               "id": "a_274",
               "text": "BRZUCH",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "brzuch"
+              ]
             },
             {
               "id": "a_275",
               "text": "ZĘBY",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "zeby"
+              ]
             },
             {
               "id": "a_276",
               "text": "KOLANA",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "kolana"
+              ]
             }
           ]
         },
@@ -1722,32 +2849,62 @@
             {
               "id": "a_277",
               "text": "ROBERT LEWANDOWSKI",
-              "points": 35
+              "points": 35,
+              "variants": [
+                "robert lewandowski",
+                "robert",
+                "lewandowski"
+              ]
             },
             {
               "id": "a_278",
               "text": "ADAM MAŁYSZ",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "adam malysz",
+                "adam",
+                "malysz"
+              ]
             },
             {
               "id": "a_279",
               "text": "IGA ŚWIĄTEK",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "iga swiatek",
+                "iga",
+                "swiatek"
+              ]
             },
             {
               "id": "a_280",
               "text": "KAMIL STOCH",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "kamil stoch",
+                "kamil",
+                "stoch"
+              ]
             },
             {
               "id": "a_281",
               "text": "ANITA WŁODARCZYK",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "anita wlodarczyk",
+                "anita",
+                "wlodarczyk"
+              ]
             },
             {
               "id": "a_282",
               "text": "JUSTYNA KOWALCZYK",
-              "points": 7
+              "points": 7,
+              "variants": [
+                "justyna kowalczyk",
+                "justyna",
+                "kowalczyk"
+              ]
             }
           ]
         },
@@ -1758,32 +2915,61 @@
             {
               "id": "a_283",
               "text": "ĆWICZĄ NA BIEŻNI",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "cwicza na biezni",
+                "cwicza",
+                "biezni"
+              ]
             },
             {
               "id": "a_284",
               "text": "PODNOSZĄ CIĘŻARY",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "podnosza ciezary",
+                "podnosza",
+                "ciezary"
+              ]
             },
             {
               "id": "a_285",
               "text": "ROBIĄ PRZYSIADY",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "robia przysiady",
+                "robia",
+                "przysiady"
+              ]
             },
             {
               "id": "a_286",
               "text": "ROBIĄ ZDJĘCIA / SELFIE",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "robia zdjecia selfie",
+                "robia",
+                "zdjecia",
+                "selfie"
+              ]
             },
             {
               "id": "a_287",
               "text": "ROZMAWIAJĄ",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "rozmawiaja"
+              ]
             },
             {
               "id": "a_288",
               "text": "PIJĄ WODĘ",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "pija wode",
+                "pija",
+                "wode"
+              ]
             }
           ]
         }
@@ -1801,32 +2987,58 @@
             {
               "id": "a_289",
               "text": "FACEBOOK",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "fb",
+                "facebook"
+              ]
             },
             {
               "id": "a_290",
               "text": "INSTAGRAM",
-              "points": 24
+              "points": 24,
+              "variants": [
+                "ig",
+                "instagram"
+              ]
             },
             {
               "id": "a_291",
               "text": "TIKTOK",
-              "points": 18
+              "points": 18,
+              "variants": [
+                "tik tok",
+                "tiktok"
+              ]
             },
             {
               "id": "a_292",
               "text": "YOUTUBE",
-              "points": 14
+              "points": 14,
+              "variants": [
+                "youtub",
+                "youtube"
+              ]
             },
             {
               "id": "a_293",
               "text": "WHATSAPP",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "whatsap",
+                "whatsapp"
+              ]
             },
             {
               "id": "a_294",
               "text": "MESSENGER",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "mesenger",
+                "mes",
+                "mess",
+                "messenger"
+              ]
             }
           ]
         },
@@ -1837,32 +3049,64 @@
             {
               "id": "a_295",
               "text": "WOLNY INTERNET",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "wolny internet",
+                "wolny",
+                "internet",
+                "net",
+                "sieci"
+              ]
             },
             {
               "id": "a_296",
               "text": "ROZŁADOWANY TELEFON",
-              "points": 26
+              "points": 26,
+              "variants": [
+                "rozladowany telefon",
+                "rozladowany",
+                "telefon",
+                "komorka",
+                "komorke",
+                "smartfon",
+                "smartfona",
+                "telefon komorkowy"
+              ]
             },
             {
               "id": "a_297",
               "text": "REKLAMY",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "reklamy"
+              ]
             },
             {
               "id": "a_298",
               "text": "ZAWIESZAJĄCY SIĘ KOMPUTER",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "zawieszajacy sie komputer",
+                "zawieszajacy",
+                "sie",
+                "komputer"
+              ]
             },
             {
               "id": "a_299",
               "text": "AKTUALIZACJE",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "aktualizacje"
+              ]
             },
             {
               "id": "a_300",
               "text": "SPAM",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "spam"
+              ]
             }
           ]
         },
@@ -1873,32 +3117,65 @@
             {
               "id": "a_301",
               "text": "PRZEGLĄDAJĄ SOCIAL MEDIA",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "przegladaja social media",
+                "przegladaja",
+                "social",
+                "media"
+              ]
             },
             {
               "id": "a_302",
               "text": "OGLĄDAJĄ FILMY",
-              "points": 22
+              "points": 22,
+              "variants": [
+                "ogladaja filmy",
+                "ogladaja",
+                "filmy"
+              ]
             },
             {
               "id": "a_303",
               "text": "GRAJĄ W GRY",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "graja w gry",
+                "graja",
+                "gry"
+              ]
             },
             {
               "id": "a_304",
               "text": "CZYTAJĄ WIADOMOŚCI",
-              "points": 12
+              "points": 12,
+              "variants": [
+                "czytaja wiadomosci",
+                "czytaja",
+                "wiadomosci",
+                "mieszkanie",
+                "chata"
+              ]
             },
             {
               "id": "a_305",
               "text": "PISZĄ SMS",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "pisza sms",
+                "pisza",
+                "sms"
+              ]
             },
             {
               "id": "a_306",
               "text": "USTAWIAJĄ BUDZIK",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "ustawiaja budzik",
+                "ustawiaja",
+                "budzik"
+              ]
             }
           ]
         },
@@ -1909,32 +3186,50 @@
             {
               "id": "a_307",
               "text": "IPHONE",
-              "points": 32
+              "points": 32,
+              "variants": [
+                "iphone"
+              ]
             },
             {
               "id": "a_308",
               "text": "SAMSUNG",
-              "points": 28
+              "points": 28,
+              "variants": [
+                "samsung"
+              ]
             },
             {
               "id": "a_309",
               "text": "XIAOMI",
-              "points": 16
+              "points": 16,
+              "variants": [
+                "xiaomi"
+              ]
             },
             {
               "id": "a_310",
               "text": "HUAWEI",
-              "points": 10
+              "points": 10,
+              "variants": [
+                "huawei"
+              ]
             },
             {
               "id": "a_311",
               "text": "NOKIA",
-              "points": 8
+              "points": 8,
+              "variants": [
+                "nokia"
+              ]
             },
             {
               "id": "a_312",
               "text": "MOTOROLA",
-              "points": 6
+              "points": 6,
+              "variants": [
+                "motorola"
+              ]
             }
           ]
         }

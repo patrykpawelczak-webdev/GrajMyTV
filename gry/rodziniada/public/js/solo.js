@@ -235,9 +235,14 @@
         return Math.floor((dateFromKey(key) - dateFromKey(startDate)) / 86400000);
     }
 
+    function getStorageKey() {
+        const authId = window.GrajMyTVAuth?.getState?.()?.user?.id;
+        return authId ? `${STORAGE_KEY}_${authId}` : STORAGE_KEY;
+    }
+
     function readStore() {
         try {
-            const store = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            const store = JSON.parse(localStorage.getItem(getStorageKey()) || '{}');
             return {
                 results: {},
                 progress: store.progress && typeof store.progress === 'object' ? store.progress : {}
@@ -248,7 +253,7 @@
     }
 
     function writeStore(store) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        localStorage.setItem(getStorageKey(), JSON.stringify({
             progress: store.progress && typeof store.progress === 'object' ? store.progress : {}
         }));
     }
@@ -290,7 +295,23 @@
 
     function getStoredResult(key) {
         const remoteState = state.remoteStates[key];
-        if (remoteState?.status === 'completed') return remoteState;
+        if (remoteState?.status === 'completed' || remoteState?.status === 'finished' || remoteState?.synced) return remoteState;
+
+        const authState = window.GrajMyTVAuth?.getState?.();
+        const authId = authState?.user?.id;
+        const myRank = state.ranking?.find(r => authId ? r.userId === authId : r.playerId === getPlayerId());
+        
+        if (myRank && key === getTodayKey()) {
+            return {
+                status: 'completed',
+                score: myRank.score,
+                maxScore: myRank.maxScore,
+                misses: myRank.misses,
+                revealed: myRank.revealed,
+                synced: true,
+                guesses: []
+            };
+        }
 
         return readStore().results[key] || null;
     }
@@ -433,23 +454,6 @@
 
         variants.add(base);
 
-        base.split(/\s+\/\s+|\/|,|;|\s+albo\s+|\s+lub\s+/).forEach(part => {
-            const normalized = normalize(part);
-            if (normalized.length >= 2) variants.add(normalized);
-        });
-
-        const words = base.split(' ').filter(word => word.length >= 3 && !SHORT_WORDS.has(word));
-        words.forEach(word => {
-            variants.add(word);
-            (COMMON_ALIASES[word] || []).forEach(alias => variants.add(normalize(alias)));
-        });
-
-        Object.entries(COMMON_ALIASES).forEach(([word, aliases]) => {
-            if (base.includes(word)) {
-                aliases.forEach(alias => variants.add(normalize(alias)));
-            }
-        });
-
         if (Array.isArray(answer.variants)) {
             answer.variants.forEach(variant => {
                 const normalized = normalize(variant);
@@ -502,7 +506,7 @@
         if (state.questions.length) return;
 
         const [questionsResponse, calendarResponse] = await Promise.all([
-            fetch('/rodziniada/api/questions', { cache: 'no-store' }),
+            fetch('/rodziniada/api/solo-questions', { cache: 'no-store' }),
             fetch('/rodziniada/api/solo-calendar', { cache: 'no-store' })
         ]);
         const data = await questionsResponse.json();
@@ -971,8 +975,11 @@
         writeStore(store);
         renderGame();
         showResult();
-        saveRemoteState('completed');
-        submitResultToServer();
+        if (state.currentChallenge === getTodayKey()) {
+            submitResultToServer();
+        } else {
+            saveRemoteState('completed');
+        }
         state.justRevealed = null;
     }
 
@@ -1082,7 +1089,7 @@
         const result = state.currentChallenge === getTodayKey() && state.finished ? state.lastResult : null;
         if (!result) return '';
         const misses = Math.min(result.misses || 0, MAX_MISSES);
-        const gameUrl = `${window.location.origin}/rodziniada/solo`;
+        const gameUrl = `${window.location.origin}/rodziniada/wyzwanie`;
         return [
             `Rodziniada #${challengeNumber()}`,
             `Wynik: ${result.score}/${result.maxScore} pkt`,
@@ -1126,6 +1133,7 @@
                 if (!state.questions.length) return;
                 renderRanking([]);
                 await loadRemoteStates();
+                await loadRanking();
                 resetRunForChallenge(state.currentChallenge);
                 renderGame();
                 if (state.finished && !state.resultSynced) {
@@ -1135,8 +1143,78 @@
 
         await loadQuestions();
         await loadRemoteStates();
+        await loadRanking();
         resetRunForChallenge(getTodayKey());
         renderGame();
+
+        const socket = io('/rodziniada');
+        
+        const joinSoloRoom = () => {
+            const authState = window.GrajMyTVAuth ? window.GrajMyTVAuth.getState() : null;
+            if (authState && authState.user) {
+                console.log(`[RODZINIADA SOLO] Wymuszam dolaczenie do pokoju solo: solo_${authState.user.id}`);
+                socket.emit('joinSolo', { userId: authState.user.id });
+            } else {
+                console.warn(`[RODZINIADA SOLO] Odrzucono joinSolo: brak zalogowanego usera.`);
+            }
+        };
+
+        socket.on('connect', () => {
+            console.log(`[RODZINIADA SOLO] Polaczono przez socket.io! ID sesji: ${socket.id}`);
+            joinSoloRoom();
+        });
+        
+        if (socket.connected) {
+            joinSoloRoom();
+        }
+
+        socket.on('soloStateUpdated', (remoteState) => {
+            console.log(`[RODZINIADA SOLO] Otrzymano zdarzenie soloStateUpdated z serwera:`, remoteState);
+            if (!remoteState || remoteState.challengeKey !== state.currentChallenge || state.finished) {
+                console.warn(`[RODZINIADA SOLO] Zignorowano zdarzenie soloStateUpdated (nie pasuje do obecnego wyzwania lub wyzwanie zakonczone)`);
+                return;
+            }
+
+            state.remoteStates[remoteState.challengeKey] = remoteState;
+
+            const wasFinished = state.finished;
+
+            if (remoteState.status === 'completed' || remoteState.status === 'finished' || remoteState.synced) {
+                console.log(`[RODZINIADA SOLO] Wykryto, ze wyzwanie na serwerze jest juz zakonczone. Resetuje widok.`);
+                resetRunForChallenge(state.currentChallenge);
+                renderGame();
+                if (!wasFinished) {
+                    showResult();
+                }
+                return;
+            }
+
+            const rRevealed = Array.isArray(remoteState.revealed) ? remoteState.revealed : [];
+            const rMisses = remoteState.misses || 0;
+            console.log(`[RODZINIADA SOLO] Analiza stanu z serwera: rRevealed.length=${rRevealed.length}, state.revealed.size=${state.revealed.size}, rMisses=${rMisses}, state.misses=${state.misses}`);
+
+            if (rRevealed.length > state.revealed.size || rMisses > state.misses) {
+                if (!state.started) state.started = true;
+                state.revealed = new Set(rRevealed);
+                state.misses = rMisses;
+                state.score = remoteState.score || 0;
+                if (remoteState.guesses) {
+                    state.guesses = [...remoteState.guesses];
+                }
+                
+                const store = readStore();
+                store.progress[state.currentChallenge] = {
+                    score: state.score,
+                    misses: state.misses,
+                    revealed: [...state.revealed],
+                    guesses: state.guesses,
+                    updatedAt: new Date().toISOString()
+                };
+                writeStore(store);
+
+                renderGame();
+            }
+        });
 
         els.answerForm.addEventListener('submit', submitAnswer);
         els.startChallengeButton?.addEventListener('click', startChallenge);
