@@ -74,7 +74,11 @@
         rankingList: $('rankingList'),
         rankingBoard: document.querySelector('.ranking-board'),
         rankingTabs: [...document.querySelectorAll('[data-ranking-scope]')],
-        strikes: [$('strike1'), $('strike2'), $('strike3')]
+        strikes: [$('strike1'), $('strike2'), $('strike3')],
+        helpButton: $('helpButton'),
+        helpDialog: $('helpDialog'),
+        helpCloseButton: $('helpCloseButton'),
+        helpStartButton: $('helpStartButton')
     };
 
     const COMMON_ALIASES = {
@@ -1041,11 +1045,38 @@
         for (let day = 1; day <= last.getDate(); day += 1) {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
             const key = getTodayKey(date);
-            const result = Boolean(getStoredResult(key));
+            const result = getStoredResult(key);
             const isCurrent = key === state.currentChallenge;
             const disabled = !canOpenChallenge(key) || (key !== state.currentChallenge && !canLeaveCurrentChallenge());
-            const className = ['calendar-day', result ? 'done' : '', isCurrent ? 'current' : '', disabled ? 'locked' : ''].filter(Boolean).join(' ');
-            cells.push(`<button type="button" class="${className}" data-challenge="${key}" ${disabled ? 'disabled' : ''}>${day}</button>`);
+            
+            let statusClass = '';
+            let pointsText = '';
+            
+            if (result) {
+                pointsText = result.score !== undefined ? `${result.score} pkt` : '---';
+                let doneOnTime = false;
+                if (result.completedAt) {
+                    const completedKey = getTodayKey(new Date(result.completedAt));
+                    if (completedKey === key) {
+                        doneOnTime = true;
+                    }
+                } else {
+                    doneOnTime = true;
+                }
+                statusClass = doneOnTime ? 'done-ontime' : 'done-late';
+            } else if (date < todayDate) {
+                statusClass = 'missed';
+            }
+
+            const className = ['calendar-day', statusClass, isCurrent ? 'current' : '', disabled ? 'locked' : ''].filter(Boolean).join(' ');
+            const cNum = challengeNumber(key);
+            cells.push(`<button type="button" class="${className}" data-challenge="${key}" ${disabled ? 'disabled' : ''}>
+                <div class="day-top">
+                    <span class="day-number">${day}</span>
+                    <span class="day-challenge">#${cNum}</span>
+                </div>
+                <span class="day-points">${pointsText}</span>
+            </button>`);
         }
 
         els.calendarGrid.innerHTML = cells.join('');
@@ -1055,6 +1086,7 @@
                     setBlockedSwitchMessage();
                     return;
                 }
+                rankingAutoFocusLocked = false;
                 await loadRemoteState(button.dataset.challenge);
                 resetRunForChallenge(button.dataset.challenge);
                 renderGame();
@@ -1069,6 +1101,7 @@
         }
         const nextKey = getTodayKey(addDays(dateFromKey(state.currentChallenge), offset));
         if (!canOpenChallenge(nextKey)) return;
+        rankingAutoFocusLocked = false;
         await loadRemoteState(nextKey);
         resetRunForChallenge(nextKey);
         renderGame();
@@ -1264,6 +1297,20 @@
             submitResultToServer();
         });
         els.resultDialog.addEventListener('close', () => setPageLocked('result-dialog', false));
+        
+        const closeHelpDialog = () => {
+            closeLockedDialog(els.helpDialog, 'help-dialog');
+            localStorage.setItem('grajmytv_solo_help_seen', 'true');
+        };
+        els.helpButton.addEventListener('click', () => openLockedDialog(els.helpDialog, 'help-dialog'));
+        els.helpCloseButton.addEventListener('click', closeHelpDialog);
+        els.helpStartButton.addEventListener('click', closeHelpDialog);
+        els.helpDialog.addEventListener('close', () => setPageLocked('help-dialog', false));
+        
+        if (!localStorage.getItem('grajmytv_solo_help_seen')) {
+            openLockedDialog(els.helpDialog, 'help-dialog');
+        }
+
         observeRankingHeight();
         startRankingLiveRefresh();
     }

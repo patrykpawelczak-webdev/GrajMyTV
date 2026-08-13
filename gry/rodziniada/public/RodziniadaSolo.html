@@ -28,13 +28,13 @@
             </nav>
         </header>
 
-
-
         <section class="game-shell" aria-label="Plansza gry">
             <div class="challenge-strip" aria-label="Nawigacja po wyzwaniach">
+                <div class="strip-spacer"></div>
                 <button type="button" class="nav-day" id="prevChallenge" aria-label="Poprzednie wyzwanie">‹</button>
                 <strong id="challengeNumber">#1</strong>
                 <button type="button" class="nav-day" id="nextChallenge" aria-label="Następne wyzwanie">›</button>
+                <div class="strip-spacer"></div>
             </div>
 
             <div class="play-area">
@@ -112,7 +112,9 @@
                 <div class="calendar-grid" id="calendarGrid"></div>
                 <div class="calendar-legend" aria-label="Legenda kalendarza">
                     <span class="legend-item-current"><i class="legend-dot current"></i> Aktywne</span>
-                    <span><i class="legend-dot done"></i> Ukończone</span>
+                    <span><i class="legend-dot done-ontime"></i> Wyzwanie zaliczone</span>
+                    <span><i class="legend-dot done-late"></i> Wyzwanie zaległe zaliczone</span>
+                    <span><i class="legend-dot missed"></i> Wyzwanie zaległe</span>
                     <span><i class="legend-dot locked"></i> Zablokowane</span>
                 </div>
                 <p class="calendar-hint" id="calendarHint" hidden>Poprzednie dni będą dostępne po ukończeniu dzisiejszego wyzwania.</p>
@@ -141,8 +143,42 @@
                     <button class="submit-button" id="resultShareButton" type="button">Udostępnij</button>
                     <button class="share-button" id="resultCloseButton" type="button">Zamknij</button>
                 </div>
+                </div>
             </div>
         </dialog>
+
+        <dialog class="help-dialog" id="helpDialog">
+            <div class="calendar-card">
+                <div class="dialog-head">
+                    <div style="padding-top: 0.75rem;">
+                        <span style="font-size: 1.25rem; font-weight: 800; color: var(--led-bright);">Zasady gry</span>
+                    </div>
+                    <button type="button" class="dialog-close" id="helpCloseButton" aria-label="Zamknij">×</button>
+                </div>
+                <div class="help-content" style="color: var(--led); font-size: 0.95rem; line-height: 1.5; padding: 0.25rem 0 1rem; text-align: left;">
+                    <p style="margin-bottom: 1rem;">Witaj w trybie wyzwania Rodziniady! Tak jak w oryginalnym teleturnieju, masz okazję zmierzyć się z trudem udzielenia odpowiedzi zgodnie z ankietowanymi. Oto najważniejsze, co musisz wiedzieć:</p>
+                    <ul style="padding-left: 1.25rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <li>Codziennie czeka na Ciebie nowe pytanie.</li>
+                        <li>Walczysz o pulę 100 pkt.</li>
+                        <li>Do rankingu wlicza się tylko pula z danego dnia!</li>
+                        <li>Masz szansę na maksymalnie 3 błędy. Trzecie pudło natychmiastowo kończy grę!</li>
+                        <li>Wpisuj swoje strzały w dolnym polu i zatwierdzaj przyciskiem "Sprawdź".</li>
+                        <li>Nie musisz pisać polskich znaków.</li>
+                        <li>Jeśli wyjdziesz z gry w trakcie, Twój postęp automatycznie się zapisze.</li>
+                        <li>W kalendarzu możesz szybko cofać się do poprzednich dni.</li>
+                        <li>Statystyki w rankingu zawsze dopasowują się do dnia, który aktualnie przeglądasz.</li>
+                    </ul>
+                    <p style="color: rgba(var(--led-rgb), 0.7); font-size: 0.85rem; text-align: center;">Możesz w każdej chwili przypomnieć sobie te zasady klikając przycisk instrukcji.</p>
+                </div>
+                <div class="result-actions" style="margin-top: 0.25rem; display: flex; justify-content: center;">
+                    <button class="submit-button" id="helpStartButton" type="button" style="width: auto; min-width: 12rem;">Podejmuję wyzwanie</button>
+                </div>
+            </div>
+        </dialog>
+        
+        <button type="button" class="help-button" id="helpButton" aria-label="Zasady gry">
+            <span class="help-glyph" aria-hidden="true">?</span>
+        </button>
     </main>
 
     <script src="/socket.io/socket.io.js"></script>
