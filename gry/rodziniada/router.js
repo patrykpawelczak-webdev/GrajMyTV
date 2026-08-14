@@ -272,6 +272,7 @@ function aggregateAllTimeRanking(entries, profilesById = new Map()) {
     });
 
     return [...players.values()]
+        .filter(p => p.challenges > 0)
         .sort((a, b) => {
             if (b.score !== a.score) return b.score - a.score;
             return String(a.nickname).localeCompare(String(b.nickname), 'pl');
@@ -558,6 +559,10 @@ function isBeforeResultsEpoch(entry) {
     return String(entry?.submittedAt || '').localeCompare(RESULTS_EPOCH_ISO) < 0;
 }
 
+let cachedProfiles = null;
+let cachedAuthUsers = null;
+let profileCacheTimestamp = 0;
+
 async function getRankingEntries(limit, scope = 'day', challengeKey = todayKey(), viewerUserId = null) {
     if (supabaseEnabled()) {
         const safeScope = ['day', 'week', 'month', 'all'].includes(scope) ? scope : 'day';
@@ -571,11 +576,24 @@ async function getRankingEntries(limit, scope = 'day', challengeKey = todayKey()
         if (range.from) filters.push(`challenge_key=gte.${encodeURIComponent(range.from)}`);
         if (range.to) filters.push(`challenge_key=lte.${encodeURIComponent(range.to)}`);
 
-        const [rows, profiles, authUsers] = await Promise.all([
-            supabaseRequestPages(`${SUPABASE_RESULTS_TABLE}?${filters.join('&')}`),
-            supabaseRequestPages('profiles?select=id,nickname,role'),
-            supabaseAuthUsersPages()
-        ]);
+        const rowsPromise = supabaseRequestPages(`${SUPABASE_RESULTS_TABLE}?${filters.join('&')}`);
+
+        const now = Date.now();
+        let profiles, authUsers;
+        if (cachedProfiles && cachedAuthUsers && now - profileCacheTimestamp < 10000) {
+            profiles = cachedProfiles;
+            authUsers = cachedAuthUsers;
+        } else {
+            [profiles, authUsers] = await Promise.all([
+                supabaseRequestPages('profiles?select=id,nickname,role'),
+                supabaseAuthUsersPages()
+            ]);
+            cachedProfiles = profiles;
+            cachedAuthUsers = authUsers;
+            profileCacheTimestamp = now;
+        }
+
+        const rows = await rowsPromise;
         const profilesFromTable = new Map((profiles || []).map(profile => [profile.id, profile]));
         const profilesById = new Map();
 

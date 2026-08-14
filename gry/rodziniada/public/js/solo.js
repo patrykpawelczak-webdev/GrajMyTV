@@ -66,10 +66,9 @@
         calendarCloseButton: $('calendarCloseButton'),
         resultDialog: $('resultDialog'),
         resultScore: $('resultScore'),
-        resultPoints: $('resultPoints'),
+        resultRank: $('resultRank'),
         resultAnswers: $('resultAnswers'),
         resultMisses: $('resultMisses'),
-        resultShareButton: $('resultShareButton'),
         resultCloseButton: $('resultCloseButton'),
         rankingList: $('rankingList'),
         rankingBoard: document.querySelector('.ranking-board'),
@@ -706,6 +705,15 @@
     }
 
     function renderRanking(entries = [], viewerRank = null, options = {}) {
+        state.viewerRank = viewerRank;
+        if (els.resultRank) {
+            if (state.currentChallenge !== getTodayKey()) {
+                els.resultRank.textContent = '-';
+            } else {
+                els.resultRank.textContent = viewerRank ? `#${viewerRank.place}` : '-';
+            }
+        }
+        
         els.rankingTabs.forEach(button => {
             const active = button.dataset.rankingScope === state.rankingScope;
             button.classList.toggle('is-active', active);
@@ -874,7 +882,9 @@
             els.currentScore.textContent = Number(state.score || 0).toLocaleString('pl-PL');
         }
 
+        els.prevChallenge.style.visibility = '';
         els.prevChallenge.disabled = !canOpenChallenge(prevKey) || !canLeaveCurrentChallenge();
+        els.nextChallenge.style.visibility = '';
         els.nextChallenge.disabled = !canOpenChallenge(nextKey) || !canLeaveCurrentChallenge();
         els.answerInput.disabled = !state.started || state.finished || !canPlayCurrent;
         els.submitButton.disabled = els.answerInput.disabled;
@@ -993,10 +1003,55 @@
 
     function showResult() {
         const maxScore = maxPossibleScore();
-        els.resultScore.textContent = state.score;
-        els.resultPoints.textContent = `${state.score}/${maxScore}`;
+        
+        const scoreStr = String(state.score);
+        let scoreHtml = '<div class="score-digits">';
+        for (let i = 0; i < scoreStr.length; i++) {
+            const digit = parseInt(scoreStr[i], 10);
+            
+            // All digits wait for dialog to open (0.4s) and start spinning simultaneously.
+            // But they finish sequentially. Rightmost digit stops first.
+            // Rightmost: index = scoreStr.length - 1
+            // Leftmost: index = 0
+            // Rightmost duration: 1.0s, next: 1.4s, next: 1.8s
+            const cascadeDuration = 1.0 + (scoreStr.length - 1 - i) * 0.4;
+            const delay = 0.4; 
+            
+            let colHtml = '';
+            // put dummy digits to create the scrolling illusion
+            for(let loops = 0; loops < 2; loops++) {
+                for(let d = 0; d <= 9; d++) colHtml += `<div>${d}</div>`;
+            }
+            for(let d = 0; d <= digit; d++) colHtml += `<div>${d}</div>`;
+            
+            const totalItems = 20 + digit + 1;
+            // Each div is 1em high. Translate up by (totalItems - 1) em.
+            const targetY = -(totalItems - 1);
+            
+            scoreHtml += `<span class="digit-col">
+                <span class="digit-col-inner" style="transform: translateY(0); animation: scrollDigit ${cascadeDuration}s cubic-bezier(0.1, 0.8, 0.2, 1) ${delay}s forwards; --targetY: ${targetY}em;">
+                    ${colHtml}
+                </span>
+            </span>`;
+        }
+        scoreHtml += '</div><div class="score-label">pkt</div>';
+        els.resultScore.innerHTML = scoreHtml;
+        
         els.resultAnswers.textContent = `${state.revealed.size}/${ANSWERS_COUNT}`;
         els.resultMisses.textContent = `${state.misses}/${MAX_MISSES}`;
+        
+        const noticeEl = $('resultNotice');
+        if (noticeEl) {
+            if (state.currentChallenge !== getTodayKey()) {
+                noticeEl.textContent = 'To wyzwanie jest archiwalne. Twój wynik w tej grze nie jest brany pod uwagę w rankingach.';
+                noticeEl.style.display = 'block';
+                els.resultRank.textContent = '-';
+            } else {
+                noticeEl.style.display = 'none';
+                els.resultRank.textContent = state.viewerRank ? `#${state.viewerRank.place}` : '...';
+            }
+        }
+        
         openLockedDialog(els.resultDialog, 'result-dialog');
     }
 
@@ -1116,33 +1171,6 @@
         const currentDate = state.calendarViewDate || dateFromKey(state.currentChallenge);
         state.calendarViewDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
         renderCalendar();
-    }
-
-    function buildShareText() {
-        const result = state.currentChallenge === getTodayKey() && state.finished ? state.lastResult : null;
-        if (!result) return '';
-        const misses = Math.min(result.misses || 0, MAX_MISSES);
-        const gameUrl = `${window.location.origin}/rodziniada/wyzwanie`;
-        return [
-            `Rodziniada #${challengeNumber()}`,
-            `Wynik: ${result.score}/${result.maxScore} pkt`,
-            `Odkryte: ${result.revealed.length}/${ANSWERS_COUNT}`,
-            `Pudła: ${misses}/${MAX_MISSES}`,
-            `Zagraj: ${gameUrl}`
-        ].join('\n');
-    }
-
-    async function shareResult() {
-        const text = buildShareText();
-        if (!text) return;
-
-        if (navigator.share) {
-            await navigator.share({ text });
-            return;
-        }
-
-        await navigator.clipboard.writeText(text);
-        els.roundMessage.textContent = 'Wynik skopiowany do schowka.';
     }
 
     async function init() {
@@ -1284,11 +1312,8 @@
                 els.answerForm.requestSubmit();
             }
         });
-        els.shareButton.addEventListener('click', shareResult);
-        els.resultShareButton.addEventListener('click', async () => {
-            await submitResultToServer();
-            await shareResult();
-        });
+        els.shareButton.addEventListener('click', () => {}); // Keep empty if needed or remove. Share button in main ui?
+
         els.resultCloseButton.addEventListener('click', async () => {
             await submitResultToServer();
             closeLockedDialog(els.resultDialog, 'result-dialog');
@@ -1307,8 +1332,13 @@
         els.helpStartButton.addEventListener('click', closeHelpDialog);
         els.helpDialog.addEventListener('close', () => setPageLocked('help-dialog', false));
         
+        const hasHistory = Object.keys(readStore().results || {}).length > 0 || Object.keys(state.remoteStates || {}).length > 0;
         if (!localStorage.getItem('grajmytv_solo_help_seen')) {
-            openLockedDialog(els.helpDialog, 'help-dialog');
+            if (hasHistory) {
+                localStorage.setItem('grajmytv_solo_help_seen', 'true');
+            } else {
+                openLockedDialog(els.helpDialog, 'help-dialog');
+            }
         }
 
         observeRankingHeight();
