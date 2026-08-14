@@ -1370,6 +1370,7 @@ iframe {
   justify-content: space-between;
   padding: 0.15rem 0.25rem;
   align-items: center;
+  container-type: inline-size;
 }
 
 .day-top {
@@ -1379,20 +1380,30 @@ iframe {
 }
 
 .day-number {
-  font-size: 0.7rem;
+  font-size: min(0.7rem, 24cqi);
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .day-challenge {
-  font-size: 0.7rem;
+  font-size: min(0.7rem, 24cqi);
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .day-points {
-  font-size: 0.65rem;
+  font-size: min(0.65rem, 22cqi);
   line-height: 1;
   color: rgba(var(--led-rgb), 0.25);
   margin-bottom: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 100%;
 }
 
 .calendar-day.done-ontime {
