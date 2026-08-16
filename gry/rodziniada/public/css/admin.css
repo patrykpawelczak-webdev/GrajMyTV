@@ -1129,8 +1129,11 @@ select.admin-text-control option {
     grid-column: 1 / -1;
   }
 
-  .answer-row,
+  .answer-row {
+    grid-template-columns: 1fr;
+  }
   .form-actions {
+    display: grid;
     grid-template-columns: 1fr;
   }
 

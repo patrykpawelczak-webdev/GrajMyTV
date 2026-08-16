@@ -666,7 +666,7 @@
             const diffDays = Number(cell.dataset.dayIndex);
             if (isNaN(diffDays)) return;
             
-            const isLocked = cell.classList.contains('is-past') || cell.classList.contains('is-today');
+            const isLocked = cell.classList.contains('is-historical') || cell.classList.contains('is-today');
 
             if (!isLocked) {
                 cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('is-dragover'); });
