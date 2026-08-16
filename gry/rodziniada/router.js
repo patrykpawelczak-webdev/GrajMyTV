@@ -14,6 +14,7 @@ const SUPABASE_URL   = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const SUPABASE_KEY   = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY || '';
 const SUPABASE_RESULTS_TABLE = process.env.SUPABASE_RESULTS_TABLE || 'rodziniada_solo_results';
+const SUPABASE_CONFIG_TABLE = process.env.SUPABASE_CONFIG_TABLE || 'rodziniada_solo_config';
 const ANSWERS_COUNT  = 6;
 const MAX_MISSES     = 3;
 const START_CHALLENGE_KEY = '2026-07-19';
@@ -813,6 +814,13 @@ router.get('/api/solo-questions', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
 
     try {
+        if (supabaseEnabled()) {
+            const rows = await supabaseRequest(`${SUPABASE_CONFIG_TABLE}?key=eq.questions`);
+            if (rows && rows.length > 0 && rows[0].value) {
+                return res.json(rows[0].value);
+            }
+        }
+
         if (!fs.existsSync(SOLO_QUESTIONS_FILE)) {
             return res.json({ categories: [] });
         }
@@ -820,6 +828,7 @@ router.get('/api/solo-questions', async (req, res) => {
         const fileData = await fsp.readFile(SOLO_QUESTIONS_FILE, 'utf8');
         res.json(JSON.parse(fileData));
     } catch(e) {
+        console.error('[SOLO] Error reading questions:', e);
         res.status(500).json({ error: 'Blad odczytu bazy pytan solo' });
     }
 });
@@ -836,6 +845,17 @@ router.post('/api/solo-questions', async (req, res) => {
     }
 
     try {
+        if (supabaseEnabled()) {
+            await supabaseRequest(SUPABASE_CONFIG_TABLE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Prefer: 'resolution=merge-duplicates'
+                },
+                body: JSON.stringify({ key: 'questions', value: data })
+            });
+        }
+
         if (fs.existsSync(SOLO_QUESTIONS_FILE)) {
             await fsp.copyFile(SOLO_QUESTIONS_FILE, SOLO_QUESTIONS_FILE + '.backup');
         }
@@ -843,6 +863,7 @@ router.post('/api/solo-questions', async (req, res) => {
         await writeJsonFile(SOLO_QUESTIONS_FILE, data);
         res.json({ ok: true });
     } catch(e) {
+        console.error('[SOLO] Error saving questions:', e);
         res.status(500).json({ error: 'Blad zapisu bazy pytan solo' });
     }
 });
@@ -851,12 +872,20 @@ router.post('/api/solo-questions', async (req, res) => {
 router.get('/api/solo-calendar', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     try {
+        if (supabaseEnabled()) {
+            const rows = await supabaseRequest(`${SUPABASE_CONFIG_TABLE}?key=eq.calendar`);
+            if (rows && rows.length > 0 && rows[0].value) {
+                return res.json(rows[0].value);
+            }
+        }
+
         if (!fs.existsSync(CALENDAR_FILE)) {
             return res.json({ startDate: START_CHALLENGE_KEY, days: [] });
         }
         const fileData = await fsp.readFile(CALENDAR_FILE, 'utf8');
         res.json(JSON.parse(fileData));
     } catch(e) {
+        console.error('[SOLO] Error reading calendar:', e);
         res.status(500).json({ error: 'Blad odczytu kalendarza' });
     }
 });
@@ -873,6 +902,17 @@ router.post('/api/solo-calendar', async (req, res) => {
     }
 
     try {
+        if (supabaseEnabled()) {
+            await supabaseRequest(SUPABASE_CONFIG_TABLE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Prefer: 'resolution=merge-duplicates'
+                },
+                body: JSON.stringify({ key: 'calendar', value: data })
+            });
+        }
+
         if (fs.existsSync(CALENDAR_FILE)) {
             await fsp.copyFile(CALENDAR_FILE, CALENDAR_FILE + '.backup');
         }
@@ -883,6 +923,7 @@ router.post('/api/solo-calendar', async (req, res) => {
 
         res.json({ ok: true });
     } catch(e) {
+        console.error('[SOLO] Error saving calendar:', e);
         res.status(500).json({ error: 'Blad zapisu kalendarza' });
     }
 });
