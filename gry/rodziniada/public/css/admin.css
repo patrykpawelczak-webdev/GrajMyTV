@@ -1332,6 +1332,7 @@ select.admin-text-control option {
   border-radius: 1.25rem;
   width: 100%;
   max-width: 32rem;
+  max-height: 90dvh;
   box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.05);
   display: flex;
   flex-direction: column;
@@ -1358,7 +1359,8 @@ select.admin-text-control option {
 
 .admin-modal-body {
   padding: 1.25rem 1.5rem;
-  max-height: 75vh;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
@@ -1425,6 +1427,13 @@ select.admin-text-control option {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+}
+
+@media (max-width: 35rem) {
+  .admin-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* Drag and Drop Kalendarz */
