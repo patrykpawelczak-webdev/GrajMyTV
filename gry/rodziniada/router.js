@@ -114,21 +114,64 @@ async function writeJsonFile(filePath, data) {
 }
 
 async function getSoloQuestionForDate(key) {
-    const [questionsData, calendarData] = await Promise.all([
-        readJsonFile(QUESTIONS_FILE, { categories: [] }),
-        readJsonFile(CALENDAR_FILE, { startDate: START_CHALLENGE_KEY, days: [] })
-    ]);
+    let questionsData = { categories: [] };
+    let calendarData = { startDate: START_CHALLENGE_KEY, days: [] };
+
+    if (supabaseEnabled()) {
+        try {
+            const [qRows, cRows] = await Promise.all([
+                supabaseRequest(`${SUPABASE_CONFIG_TABLE}?key=eq.questions`),
+                supabaseRequest(`${SUPABASE_CONFIG_TABLE}?key=eq.calendar`)
+            ]);
+            
+            if (qRows && qRows.length > 0 && qRows[0].value) {
+                questionsData = qRows[0].value;
+            } else {
+                questionsData = await readJsonFile(SOLO_QUESTIONS_FILE, { categories: [] });
+            }
+            
+            if (cRows && cRows.length > 0 && cRows[0].value) {
+                calendarData = cRows[0].value;
+            } else {
+                calendarData = await readJsonFile(CALENDAR_FILE, { startDate: START_CHALLENGE_KEY, days: [] });
+            }
+        } catch(e) {
+            console.error('[SOLO] Error reading config from Supabase in getSoloQuestionForDate:', e);
+            questionsData = await readJsonFile(SOLO_QUESTIONS_FILE, { categories: [] });
+            calendarData = await readJsonFile(CALENDAR_FILE, { startDate: START_CHALLENGE_KEY, days: [] });
+        }
+    } else {
+        questionsData = await readJsonFile(SOLO_QUESTIONS_FILE, { categories: [] });
+        calendarData = await readJsonFile(CALENDAR_FILE, { startDate: START_CHALLENGE_KEY, days: [] });
+    }
+
     const questions = flattenQuestions(questionsData);
     if (!questions.length) return null;
 
     const scheduledIndex = challengeOffsetFromStart(calendarData.startDate, key);
     if (scheduledIndex >= 0 && Array.isArray(calendarData.days)) {
-        const scheduledId = calendarData.days[scheduledIndex];
+        const days = [...calendarData.days];
+        while (days.length <= scheduledIndex) days.push('');
+
+        for (let i = 0; i <= scheduledIndex; i++) {
+            if (!days[i]) {
+                const windowStart = Math.max(0, i - 90);
+                const usedInWindow = new Set();
+                for (let j = windowStart; j < i; j++) {
+                    if (days[j]) usedInWindow.add(days[j]);
+                }
+                let fallbackQ = questions.find(q => !usedInWindow.has(q.id));
+                if (!fallbackQ) fallbackQ = questions[0];
+                if (fallbackQ) days[i] = fallbackQ.id;
+            }
+        }
+
+        const scheduledId = days[scheduledIndex];
         const scheduledQuestion = questions.find(question => question.id === scheduledId);
         if (scheduledQuestion) return scheduledQuestion;
     }
 
-    return questions[(challengeNumber(key) - 1) % questions.length];
+    return questions[0] || null;
 }
 
 function publicRankingEntry(entry, place) {

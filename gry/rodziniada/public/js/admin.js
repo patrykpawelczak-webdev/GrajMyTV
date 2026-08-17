@@ -288,6 +288,34 @@
         if (!Array.isArray(state.calendar.days)) state.calendar.days = [];
         while (state.calendar.days.length < JULY_DAYS) state.calendar.days.push('');
 
+        const allSoloQs = flattenSoloQuestions();
+        if (allSoloQs.length > 0) {
+            const today = new Date();
+            const startDateObj = parseLocalDate(state.calendar.startDate);
+            const currentDiffDays = getDiffDays(today, startDateObj);
+            
+            let calendarModified = false;
+            for (let i = 0; i <= currentDiffDays; i++) {
+                if (i >= 0 && i < state.calendar.days.length && !state.calendar.days[i]) {
+                    const windowStart = Math.max(0, i - 90);
+                    const usedInWindow = new Set();
+                    for (let j = windowStart; j < i; j++) {
+                        if (state.calendar.days[j]) usedInWindow.add(state.calendar.days[j]);
+                    }
+                    let fallbackQ = allSoloQs.find(q => !usedInWindow.has(q.id));
+                    if (!fallbackQ) fallbackQ = allSoloQs[0];
+                    if (fallbackQ) {
+                        state.calendar.days[i] = fallbackQ.id;
+                        calendarModified = true;
+                    }
+                }
+            }
+            if (calendarModified) {
+                autosaveCalendar();
+                markDirty();
+            }
+        }
+
         state.data.categories.forEach(category => {
             if (!category.id) category.id = generateId('cat');
             if (!Array.isArray(category.questions)) category.questions = [];

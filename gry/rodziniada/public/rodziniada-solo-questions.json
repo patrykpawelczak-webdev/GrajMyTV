@@ -522,7 +522,8 @@
               "text": "MARGHERITA",
               "points": 30,
               "variants": [
-                "margherita"
+                "margherita",
+                "margarita"
               ]
             },
             {
@@ -530,7 +531,9 @@
               "text": "PEPPERONI",
               "points": 25,
               "variants": [
-                "pepperoni"
+                "pepperoni",
+                "peperoni",
+                "salami"
               ]
             },
             {
@@ -546,7 +549,8 @@
               "text": "CAPRICCIOSA",
               "points": 12,
               "variants": [
-                "capricciosa"
+                "capricciosa",
+                "capriciosa"
               ]
             },
             {
@@ -555,16 +559,15 @@
               "points": 10,
               "variants": [
                 "cztery sery",
-                "cztery",
-                "sery"
+                "serowa"
               ]
             },
             {
               "id": "a_54",
-              "text": "KEBAB",
+              "text": "wiejska",
               "points": 5,
               "variants": [
-                "kebab"
+                "wiejska"
               ]
             }
           ]
