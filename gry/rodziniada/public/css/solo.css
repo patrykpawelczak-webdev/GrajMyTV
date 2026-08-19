@@ -490,7 +490,7 @@ iframe {
 
 .board-question h2 {
   margin: 0;
-  font-size: clamp(1rem, 2.4vw, 1.45rem);
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
   font-weight: 900;
   line-height: 1.22;
   text-transform: uppercase;
@@ -532,7 +532,7 @@ iframe {
 
 .question-score strong {
   color: var(--led-bright);
-  font-size: clamp(1.06rem, 2vw, 1.28rem);
+  font-size: clamp(1.06rem, 2vw, 1.15rem);
   font-weight: 900;
   line-height: 0.94;
   letter-spacing: 0.02em;
@@ -565,7 +565,7 @@ iframe {
     linear-gradient(180deg, rgba(var(--white-rgb), 0.03), transparent),
     rgba(var(--stage-center-rgb), 0.54);
   color: var(--led-dim);
-  font-size: clamp(0.85rem, 1.8vw, 1.15rem);
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem);
   font-weight: 900;
   line-height: 1.1;
   text-transform: uppercase;

@@ -528,22 +528,52 @@
     function getQuestionForChallenge(key) {
         const scheduledIndex = challengeOffsetFromStart(state.calendar.startDate || START_CHALLENGE_KEY, key);
         if (scheduledIndex >= 0 && Array.isArray(state.calendar.days)) {
-            const questionId = state.calendar.days[scheduledIndex];
-            const scheduledQuestion = questionId
-                ? state.questions.find(question => question.id === questionId)
-                : null;
-            return scheduledQuestion || state.questions[scheduledIndex % state.questions.length];
+            const days = [...state.calendar.days];
+            while (days.length <= scheduledIndex) days.push('');
+
+            for (let i = 0; i <= scheduledIndex; i++) {
+                if (!days[i]) {
+                    const windowStart = Math.max(0, i - 90);
+                    const usedInWindow = new Set();
+                    for (let j = windowStart; j < i; j++) {
+                        if (days[j]) usedInWindow.add(days[j]);
+                    }
+                    let fallbackQ = state.questions.find(q => !usedInWindow.has(q.id));
+                    if (!fallbackQ) fallbackQ = state.questions[0];
+                    if (fallbackQ) days[i] = fallbackQ.id;
+                }
+            }
+
+            const scheduledId = days[scheduledIndex];
+            const scheduledQuestion = state.questions.find(question => question.id === scheduledId);
+            if (scheduledQuestion) return scheduledQuestion;
         }
 
-        return seededItem(state.questions, `rodziniada-solo:${key}`);
+        return state.questions[0] || null;
     }
 
     function todayCompleted() {
         return state.archiveUnlocked || Boolean(getStoredResult(getTodayKey()));
     }
 
+    function getUnfinishedChallengeKey() {
+        const localProgress = readStore().progress || {};
+        for (const k of Object.keys(localProgress)) {
+            if (!getStoredResult(k)) return k;
+        }
+        for (const k of Object.keys(state.remoteStates || {})) {
+            if (state.remoteStates[k]?.status === 'progress') return k;
+        }
+        return null;
+    }
+
     function canOpenChallenge(key) {
         if (isBeforeRelease(key)) return false;
+
+        const unfinishedKey = getUnfinishedChallengeKey();
+        if (unfinishedKey && unfinishedKey !== key) return false;
+        if (unfinishedKey && unfinishedKey === key) return true;
+
         if (key === getTodayKey()) return true;
         if (dateFromKey(key) > dateFromKey(getTodayKey())) return false;
         return todayCompleted();
@@ -1195,7 +1225,7 @@
                 renderRanking([]);
                 await loadRemoteStates();
                 await loadRanking();
-                resetRunForChallenge(state.currentChallenge);
+                resetRunForChallenge(getUnfinishedChallengeKey() || state.currentChallenge || getTodayKey());
                 renderGame();
                 if (state.finished && !state.resultSynced) {
                     submitResultToServer();
@@ -1205,7 +1235,7 @@
         await loadQuestions();
         await loadRemoteStates();
         await loadRanking();
-        resetRunForChallenge(getTodayKey());
+        resetRunForChallenge(getUnfinishedChallengeKey() || getTodayKey());
         renderGame();
 
         const socket = io('/rodziniada');
