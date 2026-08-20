@@ -947,7 +947,12 @@
         }
 
         if (state.finished) {
-            els.roundMessage.textContent = `Wyzwanie zako\u0144czone. Wynik: ${state.score} pkt, odkryte ${state.revealed.size}/${ANSWERS_COUNT}.`;
+            const unfin = getUnfinishedChallengeKey();
+            if (unfin && unfin !== state.currentChallenge) {
+                els.roundMessage.textContent = `Wynik: ${state.score} pkt. UWAGA: Masz jeszcze rozpoczęte zaległe (dzień ${dateFromKey(unfin).getDate()}). Wybierz je z kalendarza, aby odblokować nawigację!`;
+            } else {
+                els.roundMessage.textContent = `Wyzwanie zako\u0144czone. Wynik: ${state.score} pkt, odkryte ${state.revealed.size}/${ANSWERS_COUNT}.`;
+            }
         } else if (!isToday && !archiveUnlocked) {
             els.roundMessage.textContent = 'To wyzwanie jest dost\u0119pne dopiero po uko\u0144czeniu dzisiejszej gry.';
         } else if (!isToday) {
@@ -1191,6 +1196,7 @@
                 await loadRemoteState(button.dataset.challenge);
                 resetRunForChallenge(button.dataset.challenge);
                 renderGame();
+                closeLockedDialog(els.calendarDialog, 'calendar-dialog');
             });
         });
     }
