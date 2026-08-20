@@ -235,7 +235,11 @@
     }
 
     function challengeOffsetFromStart(startDate, key) {
-        return Math.floor((dateFromKey(key) - dateFromKey(startDate)) / 86400000);
+        const start = dateFromKey(startDate);
+        const current = dateFromKey(key);
+        const utcStart = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+        const utcCurrent = Date.UTC(current.getFullYear(), current.getMonth(), current.getDate());
+        return Math.floor((utcCurrent - utcStart) / 86400000);
     }
 
     function getStorageKey() {
@@ -558,13 +562,25 @@
 
     function getUnfinishedChallengeKey() {
         const localProgress = readStore().progress || {};
+        const remoteKeys = Object.keys(state.remoteStates || {});
+        
+        let unfinishedLocal = null;
         for (const k of Object.keys(localProgress)) {
-            if (!getStoredResult(k)) return k;
+            if (!getStoredResult(k)) {
+                unfinishedLocal = k;
+                break;
+            }
         }
-        for (const k of Object.keys(state.remoteStates || {})) {
-            if (state.remoteStates[k]?.status === 'progress') return k;
+        
+        let unfinishedRemote = null;
+        for (const k of remoteKeys) {
+            if (state.remoteStates[k]?.status === 'progress' && !getStoredResult(k)) {
+                unfinishedRemote = k;
+                break;
+            }
         }
-        return null;
+        
+        return unfinishedLocal || unfinishedRemote || null;
     }
 
     function canOpenChallenge(key) {
